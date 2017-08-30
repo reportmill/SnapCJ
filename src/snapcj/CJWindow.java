@@ -1,0 +1,113 @@
+package snapcj;
+import cheerpj.*;
+import snap.gfx.Insets;
+import snap.util.*;
+import snap.view.*;
+
+/**
+ * A class to represent the WindowView in the browser page.
+ */
+public class CJWindow implements PropChangeListener {
+
+    // The Window View
+    WindowView            _win;
+    
+/**
+ * Sets the window.
+ */
+public void setView(WindowView aWin)  { _win = aWin; _win.addPropChangeListener(this); }
+
+/**
+ * Shows window.
+ */
+public void show(View aView, double aX, double aY)
+{
+    // Get root view and canvas
+    System.out.println("Start CJWindow.show()");
+    RootView rview = _win.getRootView();
+    System.out.println("Got rview: " + rview);
+    //Object hpr = rview.getHelper(); System.out.println("Got hpr: " + hpr);
+    CJRootView rviewNtv = (CJRootView)rview.getNative();
+    HTMLCanvasElement canvas = rviewNtv._canvas;
+    System.out.println("Done CJWindow.show2()");
+    
+    // Silly stuff
+    View c = rview.getContent();
+    if(c instanceof Label || c instanceof ButtonBase) { c.setPadding(4,6,4,6); c.setFont(c.getFont().deriveFont(14));
+        Box box = new Box(c); box.setPadding(4,4,4,4); rview.setContent(box); }
+
+    // Set PrefSize
+    _win.pack();
+    
+    // Position window
+    _win.setXY(10,10);
+    
+    // Add canvas
+    HTMLDocument doc = HTMLDocument.current();
+    HTMLBodyElement body = doc.getBody();
+    body.appendChild(canvas);
+    
+    // Set FullScreen from RootView.Content
+    if(rview.getContent().isGrowWidth()) _win.setGrowWidth(true);
+    if(_win.isGrowWidth()) {
+        _win.setPadding(5,5,5,5); _win.setXY(0,0); }
+    boundsChanged();
+    
+    // Add to screen
+    CJScreen screen = CJScreen.get();
+    screen.showWindow(_win);
+
+    // Set Window showing    
+    _win.setShowing(true);
+}
+
+/**
+ * Hides window.
+ */
+public void hide()
+{
+    // Get root view and canvas
+    RootView rview = _win.getRootView();
+    CJRootView rviewNtv = (CJRootView)rview.getNative();
+    HTMLCanvasElement canvas = rviewNtv._canvas;
+    
+    // Add canvas
+    HTMLDocument doc = HTMLDocument.current();
+    HTMLBodyElement body = doc.getBody();
+    body.removeChild(canvas);
+    
+    // Add to screen
+    CJScreen screen = CJScreen.get();
+    screen.hideWindow(_win);
+}
+
+/**
+ * Called when WindowView properties change.
+ */
+public void propertyChange(PropChange aPC)
+{
+    String pname = aPC.getPropertyName();
+    switch(pname) {
+        case View.X_Prop: case View.Y_Prop: boundsChanged(); }
+}
+
+/**
+ * Called when WindowView bounds changes to sync win size to RootView and win location to RootView.Canvas.
+ */
+public void boundsChanged()
+{
+    // Get Canvas
+    RootView rview = _win.getRootView();
+    CJRootView rviewNtv = (CJRootView)rview.getNative();
+    HTMLCanvasElement canvas = rviewNtv._canvas;
+    
+    // Get canvas x/y
+    Insets ins = _win.getInsetsAll();
+    int x = (int)Math.round(ins.left + _win.getX());
+    int y = (int)Math.round(ins.top + _win.getY());
+
+    // Set RootView position full-screen
+    canvas.getStyle().setCSSText("position:absolute;left:" + x + "px;top:" + y + "px;");
+}
+
+}
