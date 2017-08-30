@@ -30,10 +30,10 @@ public CJImage(Object aSource)
 {
     // Get URL and image src from source
     WebURL url = CJEnv.get().getURL(aSource);
-    _src = url.getString(); if(_src.startsWith("http://abc")) _src = url.getPath().substring(1);
+    _src = url.getString();
     
     // Create image    
-    _img = _img = (HTMLImageElement)HTMLDocument.current().createElement("img"); //.withAttr("src", src)
+    _img = _img = (HTMLImageElement)HTMLDocument.current().createElement("img");
     _pw = _ph = 20;
     
     // Set src and wait till loaded
@@ -72,8 +72,9 @@ private synchronized void didFinishLoad()
 public CJImage(double aWidth, double aHeight, boolean hasAlpha)
 {
     _pw = (int)aWidth; _ph = (int)aHeight;
-    _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas").withAttr("width", String.valueOf(_pw))
-        .withAttr("height", String.valueOf(_ph));
+    _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
+    //.withAttr("width", String.valueOf(_pw)).withAttr("height", String.valueOf(_ph));
+    _canvas.setSize(_pw, _ph);
 }
 
 /**

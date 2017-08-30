@@ -13,10 +13,11 @@ public class CJViewEnv extends ViewEnv {
     //SwingClipboard       _clipboard;
     
     // The timer for runIntervals and runDelayed
-    java.util.Timer           _timer = new java.util.Timer();
+    //java.util.Timer           _timer = new java.util.Timer();
     
     // A map of timer tasks
-    Map <Runnable,TimerTask>  _timerTasks = new HashMap();
+    //Map <Runnable,TimerTask>  _timerTasks = new HashMap();
+    Map <Runnable,Integer>  _intervalIds = new HashMap();
 
     // List of run later runnables
     static List <Runnable>    _runLaters = new ArrayList();
@@ -52,8 +53,9 @@ void sendEvents()
  */
 public void runDelayed(Runnable aRun, int aDelay, boolean inAppThread)
 {
-    TimerTask task = new TimerTask() { public void run() { if(inAppThread) runLater(aRun); else aRun.run(); }};
-    _timer.schedule(task, aDelay);
+    Window.setTimeout(aRun, aDelay);
+    //TimerTask task = new TimerTask() { public void run() { if(inAppThread) runLater(aRun); else aRun.run(); }};
+    //_timer.schedule(task, aDelay);
 }
 
 /**
@@ -61,10 +63,12 @@ public void runDelayed(Runnable aRun, int aDelay, boolean inAppThread)
  */
 public void runIntervals(Runnable aRun, int aPeriod, int aDelay, boolean doAll, boolean inAppThread)
 {
-    TimerTask task = new TimerTask() { public void run()  { aRun.run(); }}; //if(inAppThread) runLaterAndWait(aRun);else 
-    _timerTasks.put(aRun, task);
+    int id = Window.setInterval(aRun, aPeriod);
+    _intervalIds.put(aRun, id);
+    //TimerTask task = new TimerTask() { public void run()  { aRun.run(); }}; //if(inAppThread) runLaterAndWait(aRun);else 
+    //_timerTasks.put(aRun, task);
     //if(doAll) _timer.scheduleAtFixedRate(task, aDelay, aPeriod); else
-    _timer.schedule(task, aDelay, aPeriod); // Why is this running fast?
+    //_timer.schedule(task, aDelay, aPeriod); // Why is this running fast?
 }
 
 /**
@@ -72,8 +76,11 @@ public void runIntervals(Runnable aRun, int aPeriod, int aDelay, boolean doAll, 
  */
 public void stopIntervals(Runnable aRun)
 {
-    TimerTask task = _timerTasks.get(aRun);
-    if(task!=null) task.cancel();
+    Integer id = _intervalIds.get(aRun);
+    if(id!=null)
+        Window.clearInterval(id);
+    //TimerTask task = _timerTasks.get(aRun);
+    //if(task!=null) task.cancel();
 }
 
 /**

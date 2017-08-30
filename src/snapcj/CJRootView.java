@@ -27,7 +27,8 @@ public void setView(View aView)
     _rview = (RootView)aView; _rview.addPropChangeListener(this);
     
     // Create canvas
-    _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas").withAttr("style", "border:1px solid #EEEEEE;");
+    _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
+    _canvas.getStyle().setCSSText("border:1px solid #EEEEEE;"); //.withAttr("style", "border:1px solid #EEEEEE;");
         
     // Set canvas size
     int w = (int)Math.round(_rview.getWidth());

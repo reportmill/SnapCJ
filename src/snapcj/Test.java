@@ -16,15 +16,10 @@ protected View createUI()
 
 public static void main(String args[])
 {
-    System.out.println("Start Test");
     CJ.set();
-    System.out.println("CJ.set()");
     Test test = new Test();
-    System.out.println("new Test()");
     test.getUI().setFill(snap.gfx.Color.WHITE);
-    System.out.println("test.getUI()");
     test.setWindowVisible(true);
-    System.out.println("setWindowVisible(): " + test.getWindow().getSize());
 }
 
 }

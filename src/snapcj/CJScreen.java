@@ -48,9 +48,9 @@ private CJScreen()
     _body.addEventListener("wheel", e -> mouseWheel((WheelEvent)e));
     
     // Add Key Listeners
-    //_body.addEventListener("keydown", e -> keyDown((KeyboardEvent)e));
-    //_body.addEventListener("keypress", e -> keyPress((KeyboardEvent)e));
-    //_body.addEventListener("keyup", e -> keyUp((KeyboardEvent)e));
+    _body.addEventListener("keydown", e -> keyDown((KeyboardEvent)e));
+    _body.addEventListener("keypress", e -> keyPress((KeyboardEvent)e));
+    _body.addEventListener("keyup", e -> keyUp((KeyboardEvent)e));
     
     // Add Touch Listeners
     //_body.addEventListener("touchstart", e -> touchStart((TouchEvent)e));
@@ -58,7 +58,7 @@ private CJScreen()
     //_body.addEventListener("touchend", e -> touchEnd((TouchEvent)e));
     
     // Add bounds listener
-    //Window.current().addEventListener("resize", e -> boundsChanged());
+    Window.current().addEventListener("resize", e -> boundsChanged());
 }
 
 /**

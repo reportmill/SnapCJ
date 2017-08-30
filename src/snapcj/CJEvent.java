@@ -24,9 +24,9 @@ public double getY()  { if(_my==Float.MIN_VALUE) setXY(); return _my; }
 void setXY()
 {
     if(getEvent() instanceof Touch)  { setXYTouch(); return; }
-    MouseEvent event = (MouseEvent)getEvent(); if(event==null) { _mx = _my = 0; return; }
-    double x = ((MouseEvent)getEvent()).getClientX();
-    double y = ((MouseEvent)getEvent()).getClientY();
+    MouseEvent event = getEvent(MouseEvent.class); if(event==null) { _mx = _my = 0; return; }
+    double x = event.getClientX();
+    double y = event.getClientY();
     Point pt = getView().parentToLocal(null,x,y);
     _mx = pt.x; _my = pt.y;
 }
