@@ -23,13 +23,9 @@ public void setView(WindowView aWin)  { _win = aWin; _win.addPropChangeListener(
 public void show(View aView, double aX, double aY)
 {
     // Get root view and canvas
-    System.out.println("Start CJWindow.show()");
     RootView rview = _win.getRootView();
-    System.out.println("Got rview: " + rview);
-    //Object hpr = rview.getHelper(); System.out.println("Got hpr: " + hpr);
     CJRootView rviewNtv = (CJRootView)rview.getNative();
     HTMLCanvasElement canvas = rviewNtv._canvas;
-    System.out.println("Done CJWindow.show2()");
     
     // Silly stuff
     View c = rview.getContent();

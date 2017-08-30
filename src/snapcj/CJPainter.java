@@ -98,7 +98,6 @@ public void draw(Shape aShape)
  */
 public void fill(Shape aShape)
 {
-    System.out.println("fill(): " + aShape);
     if(getPaint() instanceof GradientPaint) { GradientPaint gpnt = (GradientPaint)getPaint();
         GradientPaint gpnt2 = gpnt.copyFor(aShape.getBounds());
         CanvasGradient cg = CJ.get(gpnt2, _cntx);

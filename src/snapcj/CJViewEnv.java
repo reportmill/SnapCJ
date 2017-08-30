@@ -36,13 +36,11 @@ public void runLater(Runnable aRunnable)
 {
     _runLaters.add(aRunnable);
     if(_runLaters.size()==1)
-        //Window.setTimeout(() -> sendEvents(), 10);
-        runDelayed(() -> sendEvents(), 400, false);
+        Window.setTimeout(() -> sendEvents(), 10);
 }
 
-static void sendEvents()
+void sendEvents()
 {
-    System.out.println("sendEvents: " + _runLaters.size());
     while(_runLaters.size()>0) {
         Runnable run = _runLaters.remove(0);
         run.run();
