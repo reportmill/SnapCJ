@@ -38,28 +38,12 @@ public CJImage(Object aSource)
     
     // Set src and wait till loaded
     setLoaded(false);
-    //_img.listenLoad(e -> didFinishLoad());
-    _img.addEventListener("loadend", e -> loadEnd(this));
-    _img.setSrc(_src); //doWait();
-}
-
-static void loadEnd(CJImage anImage)
-{
-    anImage.didFinishLoad();
-}
-
-/** Called to wait for image load. */
-private synchronized void doWait()
-{
-    if(_debug) System.out.println("Waiting for " + _src);
-    while(!_loaded) {
-        try { wait(); }
-        catch(InterruptedException e) { }
-    }
+    _img.addEventListener("load", e -> didFinishLoad());
+    _img.setSrc(_src);
 }
 
 /** Called when image has finished load. */
-private synchronized void didFinishLoad()
+synchronized void didFinishLoad()
 {
     _pw = _img.getWidth(); _ph = _img.getHeight();  //_loaded = true; notifyAll();
     setLoaded(true);
@@ -73,7 +57,6 @@ public CJImage(double aWidth, double aHeight, boolean hasAlpha)
 {
     _pw = (int)aWidth; _ph = (int)aHeight;
     _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
-    //.withAttr("width", String.valueOf(_pw)).withAttr("height", String.valueOf(_ph));
     _canvas.setSize(_pw, _ph);
 }
 
