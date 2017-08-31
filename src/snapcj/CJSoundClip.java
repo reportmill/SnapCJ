@@ -1,6 +1,6 @@
 package snapcj;
 import java.io.IOException;
-import cheerpj.*;
+import cjdom.*;
 import snap.gfx.SoundClip;
 import snap.web.WebURL;
 

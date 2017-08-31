@@ -2,7 +2,7 @@ package snapcj;
 import java.io.*;
 import java.util.*;
 import java.net.*;
-import cheerpj.*;
+import cjdom.*;
 import snap.gfx.*;
 import snap.util.*;
 import snap.web.*;

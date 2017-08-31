@@ -2,7 +2,7 @@ package snapcj;
 import java.util.*;
 import snap.gfx.Rect;
 import snap.view.*;
-import cheerpj.*;
+import cjdom.*;
 
 /**
  * A class to work with the browser web page.

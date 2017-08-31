@@ -1,6 +1,6 @@
 package snapcj;
 import java.util.*;
-import cheerpj.*;
+import cjdom.*;
 import snap.gfx.*;
 import snap.view.*;
 

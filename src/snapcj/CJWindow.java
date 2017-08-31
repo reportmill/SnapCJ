@@ -1,5 +1,5 @@
 package snapcj;
-import cheerpj.*;
+import cjdom.*;
 import snap.gfx.Insets;
 import snap.util.*;
 import snap.view.*;
