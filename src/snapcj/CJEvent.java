@@ -34,9 +34,9 @@ void setXY()
 /** Sets the event point from browser mouse event. */
 void setXYTouch()
 {
-    TouchEvent event = (TouchEvent)getEvent(); if(event==null) { _mx = _my = 0; return; }
-    double x = ((Touch)getEvent()).getClientX();
-    double y = ((Touch)getEvent()).getClientY();
+    Touch touch = (Touch)getEvent();
+    double x = touch.getClientX();
+    double y = touch.getClientY();
     Point pt = getView().parentToLocal(null,x,y);
     _mx = pt.x; _my = pt.y;
 }

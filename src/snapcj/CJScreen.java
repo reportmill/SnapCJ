@@ -53,9 +53,9 @@ private CJScreen()
     _body.addEventListener("keyup", e -> keyUp((KeyboardEvent)e));
     
     // Add Touch Listeners
-    //_body.addEventListener("touchstart", e -> touchStart((TouchEvent)e));
-    //_body.addEventListener("touchmove", e -> touchMove((TouchEvent)e));
-    //_body.addEventListener("touchend", e -> touchEnd((TouchEvent)e));
+    _body.addEventListener("touchstart", e -> touchStart((TouchEvent)e));
+    _body.addEventListener("touchmove", e -> touchMove((TouchEvent)e));
+    _body.addEventListener("touchend", e -> touchEnd((TouchEvent)e));
     
     // Add bounds listener
     Window.current().addEventListener("resize", e -> boundsChanged());
@@ -200,8 +200,7 @@ public void keyUp(KeyboardEvent anEvent)
  */
 public void touchStart(TouchEvent anEvent)
 {
-    anEvent.preventDefault();
-    
+    // Get event touches and first touch
     Touch touches[] = anEvent.getTouches(); if(touches==null || touches.length==0) return;
     Touch touch = touches[0];
     
@@ -211,11 +210,15 @@ public void touchStart(TouchEvent anEvent)
     
     // Get MouseDownView for event
     _mouseDownView = getRootView(touch);
-    
+
     // Dispatch MousePress event
     ViewEvent event = CJViewEnv.get().createEvent(_mouseDownView, touch, View.MousePress, null);
     ((CJEvent)event)._ccount = _clicks;
     _mouseDownView.dispatchEvent(event);
+    
+    // Suppress other actions
+    anEvent.stopPropagation();
+    anEvent.preventDefault();
 }
 
 /**
@@ -223,14 +226,18 @@ public void touchStart(TouchEvent anEvent)
  */
 public void touchMove(TouchEvent anEvent)
 {
-    anEvent.preventDefault();
-    
+    // Get event touches and first touch
     Touch touches[] = anEvent.getTouches(); if(touches==null || touches.length==0) return;
     Touch touch = touches[0];
     
+    // Dispatch MouseDrag event
     ViewEvent event = CJViewEnv.get().createEvent(_mouseDownView, touch, View.MouseDrag, null);
     ((CJEvent)event)._ccount = _clicks;
     _mouseDownView.dispatchEvent(event);
+    
+    // Suppress other actions
+    anEvent.stopPropagation();
+    anEvent.preventDefault();
 }
 
 /**
@@ -238,15 +245,19 @@ public void touchMove(TouchEvent anEvent)
  */
 public void touchEnd(TouchEvent anEvent)
 {
-    anEvent.preventDefault();
-
+    // Get event touches and first touch
     Touch touches[] = anEvent.getChangedTouches(); if(touches==null || touches.length==0) return;
     Touch touch = touches[0];
     
+    // Dispatch MouseRelease event
     RootView mouseDownView = _mouseDownView; _mouseDownView = null;
     ViewEvent event = CJViewEnv.get().createEvent(mouseDownView, touch, View.MouseRelease, null);
     ((CJEvent)event)._ccount = _clicks;
     mouseDownView.dispatchEvent(event);
+    
+    // Suppress other actions
+    anEvent.stopPropagation();
+    anEvent.preventDefault();
 }
 
 /**
