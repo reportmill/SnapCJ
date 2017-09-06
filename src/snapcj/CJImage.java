@@ -1,10 +1,11 @@
 package snapcj;
 import cjdom.*;
+import java.io.InputStream;
 import snap.gfx.*;
 import snap.web.WebURL;
 
 /**
- * A custom class.
+ * An Image implementation for CheerpJ.
  */
 public class CJImage extends Image {
     
@@ -24,13 +25,12 @@ public class CJImage extends Image {
     boolean                  _loaded, _debug;
 
 /**
- * Creates a new TVImage from source.
+ * Creates a new CJImage from source.
  */
 public CJImage(Object aSource)
 {
-    // Get URL and image src from source
-    WebURL url = CJEnv.get().getURL(aSource);
-    _src = url.getString();
+    // Get Src URL string
+    _src = getSourceURL(aSource);
     
     // Create image    
     _img = _img = (HTMLImageElement)HTMLDocument.current().createElement("img");
@@ -40,6 +40,24 @@ public CJImage(Object aSource)
     setLoaded(false);
     _img.addEventListener("load", e -> didFinishLoad());
     _img.setSrc(_src);
+}
+
+/**
+ * Returns a Source URL from source object.
+ */
+String getSourceURL(Object aSource)
+{
+    // Handle byte[] and InputStream
+    if(aSource instanceof byte[] || aSource instanceof InputStream) {
+        Blob blob = new Blob(aSource, null);
+        return URL.createObjectURL(blob);
+    }
+    
+    // Handle URL, WebURL, File, ...
+    WebURL url = CJEnv.get().getURL(aSource);
+    if(url!=null)
+        return getSourceURL(url.getBytes());
+    return url.getString();
 }
 
 /** Called when image has finished load. */

@@ -2,6 +2,7 @@ package snapcj;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.net.URL;
 import cjdom.*;
 import snap.gfx.*;
 import snap.util.*;
@@ -45,9 +46,10 @@ public FontFile getFontFile(String aName)  { return new CJFontFile(aName); }
  */
 public Image getImage(Object aSource)
 {
-    if(aSource instanceof byte[]) {
-        System.err.println("TVEnv.getImage: Trying to load from bytes");
-        return null;
+    //System.out.println("CJEnv.getImage: " + aSource);
+    if(aSource instanceof byte[] || aSource instanceof InputStream) {
+        System.err.println("CJEnv.getImage: Trying to load from bytes");
+        return new CJImage(aSource);
     }
     
     WebURL url = getURL(aSource);
