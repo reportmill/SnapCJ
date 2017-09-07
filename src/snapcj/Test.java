@@ -7,12 +7,12 @@ import snap.view.*;
 public class Test extends ViewOwner {
 
 
-protected View createUI()
+/*protected View createUI()
 {
     Button btn = new Button("Hello World"); btn.setPrefSize(100,25);
     Box box = new Box(btn); box.setPrefSize(320,320);
     return box;
-}
+}*/
 
 public static void main(String args[])
 {

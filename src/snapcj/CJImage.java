@@ -21,9 +21,6 @@ public class CJImage extends Image {
     // The size
     int                      _pw = -1, _ph = -1;
     
-    // Whether image is loaded
-    boolean                  _loaded, _debug;
-
 /**
  * Creates a new CJImage from source.
  */
@@ -53,11 +50,28 @@ String getSourceURL(Object aSource)
         return URL.createObjectURL(blob);
     }
     
-    // Handle URL, WebURL, File, ...
-    WebURL url = CJEnv.get().getURL(aSource);
-    if(url!=null)
+    // Get URL
+    WebURL url = WebURL.getURL(aSource);
+    if(url==null)
+        return null;
+        
+    // If URL can't be fetched by browser, load from bytes
+    if(!isBrowsable(url))
         return getSourceURL(url.getBytes());
+        
+    // Return URL string
     return url.getString();
+}
+
+/**
+ * Returns whether URL can be fetched by browser.
+ */
+boolean isBrowsable(WebURL aURL)
+{
+    String urls = aURL.getString();
+    String scheme = aURL.getScheme();
+    if(urls.contains("!")) return false;
+    return scheme.equals("http") || scheme.equals("https") || scheme.equals("data") || scheme.equals("blob");
 }
 
 /** Called when image has finished load. */
@@ -65,7 +79,6 @@ synchronized void didFinishLoad()
 {
     _pw = _img.getWidth(); _ph = _img.getHeight();  //_loaded = true; notifyAll();
     setLoaded(true);
-    if(_debug) System.out.println("Waiting done " + _src);
 }
 
 /**
