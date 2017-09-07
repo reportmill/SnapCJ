@@ -36,7 +36,7 @@ public void show(View aView, double aX, double aY)
     _win.pack();
     
     // Position window
-    _win.setXY(10,10);
+    _win.setXY(aX,aY);
     
     // Add canvas
     HTMLDocument doc = HTMLDocument.current();
@@ -72,9 +72,12 @@ public void hide()
     HTMLBodyElement body = doc.getBody();
     body.removeChild(canvas);
     
-    // Add to screen
+    // Remove from screen
     CJScreen screen = CJScreen.get();
     screen.hideWindow(_win);
+    
+    // Set Window not showing
+    _win.setShowing(false);
 }
 
 /**
