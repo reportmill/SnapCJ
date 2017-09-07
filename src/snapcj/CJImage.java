@@ -130,12 +130,12 @@ public boolean isIndexedColor()  { return false; }
 public int getRGB(int aX, int aY)
 {
     getPainter();
-    //CanvasRenderingContext2D cntx = (CanvasRenderingContext2D)_canvas.getContext("2d");
-    //ImageData idata = cntx.getImageData(aX, aY, 1, 1);
+    CanvasRenderingContext2D cntx = (CanvasRenderingContext2D)_canvas.getContext("2d");
+    ImageData idata = cntx.getImageData(aX, aY, 1, 1);
+    return idata.getDataInt(0);
     //Uint8ClampedArray data = idata.getData();
     //int d1 = data.get(0), d2 = data.get(1), d3 = data.get(2), d4 = data.get(3);
     //return d4<<24 | d1<<16 | d2<<8 | d3;
-    return 0;
 }
 
 /** Returns the ARGB array of this image. */

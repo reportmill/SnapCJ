@@ -190,4 +190,17 @@ public void save()  { super.save(); _cntx.save(); }
  */
 public void restore()  { super.restore(); _cntx.restore(); }
 
+/**
+ * Sets image rendering quality.
+ */
+public void setImageQuality(double aValue)
+{
+    if(snap.util.MathUtils.equals(aValue,getImageQuality())) return;
+    super.setImageQuality(aValue);
+    //if(aValue>.67) _cntx.setImageSmoothingQuality("high");
+    //else if(aValue>.33) _cntx.setImageSmoothingQuality("medium");
+    //else _cntx.setImageSmoothingQuality("low");
+    _cntx.setImageSmoothingEnabled(aValue>.33);
+}
+
 }

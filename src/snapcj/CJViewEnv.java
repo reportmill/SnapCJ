@@ -135,7 +135,7 @@ public ViewEvent createEvent(View aView, Object anEvent, ViewEvent.Type aType, S
 /**
  * Returns the screen bounds inset to usable area.
  */
-public Rect getScreenBoundsInset()  { return new Rect(0,0,1000,1000); }
+public Rect getScreenBoundsInset()  { return CJScreen.get().getBounds(); }
     
 /**
  * Returns a shared instance.
