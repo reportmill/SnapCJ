@@ -112,6 +112,11 @@ public boolean isShortcutDown()
 }
 
 /**
+ * Returns the drag Clipboard for this event.
+ */
+public Clipboard getDragboard()  { return CJClipboard.getDrag(this); }
+
+/**
  * Returns a view event at new point.
  */
 public ViewEvent copyForViewPoint(View aView, double aX, double aY, int aClickCount)
@@ -125,6 +130,19 @@ public ViewEvent copyForViewPoint(View aView, double aX, double aY, int aClickCo
 /**
  * Returns the event type.
  */
-protected Type getTypeImpl()  { return null; }
+protected Type getTypeImpl()
+{
+    Event event = (Event)getEvent();
+    String type = event.getType();
+    switch(type) {
+        case "dragstart": return Type.DragEnter;
+        case "dragend": return Type.DragExit;
+        case "dragenter": return Type.DragEnter;
+        case "dragexit": return Type.DragExit;
+        case "dragover": return Type.DragOver;
+        case "drop": return Type.DragDrop;
+        default: return null;
+    }
+}
 
 }

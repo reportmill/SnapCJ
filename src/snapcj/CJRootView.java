@@ -34,9 +34,18 @@ public void setView(View aView)
     int w = (int)Math.round(_rview.getWidth());
     int h = (int)Math.round(_rview.getHeight());
     _canvas.setWidth(w); _canvas.setHeight(h);
+    _canvas.getStyle().setProperty("width", w + "px");
+    _canvas.getStyle().setProperty("height", h + "px");
 
     // Create painter
     _pntr = new CJPainter(_canvas);
+    
+    // Register for drop events
+    cjdom.EventListener dragLsnr = e -> handleDragEvent((DragEvent)e);
+    _canvas.addEventListener("dragenter", dragLsnr);
+    _canvas.addEventListener("dragover", dragLsnr);
+    _canvas.addEventListener("drop", dragLsnr);
+    _canvas.addEventListener("dragexit", dragLsnr);
 }
 
 /**
@@ -68,6 +77,7 @@ public void setCursor(Cursor aCursor)
 public void repaint(Rect aRect)
 {
     if(_rview.getFill()==null) _pntr.clearRect(0,0,_rview.getWidth(), _rview.getHeight());
+    //_pntr.setTransform(new Transform(2,0,0,2,0,0));
     ViewUtils.paintAll(_rview, _pntr);
 }
 
@@ -81,13 +91,32 @@ public void propertyChange(PropChange aPC)
     if(pname==View.Width_Prop) {
         int w = (int)Math.round(_rview.getWidth());
         _canvas.setWidth(w);
+        _canvas.getStyle().setProperty("width", w + "px");
     }
     
     // Handle Height change
     else if(pname==View.Height_Prop) {
         int h = (int)Math.round(_rview.getHeight());
         _canvas.setHeight(h);
+        _canvas.getStyle().setProperty("height", h + "px");
     }
+}
+
+/**
+ * Called to handle a drag event.
+ */
+public void handleDragEvent(DragEvent anEvent)
+{
+    String type = anEvent.getType();
+    if(!type.equals("dragover")) System.out.println("DragEvent.Type: " + type);
+    boolean print = false; //!anEvent.getType().equals("dragover");
+    if(print) System.out.println("HandleDragEvent: " + anEvent);
+    ViewEvent event = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
+    if(print) System.out.println("CreateEvent: " + event);
+    _rview.dispatchEvent(event);
+    if(print) System.out.println("dispatchEvent");
+    anEvent.preventDefault();
+    if(print) System.out.println("stopPropagation");
 }
 
 }
