@@ -23,7 +23,7 @@ public double getY()  { if(_my==Float.MIN_VALUE) setXY(); return _my; }
 /** Sets the event point from browser mouse event. */
 void setXY()
 {
-    if(getEvent() instanceof Touch)  { setXYTouch(); return; }
+    if(isTouch())  { setXYTouch(); return; }
     MouseEvent event = getEvent(MouseEvent.class); if(event==null) { _mx = _my = 0; return; }
     double x = event.getClientX();
     double y = event.getClientY();
@@ -60,6 +60,14 @@ public double getScrollY()
     return _my;
 }
 
+/** Returns whether event is touch event. */
+boolean isTouch()
+{
+    if(_touch<0) _touch = getEvent() instanceof Touch? 1 : 0;
+    return _touch==1;
+}
+int _touch = -1;
+
 /** Returns the event keycode. */
 public int getKeyCode()
 {
@@ -74,6 +82,7 @@ public char getKeyChar()  { return (char)getKeyCode(); }
 /** Returns whether shift key is down. */
 public boolean isShiftDown()
 {
+    if(isTouch()) return false;
     if(isKeyEvent()) return ((KeyboardEvent)getEvent()).isShiftKey();
     if(isMouseEvent()) return ((MouseEvent)getEvent()).isShiftKey();
     return false;
@@ -82,6 +91,7 @@ public boolean isShiftDown()
 /** Returns whether control key is down. */
 public boolean isControlDown()
 {
+    if(isTouch()) return false;
     if(isKeyEvent()) return ((KeyboardEvent)getEvent()).isCtrlKey();
     if(isMouseEvent()) return ((MouseEvent)getEvent()).isCtrlKey();
     return false;
@@ -90,6 +100,7 @@ public boolean isControlDown()
 /** Returns whether alt key is down. */
 public boolean isAltDown()
 {
+    if(isTouch()) return false;
     if(isKeyEvent()) return ((KeyboardEvent)getEvent()).isAltKey();
     if(isMouseEvent()) return ((MouseEvent)getEvent()).isAltKey();
     return false;
@@ -98,6 +109,7 @@ public boolean isAltDown()
 /** Returns whether "meta" key is down (the command key on Mac with no equivalent on Windows). */
 public boolean isMetaDown()
 {
+    if(isTouch()) return false;
     if(isKeyEvent()) return ((KeyboardEvent)getEvent()).isMetaKey();
     if(isMouseEvent()) return ((MouseEvent)getEvent()).isMetaKey();
     return false;
@@ -106,6 +118,7 @@ public boolean isMetaDown()
 /** Returns whether shortcut key is pressed. */
 public boolean isShortcutDown()
 {
+    if(isTouch()) return false;
     if(isKeyEvent()) return ((KeyboardEvent)getEvent()).isMetaKey();
     if(isMouseEvent()) return isMetaDown() || isControlDown();
     return false;
@@ -135,7 +148,7 @@ protected Type getTypeImpl()
     Event event = (Event)getEvent();
     String type = event.getType();
     switch(type) {
-        case "dragstart": return Type.DragEnter;
+        case "dragstart": return Type.DragGesture;
         case "dragend": return Type.DragExit;
         case "dragenter": return Type.DragEnter;
         case "dragexit": return Type.DragExit;

@@ -1,6 +1,8 @@
 package snapcj;
+import cjdom.Element;
 import java.util.ArrayList;
 import java.util.List;
+import snap.gfx.Image;
 import snap.view.Clipboard;
 import snap.view.View;
 import snap.view.ViewEvent;
@@ -14,6 +16,9 @@ public class CJClipboard extends Clipboard {
     
     // The view to initiate drag
     View             _view;
+    
+    // The view event
+    ViewEvent        _viewEvent;
     
     // The DragEvent
     DragEvent        _dragEvent;
@@ -104,31 +109,39 @@ protected DataTransfer getDataTransfer()  { return _dataTrans; }
  */
 public void startDrag()
 {
+    // Set Dragging true and consume event
+    isDragging = true;
+    _viewEvent.consume();
+    
     // Get DragSource and start Listening to drag events drag source
-    /*DragSource dragSource = _dge.getDragSource();
-    dragSource.removeDragSourceListener(this); dragSource.removeDragSourceMotionListener(this);
-    dragSource.addDragSourceListener(this); dragSource.addDragSourceMotionListener(this);
+    //DragSource dragSource = _dge.getDragSource();
+    //dragSource.removeDragSourceListener(this); dragSource.removeDragSourceMotionListener(this);
+    //dragSource.addDragSourceListener(this); dragSource.addDragSourceMotionListener(this);
     
     // Check to see if image drag is supported by system. If not (ie, Windows), simulate image dragging with a window.
-    if(getDragImage()!=null && !DragSource.isDragImageSupported())
-        createDragWindow();
+    //if(getDragImage()!=null && !DragSource.isDragImageSupported()) createDragWindow();
 
-    // Get drag image and point (as AWT img/pnt)
-    java.awt.Image img = getDragImage()!=null? (java.awt.Image)getDragImage().getNative() : null;
-    double dx = img!=null? getDragImageOffset().x : 0;
-    double dy = img!=null? getDragImageOffset().y : 0; if(SnapUtils.isMac) { dx = -dx; dy = -dy; } // Mac is flipped?
-    java.awt.Point pnt = img!=null? new java.awt.Point((int)dx, (int)dy) : null;
-    
-    // Start drag
-    Transferable trans = getTrans();
-    dragSource.startDrag(_dge, DragSource.DefaultCopyDrop, img, pnt, trans, null);*/
+    // Get drag image and point and set in DataTransfer
+    Image dimg = getDragImage(); if(dimg==null) dimg = Image.get(1,1,true);
+    Element img = (Element)dimg.getNative();
+    double dx = getDragImageOffset().x;
+    double dy = getDragImageOffset().y;
+    _dataTrans.setDragImage(img, dx, dy);
+        
+    // Add image element to canvas so browsers can generate image (then remove a short time later)
+    cjdom.Element body = cjdom.Document.current().getBody();
+    body.appendChild(img);
+    CJViewEnv.get().runDelayed(() -> { isDragging = false; body.removeChild(img); }, 100, false);
 }
+
+public static boolean isDragging;
 
 /**
  * Sets the current event.
  */
 protected void setEvent(ViewEvent anEvent)
 {
+    _viewEvent = anEvent;
     _dragEvent = (DragEvent)anEvent.getEvent();
     _dataTrans = _dragEvent.getDataTransfer();
 }

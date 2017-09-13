@@ -36,6 +36,7 @@ public void setView(View aView)
     _canvas.setWidth(w); _canvas.setHeight(h);
     _canvas.getStyle().setProperty("width", w + "px");
     _canvas.getStyle().setProperty("height", h + "px");
+    _canvas.setAttribute("draggable", "true");
 
     // Create painter
     _pntr = new CJPainter(_canvas);
@@ -46,6 +47,9 @@ public void setView(View aView)
     _canvas.addEventListener("dragover", dragLsnr);
     _canvas.addEventListener("drop", dragLsnr);
     _canvas.addEventListener("dragexit", dragLsnr);
+    
+    // Register for drag start event
+    _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
 }
 
 /**
@@ -107,16 +111,20 @@ public void propertyChange(PropChange aPC)
  */
 public void handleDragEvent(DragEvent anEvent)
 {
-    String type = anEvent.getType();
-    if(!type.equals("dragover")) System.out.println("DragEvent.Type: " + type);
-    boolean print = false; //!anEvent.getType().equals("dragover");
-    if(print) System.out.println("HandleDragEvent: " + anEvent);
     ViewEvent event = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
-    if(print) System.out.println("CreateEvent: " + event);
     _rview.dispatchEvent(event);
-    if(print) System.out.println("dispatchEvent");
     anEvent.preventDefault();
-    if(print) System.out.println("stopPropagation");
+}
+
+/**
+ * Called to handle a drag event.
+ */
+public void handleDragGesture(DragEvent anEvent)
+{
+    ViewEvent event = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
+    _rview.dispatchEvent(event);
+    if(!CJClipboard.isDragging)
+        anEvent.preventDefault();
 }
 
 }
