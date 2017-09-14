@@ -82,16 +82,6 @@ public Clipboard getClipboard()  { return _clipboard!=null? _clipboard : (_clipb
 public FileChooser getFileChooser()  { return null; }//new SwingFileChooser(); }
 
 /**
- * Returns a property for given view.
- */
-public Object getProp(Object anObj, String aKey)  { return super.getProp(anObj, aKey); }
-
-/**
- * Sets a property for a given native.
- */
-public void setProp(Object anObj, String aKey, Object aValue)  { super.setProp(anObj, aKey, aValue); }
-
-/**
  * Creates the top level properties map.
  */
 protected Map createPropsMap()  { return new HashMap(); }
