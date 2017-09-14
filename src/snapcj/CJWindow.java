@@ -1,5 +1,6 @@
 package snapcj;
 import cjdom.*;
+import snap.gfx.Color;
 import snap.gfx.Insets;
 import snap.util.*;
 import snap.view.*;
@@ -12,6 +13,9 @@ public class CJWindow implements PropChangeListener {
     // The Window View
     WindowView            _win;
     
+    // The last top window
+    static int            _topWin;
+    
 /**
  * Sets the window.
  */
@@ -20,12 +24,50 @@ public void setView(WindowView aWin)  { _win = aWin; _win.addPropChangeListener(
 /**
  * Initializes window.
  */
-public void initWindow()  { }
+public void initWindow()
+{
+    RootView rview = _win.getRootView();
+    if(rview.getFill()==null) rview.setFill(ViewUtils.getBackFill());
+    if(rview.getBorder()==null) rview.setBorder(Color.GRAY, 1);
+}
 
 /**
  * Shows window.
  */
 public void show()
+{
+    //if(_win.isModal()) showModal(); else showImpl();
+    showImpl();
+}
+
+/**
+ * Shows window.
+ */
+synchronized void showModal()
+{
+    // Show window in separate thread
+    System.out.println("Will showImpl");
+    new Thread(() -> showImpl()).start();
+    
+    // Register listener to activate current thread on window not showing
+    PropChangeListener hideLsnr = pce -> {
+        if(_win.isShowing()) return;
+        _win.removePropChangeListener(this, View.Showing_Prop);
+        notify();
+    };
+    _win.addPropChangeListener(hideLsnr);
+    
+    // Wait until window is hidden
+    System.out.println("WillWait");
+    try { wait(); }
+    catch(Exception e) { throw new RuntimeException(e); }
+    System.out.println("DidWait");
+}
+
+/**
+ * Shows window.
+ */
+public void showImpl()
 {
     // Get root view and canvas
     RootView rview = _win.getRootView();
@@ -41,6 +83,7 @@ public void show()
     HTMLDocument doc = HTMLDocument.current();
     HTMLBodyElement body = doc.getBody();
     body.appendChild(canvas);
+    canvas.getStyle().setProperty("z-index", String.valueOf(_topWin++));
     
     // Set FullScreen from RootView.Content
     if(rview.getContent().isGrowWidth()) _win.setGrowWidth(true);
@@ -105,7 +148,8 @@ public void boundsChanged()
     int y = (int)Math.round(ins.top + _win.getY());
 
     // Set RootView position full-screen
-    canvas.getStyle().setCSSText("position:absolute;left:" + x + "px;top:" + y + "px;");
+    canvas.getStyle().setProperty("left", String.valueOf(x) + "px");
+    canvas.getStyle().setProperty("top", String.valueOf(y) + "px");
 }
 
 }
