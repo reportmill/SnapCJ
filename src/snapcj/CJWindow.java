@@ -123,6 +123,17 @@ public void hide()
 }
 
 /**
+ * Window/Popup method: Order window to front.
+ */
+public void toFront()
+{
+    RootView rview = _win.getRootView();
+    CJRootView rviewNtv = (CJRootView)rview.getNative();
+    HTMLCanvasElement canvas = rviewNtv._canvas;
+    canvas.getStyle().setProperty("z-index", String.valueOf(_topWin++));
+}
+
+/**
  * Called when WindowView properties change.
  */
 public void propertyChange(PropChange aPC)

@@ -175,6 +175,10 @@ public static class CJWindowHpr <T extends CJWindow> extends ViewHelper <T> {
     
     /** Window/Popup method: Hides the window. */
     public void hide()  { get().hide(); }
+    
+    /** Window/Popup method: Order window to front. */
+    public void toFront()  { get().toFront(); }
+
 }
 
 }
