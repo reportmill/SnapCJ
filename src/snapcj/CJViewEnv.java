@@ -167,8 +167,11 @@ public static class CJWindowHpr <T extends CJWindow> extends ViewHelper <T> {
     /** Override to set view in RootView. */
     public void setView(View aView)  { super.setView(aView); get().setView((WindowView)aView); }
         
-    /** Window/Popup method: Shows the window at given point relative to given view. */
-    public void show(View aView, double aX, double aY)  { get().show(aView, aX, aY); }
+    /** Window method: initializes window. */
+    public void checkInit()  { if(!_initChecked) { _initChecked = true; get().initWindow(); } } boolean _initChecked;
+
+    /** Window/Popup method: Shows the window. */
+    public void show()  { get().show(); }
     
     /** Window/Popup method: Hides the window. */
     public void hide()  { get().hide(); }

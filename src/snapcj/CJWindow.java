@@ -18,9 +18,14 @@ public class CJWindow implements PropChangeListener {
 public void setView(WindowView aWin)  { _win = aWin; _win.addPropChangeListener(this); }
 
 /**
+ * Initializes window.
+ */
+public void initWindow()  { }
+
+/**
  * Shows window.
  */
-public void show(View aView, double aX, double aY)
+public void show()
 {
     // Get root view and canvas
     RootView rview = _win.getRootView();
@@ -32,12 +37,6 @@ public void show(View aView, double aX, double aY)
     if(c instanceof Label || c instanceof ButtonBase) { c.setPadding(4,6,4,6); c.setFont(c.getFont().deriveFont(14));
         Box box = new Box(c); box.setPadding(4,4,4,4); rview.setContent(box); }
 
-    // Set PrefSize
-    _win.pack();
-    
-    // Position window
-    _win.setXY(aX,aY);
-    
     // Add canvas
     HTMLDocument doc = HTMLDocument.current();
     HTMLBodyElement body = doc.getBody();
