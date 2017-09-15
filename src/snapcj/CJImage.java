@@ -182,11 +182,13 @@ public Painter getPainter()
 {
     // If Image is <img> element, promote to canvas
     if(_img!=null) {
+        int w = getPixWidth(), h = getPixHeight(); _pw *= CJWindow.scale; _ph *= CJWindow.scale;
         _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
-        _canvas.setSize(getPixWidth()*CJWindow.scale, getPixHeight()*CJWindow.scale);
-        _canvas.getStyle().setProperty("width", _pw + "px");
-        _canvas.getStyle().setProperty("height", _ph + "px");
+        _canvas.setSize(_pw, _ph);
+        _canvas.getStyle().setProperty("width", w + "px");
+        _canvas.getStyle().setProperty("height", h + "px");
         Painter pntr = new CJPainter(_canvas);
+        if(CJWindow.scale>1) pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
         pntr.drawImage(this, 0, 0); _img = null;
     }
     
