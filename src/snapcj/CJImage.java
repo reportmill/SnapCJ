@@ -144,7 +144,7 @@ public int getRGB(int aX, int aY)
 {
     getPainter();
     CanvasRenderingContext2D cntx = (CanvasRenderingContext2D)_canvas.getContext("2d");
-    ImageData idata = cntx.getImageData(aX, aY, 1, 1);
+    ImageData idata = cntx.getImageData(aX*CJWindow.scale, aY*CJWindow.scale, 1, 1);
     return idata.getDataInt(0);
     //Uint8ClampedArray data = idata.getData();
     //int d1 = data.get(0), d2 = data.get(1), d3 = data.get(2), d4 = data.get(3);
