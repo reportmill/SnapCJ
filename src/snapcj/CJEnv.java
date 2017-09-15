@@ -1,11 +1,10 @@
 package snapcj;
 import cjdom.*;
 import snap.gfx.*;
-import snap.util.*;
 import snap.web.*;
 
 /**
- * A GFXEnv implementation for TeaVM.
+ * A GFXEnv implementation for CheerpJ.
  */
 public class CJEnv extends GFXEnv {
 
@@ -79,46 +78,6 @@ public void openURL(Object aSource)
  * Plays a beep.
  */
 public void beep()  { }
-
-/**
- * Sets this JVM to be headless.
- */
-public void setHeadless()  { }
-
-/**
- * Returns the platform.
- */
-public SnapUtils.Platform getPlatform()  { return SnapUtils.Platform.UNKNOWN; }
-
-/**
- * Returns a key value.
- */
-public Object getKeyValue(Object anObj, String aKey)  { return null; }
-
-/**
- * Sets a key value.
- */
-public void setKeyValue(Object anObj, String aKey, Object aValue)  { }
-
-/**
- * Returns a key chain value.
- */
-public Object getKeyChainValue(Object anObj, String aKeyChain)  { return null; }
-
-/**
- * Sets a key chain value.
- */
-public void setKeyChainValue(Object anObj, String aKC, Object aValue)  { }
-
-/**
- * Returns a key list value.
- */
-public Object getKeyListValue(Object anObj, String aKey, int anIndex)  { return null; }
-
-/**
- * Adds a key list value.
- */
-public void setKeyListValue(Object anObj, String aKey, Object aValue, int anIndex)  { }
 
 /**
  * Returns a shared instance.

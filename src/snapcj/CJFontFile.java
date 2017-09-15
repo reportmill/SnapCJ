@@ -107,13 +107,10 @@ public double getMaxAdvance()  { return 2; }
 /** Returns if this font can display the given char. */
 protected boolean canDisplayImpl(char aChar)  { return true; }
 
-/** Override to return TVM font. */
+/** Override to return CheerpJ font. */
 public Object getNative()  { return getName() + ' ' + 1000; }
 
-/** Override to return TVM font. */
+/** Override to return CheerpJ font. */
 public Object getNative(double aSize)  { return getName() + ' ' + aSize; }
-
-/** Override to return TVM font. */
-public String getNativeName()  { return getName(); }
 
 }

@@ -5,7 +5,7 @@ import snap.gfx.*;
 import snap.view.*;
 
 /**
- * A ViewEnv implementation for TeaVM.
+ * A ViewEnv implementation for CheerpJ.
  */
 public class CJViewEnv extends ViewEnv {
     
