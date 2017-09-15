@@ -3,7 +3,7 @@ import cjdom.*;
 import snap.gfx.*;
 
 /**
- * A custom class.
+ * A Painter implementation for CheerpJ.
  */
 public class CJPainter extends PainterImpl {
     
@@ -15,10 +15,15 @@ public class CJPainter extends PainterImpl {
  */
 public CJPainter(HTMLCanvasElement aCnvs)
 {
+    // Set canvas and context
     _canvas = aCnvs;
     _cntx = (CanvasRenderingContext2D)_canvas.getContext("2d");
-    _cntx.setTransform(1,0,0,1,0,0);
+    
+    // Clip to canvas bounds
     clip(new Rect(0,0,_canvas.getWidth(),_canvas.getHeight()));
+    
+    // If hidpi, scale default transform
+    if(CJWindow.scale>1) _cntx.transform(CJWindow.scale,0,0,CJWindow.scale,0,0);
 }
 
 /**
@@ -65,7 +70,9 @@ public void setTransform(Transform aTrans)
 {
     super.setTransform(aTrans);
     double m[] = aTrans.getMatrix();
-    _cntx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+    
+    // Set transform with CJWindow.scale (in case hidpi)
+    _cntx.setTransform(m[0]*CJWindow.scale, m[1], m[2], m[3]*CJWindow.scale, m[4], m[5]);
 }
 
 /**

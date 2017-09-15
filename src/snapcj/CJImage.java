@@ -188,14 +188,11 @@ public Painter getPainter()
         _canvas.getStyle().setProperty("width", w + "px");
         _canvas.getStyle().setProperty("height", h + "px");
         Painter pntr = new CJPainter(_canvas);
-        if(CJWindow.scale>1) pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
         pntr.drawImage(this, 0, 0); _img = null;
     }
     
     // Return painter for canvas
-    Painter pntr = new CJPainter(_canvas);
-    if(CJWindow.scale>1) pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
-    return pntr;
+    return new CJPainter(_canvas);
 }
 
 /**

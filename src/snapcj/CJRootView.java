@@ -81,7 +81,7 @@ public void setCursor(Cursor aCursor)
 public void repaint(Rect aRect)
 {
     if(_rview.getFill()==null) _pntr.clearRect(0,0,_rview.getWidth(), _rview.getHeight());
-    _pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
+    _pntr.setTransform(1,0,0,1,0,0); // I don't know why I need this!
     ViewUtils.paintAll(_rview, _pntr);
 }
 
