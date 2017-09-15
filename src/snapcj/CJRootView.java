@@ -33,7 +33,7 @@ public void setView(View aView)
     // Set canvas size
     int w = (int)Math.round(_rview.getWidth());
     int h = (int)Math.round(_rview.getHeight());
-    _canvas.setWidth(w); _canvas.setHeight(h);
+    _canvas.setWidth(w*CJWindow.scale); _canvas.setHeight(h*CJWindow.scale);
     _canvas.getStyle().setProperty("width", w + "px");
     _canvas.getStyle().setProperty("height", h + "px");
     _canvas.setAttribute("draggable", "true");
@@ -81,7 +81,7 @@ public void setCursor(Cursor aCursor)
 public void repaint(Rect aRect)
 {
     if(_rview.getFill()==null) _pntr.clearRect(0,0,_rview.getWidth(), _rview.getHeight());
-    //_pntr.setTransform(new Transform(2,0,0,2,0,0));
+    _pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
     ViewUtils.paintAll(_rview, _pntr);
 }
 
@@ -94,14 +94,14 @@ public void propertyChange(PropChange aPC)
     String pname = aPC.getPropertyName();
     if(pname==View.Width_Prop) {
         int w = (int)Math.round(_rview.getWidth());
-        _canvas.setWidth(w);
+        _canvas.setWidth(w*CJWindow.scale);
         _canvas.getStyle().setProperty("width", w + "px");
     }
     
     // Handle Height change
     else if(pname==View.Height_Prop) {
         int h = (int)Math.round(_rview.getHeight());
-        _canvas.setHeight(h);
+        _canvas.setHeight(h*CJWindow.scale);
         _canvas.getStyle().setProperty("height", h + "px");
     }
 }

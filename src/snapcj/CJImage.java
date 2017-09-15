@@ -86,9 +86,12 @@ synchronized void didFinishLoad()
  */
 public CJImage(double aWidth, double aHeight, boolean hasAlpha)
 {
-    _pw = (int)aWidth; _ph = (int)aHeight;
+    int w = (int)aWidth, h = (int)aHeight;
+    _pw = w*CJWindow.scale; _ph = h*CJWindow.scale;
     _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
     _canvas.setSize(_pw, _ph);
+    _canvas.getStyle().setProperty("width", w + "px");
+    _canvas.getStyle().setProperty("height", h + "px");
 }
 
 /**
@@ -108,6 +111,16 @@ public int getPixHeight()
     if(_ph>=0) return _ph;
     return _ph = _img.getHeight();
 }
+
+/**
+ * Returns the width of given image.
+ */
+public double getWidthDPI()  { return _img!=null? 72 : 72*CJWindow.scale; }
+
+/**
+ * Returns the height of given image.
+ */
+public double getHeightDPI()  { return _img!=null? 72 : 72*CJWindow.scale; }
 
 /**
  * Returns whether image has alpha.
@@ -167,14 +180,20 @@ public byte[] getBytesPNG()  { return null; }
  */
 public Painter getPainter()
 {
+    // If Image is <img> element, promote to canvas
     if(_img!=null) {
-        _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas").withAttr("width", String.valueOf(getPixWidth()))
-            .withAttr("height", String.valueOf(getPixHeight()));
+        _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
+        _canvas.setSize(getPixWidth()*CJWindow.scale, getPixHeight()*CJWindow.scale);
+        _canvas.getStyle().setProperty("width", _pw + "px");
+        _canvas.getStyle().setProperty("height", _ph + "px");
         Painter pntr = new CJPainter(_canvas);
         pntr.drawImage(this, 0, 0); _img = null;
-        return pntr;
     }
-    return new CJPainter(_canvas);
+    
+    // Return painter for canvas
+    Painter pntr = new CJPainter(_canvas);
+    if(CJWindow.scale>1) pntr.setTransform(new Transform(CJWindow.scale,0,0,CJWindow.scale,0,0));
+    return pntr;
 }
 
 /**

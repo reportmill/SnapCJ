@@ -16,6 +16,9 @@ public class CJWindow implements PropChangeListener {
     // The last top window
     static int            _topWin;
     
+    // The paint scale
+    public static int     scale = Window.current().getDevicePixelRatio()==2? 2 : 1;
+    
 /**
  * Sets the window.
  */
