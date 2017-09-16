@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import snap.gfx.Image;
 import snap.view.Clipboard;
+import snap.view.ClipboardFile;
 import snap.view.View;
 import snap.view.ViewEvent;
 import cjdom.DragEvent;
@@ -58,8 +59,11 @@ public Object getContent(String aName)
         
     // Handle Files
     if(aName==FILES) {
-        List files = new ArrayList();
-        return files;
+        cjdom.File cjfiles[] = _dataTrans.getFiles(); if(cjfiles==null) return null;
+        List <ClipboardFile> cfiles = new ArrayList(cjfiles.length);
+        for(cjdom.File cjfile : cjfiles)
+            cfiles.add(new ClipboardFile(cjfile.getBytes(), cjfile.getType()));
+        return cfiles;
     }
         
     // Handle anything else

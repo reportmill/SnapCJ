@@ -127,7 +127,7 @@ public boolean isShortcutDown()
 /**
  * Returns the drag Clipboard for this event.
  */
-public Clipboard getDragboard()  { return CJClipboard.getDrag(this); }
+public Clipboard getClipboard()  { return CJClipboard.getDrag(this); }
 
 /**
  * Returns a view event at new point.
