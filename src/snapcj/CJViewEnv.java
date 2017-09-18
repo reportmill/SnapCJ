@@ -16,7 +16,7 @@ public class CJViewEnv extends ViewEnv {
     Map <Runnable,Integer>    _intervalIds = new HashMap();
 
     // List of run later runnables
-    static List <Runnable>    _runLaters = new ArrayList();
+    //static List <Runnable>    _runLaters = new ArrayList();
     
     // A shared instance.
     static CJViewEnv          _shared = new CJViewEnv();
@@ -31,18 +31,14 @@ public boolean isEventThread()  { return true; }
  */
 public void runLater(Runnable aRunnable)
 {
-    _runLaters.add(aRunnable);
-    if(_runLaters.size()==1)
-        Window.setTimeout(() -> sendEvents(), 10);
+    Window.setTimeout(aRunnable, 10);
+    //_runLaters.add(aRunnable);
+    //if(_runLaters.size()==1) Window.setTimeout(() -> sendEvents(), 10);
 }
 
-void sendEvents()
-{
-    while(_runLaters.size()>0) {
-        Runnable run = _runLaters.remove(0);
-        run.run();
-    }
-}
+//void sendEvents() {
+//    Runnable runs[] = _runLaters.toArray(new Runnable[_runLaters.size()]); _runLaters.clear();
+//    for(Runnable run : runs) run.run(); }
 
 /**
  * Runs given runnable after delay.
