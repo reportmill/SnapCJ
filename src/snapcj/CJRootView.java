@@ -50,6 +50,7 @@ public void setView(View aView)
     
     // Register for drag start event
     _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
+    _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
 }
 
 /**
@@ -125,6 +126,15 @@ public void handleDragGesture(DragEvent anEvent)
     _rview.dispatchEvent(event);
     if(!CJClipboard.isDragging)
         anEvent.preventDefault();
+}
+
+/**
+ * Called to handle dragend event.
+ */
+public void handleDragEnd(DragEvent anEvent)
+{
+    ViewEvent nevent = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
+    _rview.dispatchEvent(nevent);
 }
 
 }

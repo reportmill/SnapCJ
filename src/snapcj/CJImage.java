@@ -220,6 +220,16 @@ public boolean isPremultiplied()  { return _pm; } boolean _pm;
 public void setPremultiplied(boolean aValue)  { _pm = aValue; }
 
 /**
+ * Blurs the image by mixing pixels with those around it to given radius.
+ */
+/*public void blur(int aRad)
+{
+    // Nice try
+    if(_img!=null) _img.getStyle().setProperty("filter", "blur(" + aRad + "px)");
+    else _canvas.getStyle().setProperty("filter", "blur(" + aRad + "px)");
+}*/
+
+/**
  * Returns the native object.
  */
 public CanvasImageSource getNative()  { return _img!=null? _img : _canvas; }

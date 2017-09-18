@@ -63,9 +63,7 @@ public Object getContent(String aName)
         List <ClipboardFile> cfiles = new ArrayList(cjfiles.length);
         for(cjdom.File cjfile : cjfiles) {
             String type = cjfile.getType();
-            System.out.println("GotType: " + type);
             byte bytes[] = cjfile.getBytes();
-            System.out.println("GotBytes: " + bytes.length);
             ClipboardFile cbfile = new ClipboardFile(cjfile.getBytes(), cjfile.getType());
             cfiles.add(cbfile);
         }
@@ -145,6 +143,12 @@ public void startDrag()
 }
 
 public static boolean isDragging;
+
+/** Called to indicate that drop is accepted. */
+public void acceptDrag()  { }
+
+/** Called to indicate that drop is complete. */
+public void dropComplete()  { }
 
 /**
  * Sets the current event.

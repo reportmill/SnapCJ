@@ -129,6 +129,12 @@ public boolean isShortcutDown()
  */
 public Clipboard getClipboard()  { return CJClipboard.getDrag(this); }
 
+/** Called to indicate that drop is accepted. */
+public void acceptDrag()  { CJClipboard.getDrag(this).acceptDrag(); }
+
+/** Called to indicate that drop is complete. */
+public void dropComplete()  { CJClipboard.getDrag(this).dropComplete(); }
+
 /**
  * Returns a view event at new point.
  */
@@ -149,7 +155,7 @@ protected Type getTypeImpl()
     String type = event.getType();
     switch(type) {
         case "dragstart": return Type.DragGesture;
-        case "dragend": return Type.DragExit;
+        case "dragend": return Type.DragSourceEnd;
         case "dragenter": return Type.DragEnter;
         case "dragexit": return Type.DragExit;
         case "dragover": return Type.DragOver;

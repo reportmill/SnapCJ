@@ -1,6 +1,7 @@
 package snapcj;
 import cjdom.*;
 import snap.gfx.*;
+import snap.util.FilePathUtils;
 import snap.web.*;
 
 /**
@@ -61,7 +62,18 @@ public double getScreenResolution()  { return 72; }
 /**
  * Tries to open the given file name with the platform reader.
  */
-public void openFile(Object aSource)  { }
+public void openFile(Object aSource)
+{
+    WebURL url = WebURL.getURL(aSource);
+    String ext = FilePathUtils.getExtension(url.getPath()).toLowerCase();
+    String type = ext.equals("pdf")? "application/pdf" : ext.equals("html")? "text/html" : null;
+    byte bytes[] = url.getBytes();
+    System.out.println("Got bytes: " + bytes.length + " and type " + type);
+    Blob blob = new Blob(bytes, type);
+    String src = URL.createObjectURL(blob);
+    System.out.println("Open src: " + src);
+    Window.current().open(src, "_blank", "menubar=no");
+}
 
 /**
  * Tries to open the given URL with the platform reader.
