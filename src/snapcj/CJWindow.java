@@ -39,8 +39,8 @@ public void initWindow()
  */
 public void show()
 {
-    //if(_win.isModal()) showModal(); else showImpl();
-    showImpl();
+    if(_win.isModal()) showModal();
+    else showImpl();
 }
 
 /**
@@ -48,9 +48,8 @@ public void show()
  */
 synchronized void showModal()
 {
-    // Show window in separate thread
-    System.out.println("Will showImpl");
-    new Thread(() -> showImpl()).start();
+    // Do normal show
+    showImpl();
     
     // Register listener to activate current thread on window not showing
     PropChangeListener hideLsnr = pce -> {

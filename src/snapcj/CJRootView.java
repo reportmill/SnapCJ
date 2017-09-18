@@ -111,9 +111,9 @@ public void propertyChange(PropChange aPC)
  */
 public void handleDragEvent(DragEvent anEvent)
 {
+    anEvent.preventDefault();
     ViewEvent event = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
     _rview.dispatchEvent(event);
-    anEvent.preventDefault();
 }
 
 /**

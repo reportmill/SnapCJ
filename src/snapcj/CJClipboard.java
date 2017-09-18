@@ -61,8 +61,14 @@ public Object getContent(String aName)
     if(aName==FILES) {
         cjdom.File cjfiles[] = _dataTrans.getFiles(); if(cjfiles==null) return null;
         List <ClipboardFile> cfiles = new ArrayList(cjfiles.length);
-        for(cjdom.File cjfile : cjfiles)
-            cfiles.add(new ClipboardFile(cjfile.getBytes(), cjfile.getType()));
+        for(cjdom.File cjfile : cjfiles) {
+            String type = cjfile.getType();
+            System.out.println("GotType: " + type);
+            byte bytes[] = cjfile.getBytes();
+            System.out.println("GotBytes: " + bytes.length);
+            ClipboardFile cbfile = new ClipboardFile(cjfile.getBytes(), cjfile.getType());
+            cfiles.add(cbfile);
+        }
         return cfiles;
     }
         
