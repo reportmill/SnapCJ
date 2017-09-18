@@ -2,6 +2,7 @@ package snapcj;
 import cjdom.*;
 import java.io.InputStream;
 import snap.gfx.*;
+import snap.util.SnapUtils;
 import snap.web.WebURL;
 
 /**
@@ -46,6 +47,7 @@ String getSourceURL(Object aSource)
 {
     // Handle byte[] and InputStream
     if(aSource instanceof byte[] || aSource instanceof InputStream) {
+        readBasicInfo(SnapUtils.getBytes(aSource));
         Blob blob = new Blob(aSource, null);
         return URL.createObjectURL(blob);
     }
@@ -72,6 +74,18 @@ boolean isBrowsable(WebURL aURL)
     String scheme = aURL.getScheme();
     if(urls.contains("!")) return false;
     return scheme.equals("http") || scheme.equals("https") || scheme.equals("data") || scheme.equals("blob");
+}
+
+/**
+ * Read basic info if bytes.
+ */
+void readBasicInfo(byte theBytes[])
+{
+    String type = ImageUtils.getImageType(theBytes);
+    if(type.equals("jpg")) {
+        ImageUtils.ImageInfo info = ImageUtils.getInfoJPG(theBytes);
+        _pw = info.width; _ph = info.height;
+    }
 }
 
 /** Called when image has finished load. */
