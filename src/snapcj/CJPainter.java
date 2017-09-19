@@ -43,6 +43,8 @@ public void setStroke(Stroke aStroke)
 {
     super.setStroke(aStroke);
     _cntx.setLineWidth(aStroke!=null? aStroke.getWidth() : 1);
+    _cntx.setLineDash(aStroke.getDashArray());
+    _cntx.setLineDashOffset(aStroke.getDashOffset());
 }
 
 /**
