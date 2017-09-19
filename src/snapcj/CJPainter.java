@@ -162,8 +162,9 @@ public void drawImage(Image anImg, Transform xform)
 public void drawImage(Image anImg, double sx, double sy, double sw, double sh, double dx,double dy,double dw,double dh)
 {
     // Correct source width/height for image dpi
-    if(anImg.getWidthDPI()!=72) sw *= anImg.getWidthDPI()/72;
-    if(anImg.getHeightDPI()!=72) sh *= anImg.getHeightDPI()/72;
+    double isw = anImg.getWidthDPI()/72, ish = anImg.getHeightDPI()/72;
+    if(isw!=1) { sx *= isw; sw *= isw; }
+    if(ish!=1) { sy *= ish; sh *= ish; }
     
     // Get points for corner as ints and draw image
     CanvasImageSource img = anImg instanceof CJImage? (CanvasImageSource)anImg.getNative() : null;
@@ -210,6 +211,19 @@ public void setImageQuality(double aValue)
     //else if(aValue>.33) _cntx.setImageSmoothingQuality("medium");
     //else _cntx.setImageSmoothingQuality("low");
     _cntx.setImageSmoothingEnabled(aValue>.33);
+}
+
+/**
+ * Sets the composite mode.
+ */
+public void setComposite(Composite aComp)
+{
+    super.setComposite(aComp);
+    switch(aComp) {
+        case SRC_OVER: _cntx.setGlobalCompositeOperation("source-over"); break;
+        case SRC_IN: _cntx.setGlobalCompositeOperation("source-in"); break;
+        case DST_IN: _cntx.setGlobalCompositeOperation("destination-in"); break;
+    }
 }
 
 }

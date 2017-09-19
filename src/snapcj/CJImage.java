@@ -222,12 +222,27 @@ public void setPremultiplied(boolean aValue)  { _pm = aValue; }
 /**
  * Blurs the image by mixing pixels with those around it to given radius.
  */
-/*public void blur(int aRad)
+public void blur(int aRad)
 {
-    // Nice try
-    if(_img!=null) _img.getStyle().setProperty("filter", "blur(" + aRad + "px)");
-    else _canvas.getStyle().setProperty("filter", "blur(" + aRad + "px)");
-}*/
+    // Just go to canvas - should be rare to blur a raw image
+    if(_img!=null) getPainter();
+    
+    // Only works for Chrome
+    HTMLCanvasElement canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
+    canvas.setSize(_pw, _ph);
+    canvas.getStyle().setProperty("width", (_pw/CJWindow.scale) + "px");
+    canvas.getStyle().setProperty("height", (_ph/CJWindow.scale) + "px");
+    CJPainter pntr = new CJPainter(canvas);
+    pntr._cntx.setFilter("blur(" + aRad/2 + "px)");
+    pntr.drawImage(this, 0, 0); _img = null;
+    pntr._cntx.setFilter("none");
+    _canvas = canvas;
+}
+
+/**
+ * Embosses the image by mixing pixels with those around it to given radius.
+ */
+public void emboss(double aRadius, double anAzi, double anAlt)  { }
 
 /**
  * Returns the native object.
