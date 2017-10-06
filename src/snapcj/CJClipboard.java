@@ -2,11 +2,10 @@ package snapcj;
 import cjdom.Element;
 import java.util.ArrayList;
 import java.util.List;
+import snap.gfx.Color;
 import snap.gfx.Image;
-import snap.view.Clipboard;
-import snap.view.ClipboardFile;
-import snap.view.View;
-import snap.view.ViewEvent;
+import snap.util.ASCIICodec;
+import snap.view.*;
 import cjdom.DragEvent;
 import cjdom.DataTransfer;
 
@@ -44,6 +43,14 @@ public boolean hasContent(String aName)
     if(aName==FILES)
         return _dataTrans.getFiles().length>0;
 
+    // Handle IMAGE
+    if(aName==IMAGE)
+        return _dataTrans.hasType("snap/png");
+
+    // Handle COLOR
+    if(aName==COLOR)
+        return _dataTrans.hasType("snap/color");
+
     // Handle anything else
     return _dataTrans.hasType(aName);
 }
@@ -70,6 +77,20 @@ public Object getContent(String aName)
         return cfiles;
     }
         
+    // Handle IMAGE
+    if(aName==IMAGE) {
+        String istr = _dataTrans.getData("snap/png");
+        byte bytes[] = ASCIICodec.decodeBase64(istr);
+        Image img = Image.get(bytes);
+        return img;
+    }
+
+    // Handle COLOR
+    if(aName==COLOR) {
+        String cstr = _dataTrans.getData("snap/color");
+        return Color.get(cstr);
+    }
+
     // Handle anything else
     return _dataTrans.getData(aName);
 }
@@ -79,9 +100,24 @@ public Object getContent(String aName)
  */
 public void setContent(String aName, Object theData)
 {
-    // Handle String
+    // Handle STRING
     if(aName==STRING)
         _dataTrans.setData("text/plain", (String)theData);
+        
+    // Handle IMAGE
+    if(aName==IMAGE) {
+        Image img = (Image)theData;
+        byte bytes[] = img.getBytesPNG();
+        String bstring = ASCIICodec.encodeBase64(bytes);
+        _dataTrans.setData("snap/png", bstring);
+    }
+    
+    // Handle COLOR
+    if(aName==COLOR) {
+        Color color = (Color)theData;
+        String cstr = color.toHexString();
+        _dataTrans.setData("snap/color", cstr);
+    }
 }
 
 /**
@@ -95,8 +131,8 @@ public void setContent(Object ... theContents)
         //else if(theContents[0] instanceof java.io.File)
         //    theContents = new Object[] { FILES, Arrays.asList(theContents[0]) };
         else if(theContents[0] instanceof List) theContents = new Object[] { FILES, theContents[0] };
-        //else if(theContents[0] instanceof Image) theContents = new Object[] { IMAGE, theContents[0] };
-        //else if(theContents[0] instanceof Color) theContents = new Object[] { COLOR, theContents[0] };
+        else if(theContents[0] instanceof Image) theContents = new Object[] { IMAGE, theContents[0] };
+        else if(theContents[0] instanceof Color) theContents = new Object[] { COLOR, theContents[0] };
     }
 
     // Set contents    

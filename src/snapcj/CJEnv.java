@@ -96,4 +96,9 @@ public void beep()  { }
  */
 public static CJEnv get()  { return _shared; }
 
+/**
+ * Sets TVViewEnv as the ViewEnv.
+ */
+public static void set()  { GFXEnv.setEnv(get()); }
+
 }
