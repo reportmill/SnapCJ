@@ -2,9 +2,7 @@ package snapcj;
 import cjdom.Element;
 import java.util.ArrayList;
 import java.util.List;
-import snap.gfx.Color;
 import snap.gfx.Image;
-import snap.util.ASCIICodec;
 import snap.view.*;
 import cjdom.DragEvent;
 import cjdom.DataTransfer;
@@ -33,120 +31,55 @@ public class CJClipboard extends Clipboard {
 /**
  * Returns the clipboard content.
  */
-public boolean hasContent(String aName)
+protected boolean hasDataImpl(String aMimeType)
 {
-    // Handle String
-    if(aName==STRING)
-        return _dataTrans.hasType("text/plain");
-
-    // Handle Files
-    if(aName==FILES)
+    if(aMimeType==FILE_LIST)
         return _dataTrans.getFiles().length>0;
-
-    // Handle IMAGE
-    if(aName==IMAGE)
-        return _dataTrans.hasType("snap/png");
-
-    // Handle COLOR
-    if(aName==COLOR)
-        return _dataTrans.hasType("snap/color");
-
-    // Handle anything else
-    return _dataTrans.hasType(aName);
+    return _dataTrans.hasType(aMimeType);
 }
 
 /**
  * Returns the clipboard content.
  */
-public Object getContent(String aName)
+protected ClipboardData getDataImpl(String aMimeType)
 {
-    // Handle String
-    if(aName==STRING)
-        return _dataTrans.getData("text/plain");
-        
+    Object data = null;
+    
     // Handle Files
-    if(aName==FILES) {
+    if(aMimeType==FILE_LIST) {
         cjdom.File cjfiles[] = _dataTrans.getFiles(); if(cjfiles==null) return null;
-        List <ClipboardFile> cfiles = new ArrayList(cjfiles.length);
+        List <ClipboardData> cfiles = new ArrayList(cjfiles.length);
         for(cjdom.File cjfile : cjfiles) {
             String type = cjfile.getType();
             byte bytes[] = cjfile.getBytes();
-            ClipboardFile cbfile = new ClipboardFile(cjfile.getBytes(), cjfile.getType());
+            ClipboardData cbfile = new ClipboardData(cjfile.getType(), cjfile.getBytes());
             cfiles.add(cbfile);
         }
-        return cfiles;
+        data = cfiles;
     }
         
-    // Handle IMAGE
-    if(aName==IMAGE) {
-        String istr = _dataTrans.getData("snap/png");
-        byte bytes[] = ASCIICodec.decodeBase64(istr);
-        Image img = Image.get(bytes);
-        return img;
-    }
-
-    // Handle COLOR
-    if(aName==COLOR) {
-        String cstr = _dataTrans.getData("snap/color");
-        return Color.get(cstr);
-    }
-
-    // Handle anything else
-    return _dataTrans.getData(aName);
-}
-
-/**
- * Sets the clipboard content.
- */
-public void setContent(String aName, Object theData)
-{
-    // Handle STRING
-    if(aName==STRING)
-        _dataTrans.setData("text/plain", (String)theData);
-        
-    // Handle IMAGE
-    if(aName==IMAGE) {
-        Image img = (Image)theData;
-        byte bytes[] = img.getBytesPNG();
-        String bstring = ASCIICodec.encodeBase64(bytes);
-        _dataTrans.setData("snap/png", bstring);
-    }
+    // Handle anything else (String data)
+    else data = _dataTrans.getData(aMimeType);
     
-    // Handle COLOR
-    if(aName==COLOR) {
-        Color color = (Color)theData;
-        String cstr = color.toHexString();
-        _dataTrans.setData("snap/color", cstr);
-    }
+    // Return ClipboardData for data
+    return new ClipboardData(aMimeType, data);
 }
 
 /**
- * Sets the clipboard content.
+ * Adds clipboard content.
  */
-public void setContent(Object ... theContents)
+protected void addDataImpl(String aMimeType, ClipboardData aData)
 {
-    // If contents only one object, map to key
-    if(theContents.length==1) {
-        if(theContents[0] instanceof String) theContents = new Object[] { STRING, theContents[0] };
-        //else if(theContents[0] instanceof java.io.File)
-        //    theContents = new Object[] { FILES, Arrays.asList(theContents[0]) };
-        else if(theContents[0] instanceof List) theContents = new Object[] { FILES, theContents[0] };
-        else if(theContents[0] instanceof Image) theContents = new Object[] { IMAGE, theContents[0] };
-        else if(theContents[0] instanceof Color) theContents = new Object[] { COLOR, theContents[0] };
-    }
-
-    // Set contents    
-    for(int i=0;i<theContents.length;) {
-        String name = (String)theContents[i++];
-        Object data = theContents[i++];
-        setContent(name, data);
-    }
+    // Do normal implementation to populate ClipboardDatas map
+    super.addDataImpl(aMimeType, aData);
+    
+    // Handle string data
+    if(aData.isString())
+        _dataTrans.setData(aMimeType, aData.getString());
+        
+    // Otherwise complain
+    else System.err.println("CJClipboard.addDataImpl: Unsupported data type: " + aMimeType + ", " + aData.getSource());
 }
-
-/**
- * Returns the data transfer.
- */
-protected DataTransfer getDataTransfer()  { return _dataTrans; }
 
 /**
  * Starts the drag.
