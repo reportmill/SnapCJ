@@ -57,6 +57,12 @@ private CJScreen()
     _body.addEventListener("touchmove", e -> touchMove((TouchEvent)e));
     _body.addEventListener("touchend", e -> touchEnd((TouchEvent)e));
     
+    // Add cut, copy, paste listeners
+    cjdom.EventListener cutCopyPasteLsnr = e -> cutCopyPaste((ClipboardEvent)e);
+    _body.addEventListener("cut", cutCopyPasteLsnr);
+    _body.addEventListener("copy", cutCopyPasteLsnr);
+    _body.addEventListener("paste", cutCopyPasteLsnr);
+    
     // Add bounds listener
     Window.current().addEventListener("resize", e -> boundsChanged());
 }
@@ -257,6 +263,34 @@ public void touchEnd(TouchEvent anEvent)
     
     // Suppress other actions
     anEvent.stopPropagation();
+    anEvent.preventDefault();
+}
+
+/**
+ * Called when body gets cut/copy/paste.
+ */
+public void cutCopyPaste(ClipboardEvent anEvent)
+{
+    String type = anEvent.getType();
+    CJClipboard cb = (CJClipboard)Clipboard.get();
+    DataTransfer dtrans = anEvent.getClipboardData();
+    
+    // Handle cut/copy: Load DataTransfer from Clipboard.ClipboardDatas
+    if(type.equals("cut") || type.equals("copy")) {
+        dtrans.clearData(null);
+        for(ClipboardData cdata : cb.getClipboardDatas().values())
+            if(cdata.isString())
+                dtrans.setData(cdata.getMIMEType(), cdata.getString());
+    }
+    
+    // Handle paste: Update Clipboard.ClipboardDatas from DataTransfer
+    else if(type.equals("paste")) {
+        cb.clearData();
+        for(String typ : dtrans.getTypes())
+            cb.addData(typ,dtrans.getData(typ));
+    }
+    
+    // Needed to push changes to system clipboard
     anEvent.preventDefault();
 }
 

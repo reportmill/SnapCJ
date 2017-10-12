@@ -18,9 +18,6 @@ public class CJClipboard extends Clipboard {
     // The view event
     ViewEvent        _viewEvent;
     
-    // The DragEvent
-    DragEvent        _dragEvent;
-    
     // The DataTransfer
     DataTransfer     _dataTrans;
     
@@ -33,6 +30,9 @@ public class CJClipboard extends Clipboard {
  */
 protected boolean hasDataImpl(String aMimeType)
 {
+    // If no DataTransfer, just return normal version
+    if(_dataTrans==null) return super.hasDataImpl(aMimeType);
+    
     if(aMimeType==FILE_LIST)
         return _dataTrans.getFiles().length>0;
     return _dataTrans.hasType(aMimeType);
@@ -43,6 +43,9 @@ protected boolean hasDataImpl(String aMimeType)
  */
 protected ClipboardData getDataImpl(String aMimeType)
 {
+    // If no DataTransfer, just return normal version
+    if(_dataTrans==null) return super.getDataImpl(aMimeType);
+    
     Object data = null;
     
     // Handle Files
@@ -73,6 +76,9 @@ protected void addDataImpl(String aMimeType, ClipboardData aData)
     // Do normal implementation to populate ClipboardDatas map
     super.addDataImpl(aMimeType, aData);
     
+    // If no DataTransfer, just return
+    if(_dataTrans==null) return;
+    
     // Handle string data
     if(aData.isString())
         _dataTrans.setData(aMimeType, aData.getString());
@@ -90,14 +96,6 @@ public void startDrag()
     isDragging = true;
     _viewEvent.consume();
     
-    // Get DragSource and start Listening to drag events drag source
-    //DragSource dragSource = _dge.getDragSource();
-    //dragSource.removeDragSourceListener(this); dragSource.removeDragSourceMotionListener(this);
-    //dragSource.addDragSourceListener(this); dragSource.addDragSourceMotionListener(this);
-    
-    // Check to see if image drag is supported by system. If not (ie, Windows), simulate image dragging with a window.
-    //if(getDragImage()!=null && !DragSource.isDragImageSupported()) createDragWindow();
-
     // Get drag image and point and set in DataTransfer
     Image dimg = getDragImage(); if(dimg==null) dimg = Image.get(1,1,true);
     Element img = (Element)dimg.getNative();
@@ -125,8 +123,8 @@ public void dropComplete()  { }
 protected void setEvent(ViewEvent anEvent)
 {
     _viewEvent = anEvent;
-    _dragEvent = (DragEvent)anEvent.getEvent();
-    _dataTrans = _dragEvent.getDataTransfer();
+    DragEvent dragEvent = (DragEvent)anEvent.getEvent();
+    _dataTrans = dragEvent.getDataTransfer();
 }
 
 /**
