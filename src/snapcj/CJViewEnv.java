@@ -73,11 +73,6 @@ public void stopIntervals(Runnable aRun)
 public Clipboard getClipboard()  { return _clipboard!=null? _clipboard : (_clipboard=CJClipboard.get()); }
 
 /**
- * Returns a FileChooser.
- */
-public FileChooser getFileChooser()  { return null; }//new SwingFileChooser(); }
-
-/**
  * Creates the top level properties map.
  */
 protected Map createPropsMap()  { return new HashMap(); }
