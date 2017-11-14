@@ -79,7 +79,7 @@ public void showImpl()
     // Silly stuff
     View c = rview.getContent();
     if(c instanceof Label || c instanceof ButtonBase) { c.setPadding(4,6,4,6); c.setFont(c.getFont().deriveFont(14));
-        Box box = new Box(c); box.setPadding(4,4,4,4); rview.setContent(box); }
+        BoxView box = new BoxView(c); box.setPadding(4,4,4,4); rview.setContent(box); }
 
     // Add canvas
     HTMLDocument doc = HTMLDocument.current();
