@@ -124,8 +124,10 @@ public void handleDragGesture(DragEvent anEvent)
 {
     ViewEvent event = CJViewEnv.get().createEvent(_rview, anEvent, null, null);
     _rview.dispatchEvent(event);
-    if(!CJClipboard.isDragging)
+    if(!CJClipboard.isDragging) {
         anEvent.preventDefault();
+        anEvent.stopPropagation();
+    }
 }
 
 /**
