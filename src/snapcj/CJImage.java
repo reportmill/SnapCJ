@@ -194,19 +194,26 @@ public byte[] getBytesPNG()  { return null; }
  */
 public Painter getPainter()
 {
-    // If Image is <img> element, promote to canvas
-    if(_img!=null) {
-        int w = getPixWidth(), h = getPixHeight(); _pw *= CJWindow.scale; _ph *= CJWindow.scale;
-        _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
-        _canvas.setSize(_pw, _ph);
-        _canvas.getStyle().setProperty("width", w + "px");
-        _canvas.getStyle().setProperty("height", h + "px");
-        Painter pntr = new CJPainter(_canvas);
-        pntr.drawImage(this, 0, 0); _img = null;
-    }
+    // If HTMLImageElement, convert to canvas
+    if(_img!=null) convertToCanvas();
     
     // Return painter for canvas
     return new CJPainter(_canvas);
+}
+
+/**
+ * Converts to canvas.
+ */
+protected void convertToCanvas()
+{
+    int w = getPixWidth(), h = getPixHeight(); _pw *= CJWindow.scale; _ph *= CJWindow.scale;
+    _canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
+    _canvas.setWidth(_pw); _canvas.setHeight(_ph);
+    _canvas.getStyle().setProperty("width", w + "px");
+    _canvas.getStyle().setProperty("height", h + "px");
+    Painter pntr = new CJPainter(_canvas);
+    pntr.drawImage(this, 0, 0); _img = null;
+    //CanvasRenderingContext2D cntx = (CanvasRenderingContext2D)_canvas.getContext("2d"); cntx.drawImage(_img, 0, 0);
 }
 
 /**
@@ -224,18 +231,26 @@ public void setPremultiplied(boolean aValue)  { _pm = aValue; }
  */
 public void blur(int aRad)
 {
-    // Just go to canvas - should be rare to blur a raw image
-    if(_img!=null) getPainter();
+    // If HTMLImageElement, convert to canvas
+    if(_img!=null) convertToCanvas();
     
-    // Only works for Chrome
+    // Create new canvas to do blur
     HTMLCanvasElement canvas = (HTMLCanvasElement)HTMLDocument.current().createElement("canvas");
-    canvas.setSize(_pw, _ph);
+    canvas.setWidth(_pw); canvas.setHeight(_ph);
     canvas.getStyle().setProperty("width", (_pw/CJWindow.scale) + "px");
     canvas.getStyle().setProperty("height", (_ph/CJWindow.scale) + "px");
+    
+    // Paint image into new canvas with ShadowBlur
+    //CJPainter pntr = new CJPainter(canvas);
+    //pntr._cntx.setShadowBlur(aRad); pntr._cntx.setShadowColor("black");
+    //pntr.drawImage(this, 0, 0); pntr._cntx.setShadowBlur(0);
+    
+    // Only works for Chrome
     CJPainter pntr = new CJPainter(canvas);
-    pntr._cntx.setFilter("blur(" + aRad/2 + "px)");
-    pntr.drawImage(this, 0, 0); _img = null;
+    pntr._cntx.setFilter("blur(" + aRad/2 + "px)"); pntr.drawImage(this, 0, 0); _img = null;
     pntr._cntx.setFilter("none");
+    
+    // Set canvas
     _canvas = canvas;
 }
 
