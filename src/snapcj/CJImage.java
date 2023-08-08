@@ -1,4 +1,7 @@
 package snapcj;
+import cjdom.HTMLCanvasElement;
+import cjdom.HTMLDocument;
+import cjdom.HTMLImageElement;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
@@ -15,10 +18,10 @@ public class CJImage extends Image {
     private String _src;
 
     // The native object
-//    protected HTMLImageElement _img;
+    protected HTMLImageElement _img;
 
     // The canvas object
-//    protected HTMLCanvasElement _canvas;
+    protected HTMLCanvasElement _canvas;
 
     // The size
     private int _pixW, _pixH;
@@ -34,21 +37,22 @@ public class CJImage extends Image {
      */
     public CJImage(double aWidth, double aHeight, boolean hasAlpha, double aScale)
     {
-//        // Get scale (complain if not 1 or 2)
-//        _scale = (int) Math.round(aScale);
-//        if (_scale != 1 && _scale != 2) System.out.println("TVImage.init: Odd scale" + _scale);
-//
-//        // Get image size, pixel size
-//        int w = (int) Math.round(aWidth);
-//        int h = (int) Math.round(aHeight);
-//        _pixW = w * _scale;
-//        _pixH = h * _scale;
-//
-//        // Create canvas for pixel width/height, image width/height
-//        _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
-//        _canvas.setWidth(_pixW);
-//        _canvas.setHeight(_pixH);
-//        _canvas.getStyle().setProperty("width", w + "px");
+        // Get scale (complain if not 1 or 2)
+        _scale = (int) Math.round(aScale);
+        if (_scale != 1 && _scale != 2)
+            System.out.println("CJImage.init: Odd scale" + _scale);
+
+        // Get image size, pixel size
+        int w = (int) Math.round(aWidth);
+        int h = (int) Math.round(aHeight);
+        _pixW = w * _scale;
+        _pixH = h * _scale;
+
+        // Create canvas for pixel width/height, image width/height
+        _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        _canvas.setWidth(_pixW);
+        _canvas.setHeight(_pixH);
+        //_canvas.getStyle().setProperty("width", w + "px");
 //        _canvas.getStyle().setProperty("height", h + "px");
 //        _hasAlpha = hasAlpha;
     }

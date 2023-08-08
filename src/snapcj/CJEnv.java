@@ -195,10 +195,9 @@ public class CJEnv extends GFXEnv {
     /**
      * This is really just here to help with TeaVM.
      */
-    public Method getMethod(Class<?> aClass, String aName, Class<?>... theClasses)
+    public Method getMethod(Class<?> aClass, String aName, Class<?>... theClasses) throws NoSuchMethodException
     {
-        System.err.println("TVEnv.getMethod: Trying to call: " + aClass.getName() + " " + aName);
-        return null;
+        return aClass.getMethod(aName, theClasses);
     }
 
     /**
