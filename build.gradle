@@ -1,0 +1,52 @@
+import java.text.SimpleDateFormat
+
+plugins {
+    id 'java'
+}
+
+group 'com.reportmill'
+version new SimpleDateFormat("yyyy.MM").format(new Date())
+
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['src']
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // SnapKit project
+    implementation project(':SnapKit')
+
+    // CJDom project
+    implementation project(':CJDom')
+
+    // SnapCode project
+    implementation project(':SnapCode')
+}
+
+/**
+ * Custom task to build jar that includes all dependencies.
+ */
+task buildFullJar(type: Jar) {
+    archiveBaseName = 'SnapCodeCJ'
+    manifest {
+        attributes(
+                'Main-Class': 'snapcj.SnapCJ',
+                'Application-Name': 'SnapCodeCJ',
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude('**/org/**', '**/test/**', '**/sun/**')
+    with jar
+    dependsOn build
+}
+
