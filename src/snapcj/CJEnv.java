@@ -2,6 +2,7 @@ package snapcj;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import cjdom.*;
 import snap.gfx.*;
 import snap.swing.AWTEnv;
 import snap.util.FileUtils;

@@ -4,6 +4,7 @@ import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.web.WebURL;
 import java.io.InputStream;
+import cjdom.Blob;
 
 /**
  * An Image subclass for TeaVM.

@@ -1,4 +1,6 @@
 package snapcj;
+import cjdom.File;
+import cjdom.Int8Array;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.Color;
@@ -169,44 +171,6 @@ public class CJ {
      */
     //@JSBody(params = {"htmlElement", "aValue"}, script = "htmlElement.contentEditable = aValue; htmlElement.tabIndex = 0;")
     //static native String setContentEditable(HTMLElement htmlElement, boolean aValue);
-
-    /**
-     * Log given object.
-     */
-    //@JSBody(params = {"anObj"}, script = "console.log(anObj);")
-    public static void log(Object anObj)
-    {
-        Object obj = anObj;
-        if (anObj instanceof JSObject)
-            obj = ((JSObject) anObj)._jsObj;
-        logImpl(obj);
-    }
-
-    /**
-     * Log given object.
-     */
-    //@JSBody(params = {"anObj"}, script = "console.log(anObj);")
-    protected static native void logImpl(Object anObj);
-
-    /**
-     * Creates an array.
-     */
-//    public static Float32Array getFloat32Array(float[] floatArray)
-//    {
-//        Float32Array float32Array = Float32Array.create(floatArray.length);
-//        for (int i = 0; i < floatArray.length; i++) float32Array.set(i, floatArray[i]);
-//        return float32Array;
-//    }
-
-    /**
-     * Creates an array.
-     */
-//    public static Float32Array getFloat32Array(double[] doubleArray)
-//    {
-//        Float32Array float32Array = Float32Array.create(doubleArray.length);
-//        for (int i = 0; i < doubleArray.length; i++) float32Array.set(i, (float) doubleArray[i]);
-//        return float32Array;
-//    }
 
     /**
      * Sets the TeaVM environment.
