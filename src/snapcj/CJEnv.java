@@ -147,7 +147,7 @@ public class CJEnv extends GFXEnv {
     /**
      * Returns the screen scale. Usually 1, but could be 2 for HiDPI/Retina displays.
      */
-    public double getScreenScale()  { return CJ.getDevicePixelRatio(); }
+    public double getScreenScale()  { return CJDom.getDevicePixelRatio(); }
 
     /**
      * Tries to open the given file name with the platform reader.

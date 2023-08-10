@@ -1,6 +1,5 @@
 package snapcj;
-import cjdom.File;
-import cjdom.Int8Array;
+import cjdom.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.Color;
@@ -52,81 +51,34 @@ public class CJ {
     }
 
     /**
-     * Find a child with given id.
+     * Returns the offset.
      */
-//    public static HTMLElement findElement(HTMLElement anEmt, String aId)
-//    {
-//        NodeList<Node> childEmts = anEmt.getChildNodes();
-//        for (int i = 0; i < childEmts.getLength(); i++) {
-//            HTMLElement emt = (HTMLElement) childEmts.get(i);
-//            String id = emt.getAttribute("id");
-//            if (id != null && id.equals(aId))
-//                return emt;
-//        }
-//        for (int i = 0; i < childEmts.getLength(); i++) {
-//            HTMLElement emt = (HTMLElement) childEmts.get(i);
-//            HTMLElement emt2 = findElement(emt, aId);
-//            if (emt2 != null)
-//                return emt2;
-//        }
-//        return null;
-//    }
+    public static Point getOffsetAll(HTMLElement anEmt)
+    {
+        // Update window location
+        int top = 0;
+        int left = 0;
+        HTMLDocument doc = HTMLDocument.current();
+        for (Node emt = anEmt; emt != null && emt.getJS() != doc.getJS(); emt = emt.getParentNode()) {
+            top += ((HTMLElement) emt).getOffsetTop();
+            left += ((HTMLElement) emt).getOffsetLeft();
+        }
 
-//    public static Point getOffsetAll(HTMLElement anEmt)
-//    {
-//        //TextRectangle rect = anEmt.getBoundingClientRect(); return new Point(rect.getLeft(), rect.getTop());
-//
-//        // Update window location
-//        int top = 0, left = 0;
-//        HTMLDocument doc = HTMLDocument.current();
-//        for (HTMLElement emt = anEmt; emt != doc; emt = (HTMLElement) emt.getParentNode()) {
-//            top += TV.getOffsetTop(emt);
-//            left += TV.getOffsetLeft(emt);
-//        }
-//        return new Point(left, top);
-//    }
-
-    //@JSBody(params = {"anEmt"}, script = "return anEmt.offsetTop;")
-    //public static native int getOffsetTop(HTMLElement anEmt);
-
-    //@JSBody(params = {"anEmt"}, script = "return anEmt.offsetLeft;")
-    //public static native int getOffsetLeft(HTMLElement anEmt);
+        // Return point
+        return new Point(left, top);
+    }
 
     /**
-     * Viewport X/Y. 3 options:
-     * <p>
-     * - window.pageYOffset (works in S, C, FF)
-     * - window.scrollY (works in S, C, FF)
-     * - document.documentElement.scrollTop (works in C. not S. returns value+1 in FF)
+     * Viewport size.
      */
-    //@JSBody(params = {}, script = "return window.pageYOffset;")
-    public static native int getViewportX();
-
-    //@JSBody(params = {}, script = "return window.pageYOffset;")
-    public static native int getViewportY();
-
-    /**
-     * Viewport width/height.
-     * <p>
-     * Web suggested: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-     */
-    //@JSBody(params = {}, script = "return document.documentElement.clientWidth;")
-    public static native int getViewportWidth();
-
-    //@JSBody(params = {}, script = "return document.documentElement.clientHeight;")
-    public static native int getViewportHeight();
-
     public static Rect getViewportBounds()
     {
         double x = 0; // double x = getViewportX();
         double y = 0; // double y = getViewportY();
-        double w = getViewportWidth();
-        double h = getViewportHeight();
+        double w = CJDom.getViewportWidth();
+        double h = CJDom.getViewportHeight();
         return new Rect(x, y, w, h);
     }
-
-    //@JSBody(params = {}, script = "return window.devicePixelRatio;")
-    public static native double getDevicePixelRatio();
 
     /**
      * Creates a JavaScript File from given bytes in Java.
