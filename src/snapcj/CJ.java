@@ -81,50 +81,6 @@ public class CJ {
     }
 
     /**
-     * Creates a JavaScript File from given bytes in Java.
-     */
-    public static File createFile(byte[] theBytes, String aName, String aType)
-    {
-        Int8Array bytesJS = new Int8Array(theBytes);
-        File file = createFile(bytesJS, aName, aType);
-        return file;
-    }
-
-    /**
-     * Creates a File from given bytes in JS.
-     */
-    //@JSBody(params = {"theBytes", "aName", "aType"}, script = "return new File([theBytes], aName, aType? { type:aType } : null);")
-    static native File createFile(Int8Array theBytes, String aName, String aType);
-
-    /**
-     * Creates a Blob from given bytes in Java.
-     */
-//    public static Blob createBlob(byte[] theBytes, String aType)
-//    {
-//        Int8Array bytesJS = getBytesJS(theBytes);
-//        Blob blob = createBlob(bytesJS, aType);
-//        return blob;
-//    }
-
-    /**
-     * Creates a Blob from given bytes in JS.
-     */
-    //@JSBody(params = {"theBytes", "aType"}, script = "return new Blob([theBytes], aType? { type:aType } : null);")
-    //static native Blob createBlob(Int8Array theBytes, String aType);
-
-    /**
-     * Creates a URL from given blob.
-     */
-    //@JSBody(params = {"theBlob"}, script = "return URL.createObjectURL(theBlob);")
-    //static native String createURL(Blob theBlob);
-
-    /**
-     * Creates a URL from given blob.
-     */
-    //@JSBody(params = {"htmlElement", "aValue"}, script = "htmlElement.contentEditable = aValue; htmlElement.tabIndex = 0;")
-    //static native String setContentEditable(HTMLElement htmlElement, boolean aValue);
-
-    /**
      * Sets the TeaVM environment.
      */
     public static void set()

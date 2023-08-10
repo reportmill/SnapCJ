@@ -87,7 +87,7 @@ public class CJImage extends Image {
         // Handle byte[] and InputStream
         if (aSource instanceof byte[] || aSource instanceof InputStream) {
             byte[] bytes = getBytes();
-            Blob blob = Blob.createBlob(bytes, null);
+            Blob blob = new Blob(bytes, null);
             String urls = Blob.createURL(blob);
             return urls;
         }

@@ -167,7 +167,7 @@ public class CJEnv extends GFXEnv {
         byte[] bytes = FileUtils.getBytes(file);
 
         // Create file and URL string
-        File fileJS = CJ.createFile(bytes, name, type);
+        File fileJS = new File(name, type, bytes);
         String urls = Blob.createURL(fileJS);
 
         // Open
