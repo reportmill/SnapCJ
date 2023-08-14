@@ -73,7 +73,7 @@ public class CJImage extends Image {
 
         // Set src and wait till loaded
         setLoaded(false);
-//        _img.listenLoad(e -> didFinishLoad());
+        _img.addEventListener("load", e -> didFinishLoad());
         _img.setSrc(_src);
     }
 
@@ -361,12 +361,12 @@ public class CJImage extends Image {
 
         // Paint image into new canvas with ShadowBlur, offset so that only shadow appears
         CJPainter pntr = new CJPainter(canvas, _scale);
-//        pntr._cntx.setShadowBlur(aRad * _scale);
-//        if (aColor != null)
-//            pntr._cntx.setShadowColor(TV.get(aColor));
-//        else pntr._cntx.setShadowColor("gray");
-//        pntr._cntx.setShadowOffsetX(-_pixW);
-//        pntr._cntx.setShadowOffsetY(-_pixH);
+        pntr._cntx.setShadowBlur(aRad * _scale);
+        if (aColor != null)
+            pntr._cntx.setShadowColor(CJ.get(aColor));
+        else pntr._cntx.setShadowColor("gray");
+        pntr._cntx.setShadowOffsetX(-_pixW);
+        pntr._cntx.setShadowOffsetY(-_pixH);
         pntr.drawImage(this, getWidth(), getHeight());
 
         _canvas = canvas;
