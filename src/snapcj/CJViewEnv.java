@@ -1,4 +1,6 @@
 package snapcj;
+import cjdom.HTMLDocument;
+import cjdom.Window;
 import snap.geom.Rect;
 import snap.view.*;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runLater(Runnable aRun)
     {
-//        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), 10);
+        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), 10);
     }
 
     /**
@@ -54,7 +56,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runDelayed(Runnable aRun, int aDelay, boolean inAppThread)
     {
-//        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), aDelay);
+        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), aDelay);
     }
 
     /**
@@ -62,8 +64,8 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runIntervals(Runnable aRun, int aPeriod, int aDelay, boolean doAll, boolean inAppThread)
     {
-//        int id = Window.setInterval(() -> CJEnv.runOnAppThread(aRun), aPeriod);
-//        _intervalIds.put(aRun, id);
+        int id = Window.setInterval(() -> CJEnv.runOnAppThread(aRun), aPeriod);
+        _intervalIds.put(aRun, id);
     }
 
     /**
@@ -72,8 +74,8 @@ public class CJViewEnv extends ViewEnv {
     public void stopIntervals(Runnable aRun)
     {
         Integer id = _intervalIds.get(aRun);
-//        if (id != null)
-//            Window.clearInterval(id);
+        if (id != null)
+            Window.clearInterval(id);
     }
 
     /**
@@ -82,13 +84,18 @@ public class CJViewEnv extends ViewEnv {
     public Clipboard getClipboard()
     {
         if (_clipboard!=null) return _clipboard;
-        return _clipboard = null; //TVClipboard.get();
+//        return _clipboard = CJClipboard.get();
+        return null;
     }
 
     /**
      * Returns a new ViewHelper for given native component.
      */
-    public WindowView.WindowHpr createHelper(View aView)  { return null; } //new TVWindowHpr(); }
+    public WindowView.WindowHpr createHelper(View aView)
+    {
+//        return new CJWindowHpr();;
+        return null;
+    }
 
     /**
      * Creates an event for a UI view.
@@ -124,9 +131,9 @@ public class CJViewEnv extends ViewEnv {
         if(_scriptURLs != null) return _scriptURLs;
 
         // Iterate over script tags
-//        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.current();
 //        NodeList<Element> scripts = doc.getElementsByTagName("script");
-//        List<String> urls = new ArrayList<>();
+        List<String> urls = new ArrayList<>();
 //
 //        for (int i = 0; i < scripts.getLength(); i++ ) {
 //            HTMLSourceElement script = (HTMLSourceElement) scripts.get(i);
@@ -140,8 +147,7 @@ public class CJViewEnv extends ViewEnv {
 //        }
 
         // Return urls
-//        return _scriptURLs = urls.toArray(new String[0]);
-        return null;
+        return _scriptURLs = urls.toArray(new String[0]);
     }
 
     /**

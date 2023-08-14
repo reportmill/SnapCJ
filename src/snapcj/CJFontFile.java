@@ -1,4 +1,8 @@
 package snapcj;
+import cjdom.CanvasRenderingContext2D;
+import cjdom.HTMLCanvasElement;
+import cjdom.HTMLDocument;
+import cjdom.TextMetrics;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.gfx.FontFile;
@@ -26,29 +30,29 @@ public class CJFontFile extends FontFile {
     private double[]  _adv;
 
     // The canvas
-//    private static HTMLCanvasElement _canvas;
+    private static HTMLCanvasElement _canvas;
 
     // The RenderContext2D
-//    private static CanvasRenderingContext2D  _cntx;
+    private static CanvasRenderingContext2D _cntx;
 
     /**
      * Creates a new TVFontFile for given name.
      */
     public CJFontFile(String aName)
     {
-//        // Set name and family
-//        _name = aName;
-//        _familyName = _name.replace("Bold","").replace("Italic","").trim();
-//
-//        // Create/init advance cache array
-//        _adv = new double[255];
-//        Arrays.fill(_adv, -1);
-//
-//        // Initialize Canvas/Context
-//        if (_canvas == null) {
-//            _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
-//            _cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
-//        }
+        // Set name and family
+        _name = aName;
+        _familyName = _name.replace("Bold","").replace("Italic","").trim();
+
+        // Create/init advance cache array
+        _adv = new double[255];
+        Arrays.fill(_adv, -1);
+
+        // Initialize Canvas/Context
+        if (_canvas == null) {
+            _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+            _cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        }
     }
 
     /**
@@ -124,10 +128,9 @@ public class CJFontFile extends FontFile {
      */
     private double charAdvanceImplImpl(char aChar)
     {
-//        _cntx.setFont(getJSName());
-//        TextMetrics metrics = _cntx.measureText(String.valueOf(aChar));
-//        return metrics.getWidth()/1000d;
-        return 0;
+        _cntx.setFont(getJSName());
+        TextMetrics metrics = _cntx.measureText(String.valueOf(aChar));
+        return metrics.getWidth() / 1000d;
     }
 
     /**
@@ -135,14 +138,13 @@ public class CJFontFile extends FontFile {
      */
     public Rect getGlyphBounds(String aString)
     {
-//        _cntx.setFont(getJSName());
-//        TextMetrics metrics = _cntx.measureText(aString);
-//        double glyphW = metrics.getWidth();
-//        double glyphAsc = getMetricsActualAscent(metrics);
-//        double glyphDesc = getMetricsActualDescent(metrics);
-//        double glyphH = glyphAsc + glyphDesc;
-//        return new Rect(0, -glyphAsc, glyphW, glyphH);
-        return null;
+        _cntx.setFont(getJSName());
+        TextMetrics metrics = _cntx.measureText(aString);
+        double glyphW = metrics.getWidth();
+        double glyphAsc = metrics.getActualBoundingBoxAscent();
+        double glyphDesc = metrics.getActualBoundingBoxDescent();
+        double glyphH = glyphAsc + glyphDesc;
+        return new Rect(0, -glyphAsc, glyphW, glyphH);
     }
 
     /**
@@ -166,11 +168,10 @@ public class CJFontFile extends FontFile {
      */
     public double getAscent()
     {
-//        _cntx.setFont(getJSName());
-//        TextMetrics metrics = _cntx.measureText("H");
-//        double ascent = getMetricsFontAscent(metrics)/1000;
-//        return ascent>0 ? ascent : .906;
-        return 0;
+        _cntx.setFont(getJSName());
+        TextMetrics metrics = _cntx.measureText("H");
+        double ascent = metrics.getFontBoundingBoxAscent() / 1000;
+        return ascent>0 ? ascent : .906;
     }
 
     /**
@@ -178,24 +179,11 @@ public class CJFontFile extends FontFile {
      */
     public double getDescent()
     {
-//        _cntx.setFont(getJSName());
-//        TextMetrics metrics = _cntx.measureText("H");
-//        double desc = getMetricsFontDescent(metrics)/1000;
-//        return desc>0 ? desc : .212;
-        return 0;
+        _cntx.setFont(getJSName());
+        TextMetrics metrics = _cntx.measureText("H");
+        double desc = metrics.getFontBoundingBoxDescent() / 1000;
+        return desc>0 ? desc : .212;
     }
-
-    //@JSBody(params = { "aTM" }, script = "return aTM.fontBoundingBoxAscent || 906;")
-//    public static native double getMetricsFontAscent(TextMetrics aTM);
-
-    //@JSBody(params = { "aTM" }, script = "return aTM.actualBoundingBoxAscent || 906;")
-//    public static native double getMetricsActualAscent(TextMetrics aTM);
-
-    //@JSBody(params = { "aTM" }, script = "return aTM.fontBoundingBoxDescent || 212;")
-//    public static native double getMetricsFontDescent(TextMetrics aTM);
-
-    //@JSBody(params = { "aTM" }, script = "return aTM.actualBoundingBoxDescent || 212;")
-//    public static native double getMetricsActualDescent(TextMetrics aTM);
 
     /**
      * Returns the default distance between lines for this font.

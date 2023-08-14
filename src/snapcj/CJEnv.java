@@ -15,7 +15,7 @@ import snap.web.*;
 public class CJEnv extends GFXEnv {
     
     // The app thread
-    protected static CJEventThread  _appThread;
+    //protected static CJEventThread  _appThread;
     
     // The shared AWTEnv
     private static CJEnv  _shared;
@@ -210,8 +210,8 @@ public class CJEnv extends GFXEnv {
      */
     public void startNewAppThread()
     {
-        _appThread = new CJEventThread();
-        _appThread.start();
+//        _appThread = new CJEventThread();
+//        _appThread.start();
     }
 
     /**
@@ -219,7 +219,7 @@ public class CJEnv extends GFXEnv {
      */
     public static void runOnAppThread(Runnable aRun)
     {
-        CJEventThread.runOnAppThread(aRun);
+//        CJEventThread.runOnAppThread(aRun);
     }
 
     /**
