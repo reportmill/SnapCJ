@@ -85,8 +85,8 @@ public class CJImage extends Image {
         // Handle byte[] and InputStream
         if (aSource instanceof byte[] || aSource instanceof InputStream) {
             byte[] bytes = getBytes();
-            Blob blob = new Blob(bytes, null);
-            String urls = Blob.createURL(blob);
+            Blob blob = new Blob(bytes, "dunno");
+            String urls = blob.createURL();
             return urls;
         }
 
@@ -96,8 +96,10 @@ public class CJImage extends Image {
             return null;
 
         // If URL can't be fetched by browser, load from bytes
-        if (!isBrowsable(url))
-            return getSourceURL(url.getBytes());
+        if (!isBrowsable(url)) {
+            byte[] urlBytes = url.getBytes();
+            return getSourceURL(urlBytes);
+        }
 
         // Return URL string
         String urls = url.getString().replace("!", "");

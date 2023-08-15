@@ -43,8 +43,9 @@ public class CJEnv extends GFXEnv {
      */
     public URL getResource(Class<?> aClass, String aPath)
     {
-        CJWebSite site = CJWebSite.get();
-        return site.getJavaURL(aClass, aPath);
+//        CJWebSite site = CJWebSite.get();
+//        return site.getJavaURL(aClass, aPath);
+        return aClass.getResource(aPath);
     }
 
     /**
@@ -168,7 +169,7 @@ public class CJEnv extends GFXEnv {
 
         // Create file and URL string
         File fileJS = new File(name, type, bytes);
-        String urls = Blob.createURL(fileJS);
+        String urls = fileJS.createURL();
 
         // Open
         Window.current().open(urls, "_blank");
