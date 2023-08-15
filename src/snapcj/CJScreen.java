@@ -159,7 +159,7 @@ public class CJScreen {
                 break;
 
             // Unknown
-            default: System.err.println("TVScreen.handleEvent: Not handled: " + e.getType()); return;
+            default: System.err.println("CJScreen.handleEvent: Not handled: " + e.getType()); return;
         }
 
         // Handle StopPropagation and PreventDefault
@@ -169,15 +169,21 @@ public class CJScreen {
             e.preventDefault();
 
         // Run event
-//        if (run != null)
-//            TVEnv.runOnAppThread(run);
+        if (run != null)
+            run.run(); // CJEnv.runOnAppThread(run);
     }
 
     /**
      * This is used to keep getting events even when mousedown goes outside window.
      */
-//    @JSBody(params={ "anEvent" }, script = "document.body.setPointerCapture(anEvent.pointerId);")
-    public static native void setPointerCapture(Event anEvent);
+    public void setPointerCapture(Event anEvent)
+    {
+        // document.body.setPointerCapture(anEvent.pointerId)
+        HTMLDocument doc = HTMLDocument.current();
+        HTMLBodyElement body = doc.getBody();
+        int id = anEvent.getMemberInt("pointerId");
+        body.callWithDouble("setPointerCapture", id);
+    }
 
     /**
      * Returns the list of visible windows.
