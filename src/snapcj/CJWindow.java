@@ -1,11 +1,11 @@
 package snapcj;
 import cjdom.*;
+import cjdom.EventListener;
 import snap.geom.Point;
 import snap.gfx.Color;
 import snap.props.PropChange;
 import snap.props.PropChangeListener;
 import snap.view.*;
-import snap.view.EventListener;
 
 /**
  * A class to represent the WindowView in the browser page.
@@ -37,7 +37,7 @@ public class CJWindow {
     protected PropChangeListener  _hideLsnr;
 
     // A listener for browser window resize
-    protected EventListener  _resizeLsnr = null;
+    protected EventListener<?> _resizeLsnr = null;
 
     // The body overflow value
     protected String  _bodyMargin = "undefined", _bodyOverflow;
@@ -235,9 +235,9 @@ public class CJWindow {
         ViewUtils.setFocused(_win, true);
 
         // Start listening to browser window resizes
-//        if (_resizeLsnr == null)
-//            _resizeLsnr = e -> TVEnv.runOnAppThread(() -> browserWindowSizeChanged());
-//        Window.current().addEventListener("resize", _resizeLsnr);
+        if (_resizeLsnr == null)
+            _resizeLsnr = e -> browserWindowSizeChanged();
+        Window.current().addEventListener("resize", _resizeLsnr);
     }
 
     /**
@@ -286,7 +286,7 @@ public class CJWindow {
         ViewUtils.setFocused(_win, false);
 
         // Stop listening to browser window resizes
-//        Window.current().removeEventListener("resize", _resizeLsnr);
+        Window.current().removeEventListener("resize", _resizeLsnr);
         _resizeLsnr = null;
 
         // Send WinClose event
