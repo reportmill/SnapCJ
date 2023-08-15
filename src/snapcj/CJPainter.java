@@ -217,15 +217,15 @@ public class CJPainter extends PainterImpl {
     {
         double[] pnts = new double[6];
         PathIter pathIter = aShape.getPathIter(null);
-//        _cntx.beginPath();
-//        while (pathIter.hasNext()) {
-//            switch (pathIter.getNext(pnts)) {
-//                case MoveTo: _cntx.moveTo(pnts[0], pnts[1]); break;
-//                case LineTo: _cntx.lineTo(pnts[0], pnts[1]); break;
-//                case CubicTo: _cntx.bezierCurveTo(pnts[0], pnts[1], pnts[2], pnts[3], pnts[4], pnts[5]); break;
-//                case Close: _cntx.closePath(); break;
-//            }
-//        }
+        _cntx.beginPath();
+        while (pathIter.hasNext()) {
+            switch (pathIter.getNext(pnts)) {
+                case MoveTo: _cntx.moveTo(pnts[0], pnts[1]); break;
+                case LineTo: _cntx.lineTo(pnts[0], pnts[1]); break;
+                case CubicTo: _cntx.bezierCurveTo(pnts[0], pnts[1], pnts[2], pnts[3], pnts[4], pnts[5]); break;
+                case Close: _cntx.closePath(); break;
+            }
+        }
     }
 
     /**
@@ -236,7 +236,7 @@ public class CJPainter extends PainterImpl {
         CanvasImageSource img = (CanvasImageSource) anImg.getNative();
         save();
         transform(xform);
-//        _cntx.drawImage(img, 0, 0);
+        _cntx.drawImage(img, 0, 0);
         restore();
     }
 
@@ -257,7 +257,7 @@ public class CJPainter extends PainterImpl {
 
         // Get points for corner as ints and draw image
         CanvasImageSource img = anImg instanceof CJImage ? (CanvasImageSource) anImg.getNative() : null;
-//        _cntx.drawImage(img, srcX, srcY, srcW, srcH, dx, dy, dw, dh);
+        _cntx.drawImage(img, srcX, srcY, srcW, srcH, dx, dy, dw, dh);
     }
 
     /**
@@ -266,9 +266,8 @@ public class CJPainter extends PainterImpl {
     public void drawString(String aStr, double aX, double aY, double charSpacing)
     {
         // Handle no char spacing
-        if (charSpacing == 0) {
-//            _cntx.fillText(aStr, aX, aY);
-        }
+        if (charSpacing == 0)
+            _cntx.fillText(aStr, aX, aY);
 
             // Handle char spacing
         else {
@@ -276,7 +275,7 @@ public class CJPainter extends PainterImpl {
             double x = aX;
             for (int i = 0, iMax = aStr.length(); i < iMax; i++) {
                 char c = aStr.charAt(i);
-//                _cntx.fillText(String.valueOf(c), x, aY);
+                _cntx.fillText(String.valueOf(c), x, aY);
                 x += font.charAdvance(c) + charSpacing;
             }
         }
@@ -287,7 +286,7 @@ public class CJPainter extends PainterImpl {
      */
     public void clearRect(double aX, double aY, double aW, double aH)
     {
-//        _cntx.clearRect(aX, aY, aW, aH);
+        _cntx.clearRect(aX, aY, aW, aH);
     }
 
     /**

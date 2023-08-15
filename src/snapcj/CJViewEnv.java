@@ -48,7 +48,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runLater(Runnable aRun)
     {
-        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), 10);
+        Window.setTimeout(aRun, 10);
     }
 
     /**
@@ -56,7 +56,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runDelayed(Runnable aRun, int aDelay, boolean inAppThread)
     {
-        Window.setTimeout(() -> CJEnv.runOnAppThread(aRun), aDelay);
+        Window.setTimeout(aRun, aDelay);
     }
 
     /**
@@ -64,7 +64,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runIntervals(Runnable aRun, int aPeriod, int aDelay, boolean doAll, boolean inAppThread)
     {
-        int id = Window.setInterval(() -> CJEnv.runOnAppThread(aRun), aPeriod);
+        int id = Window.setInterval(aRun, aPeriod);
         _intervalIds.put(aRun, id);
     }
 
@@ -93,8 +93,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public WindowView.WindowHpr createHelper(View aView)
     {
-//        return new CJWindowHpr();;
-        return null;
+        return new CJWindowHpr();
     }
 
     /**
@@ -190,9 +189,6 @@ public class CJViewEnv extends ViewEnv {
      */
     public static void set()
     {
-        String root = getScriptRoot();
-        System.out.println("Script Root: " + root);
-
         // Set TV adapter classes for GFXEnv and ViewEnv
         CJEnv.get();
         get();
