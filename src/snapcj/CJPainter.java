@@ -1,4 +1,5 @@
 package snapcj;
+import cjdom.CanvasImageSource;
 import cjdom.CanvasRenderingContext2D;
 import cjdom.HTMLCanvasElement;
 import snap.geom.PathIter;
@@ -32,7 +33,7 @@ public class CJPainter extends PainterImpl {
         _canvas = aCnvs;
         _scale = aScale;
         _cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
-//        _cntx.setTransform(1, 0, 0, 1, 0, 0);
+        _cntx.setTransform(1, 0, 0, 1, 0, 0);
 
         // Clip to canvas bounds
         int canvasW = _canvas.getWidth();
@@ -40,9 +41,8 @@ public class CJPainter extends PainterImpl {
         clipRect(0, 0, canvasW, canvasH);
 
         // If hidpi, scale default transform
-        if (_scale > 1) {
-//            _cntx.scale(_scale, _scale);
-        }
+        if (_scale > 1)
+            _cntx.scale(_scale, _scale);
     }
 
     /**
@@ -53,8 +53,8 @@ public class CJPainter extends PainterImpl {
         super.setPaint(aPaint);
         if (aPaint instanceof Color) {
             String cstr = CJ.get((Color) aPaint);
-//            _cntx.setFillStyle(cstr);
-//            _cntx.setStrokeStyle(cstr);
+            _cntx.setFillStyle(cstr);
+            _cntx.setStrokeStyle(cstr);
         }
     }
 
@@ -70,38 +70,39 @@ public class CJPainter extends PainterImpl {
         super.setStroke(aStroke);
 
         // Set LineWidth
-//        _cntx.setLineWidth(aStroke.getWidth());
+        _cntx.setLineWidth(aStroke.getWidth());
 
         // Set DashArray null:, DashOffset
-//        if (aStroke.getDashArray() == null)
+        if (aStroke.getDashArray() == null) {
 //            _cntx.setLineDash(EMPTY_DASH_ARRAY);
+        }
 
             // Set DashArray
-//        else {
-//            double[] da = aStroke.getDashArray();
+        else {
+            double[] da = aStroke.getDashArray();
 //            JSArray<JSObject> jsa = JSArray.create();
 //            for (double d : da) jsa.push(JSNumber.valueOf(d));
 //            _cntx.setLineDash(jsa);
-//        }
+        }
 
         // Set DashOffset
-//        _cntx.setLineDashOffset(aStroke.getDashOffset());
+        _cntx.setLineDashOffset(aStroke.getDashOffset());
 
         // Set cap
         switch (aStroke.getCap()) {
-//            case Round: _cntx.setLineCap("round"); break;
-//            case Butt: _cntx.setLineCap("butt"); break;
-//            case Square: _cntx.setLineCap("square"); break;
+            case Round: _cntx.setLineCap("round"); break;
+            case Butt: _cntx.setLineCap("butt"); break;
+            case Square: _cntx.setLineCap("square"); break;
         }
 
         // Set join
         switch (aStroke.getJoin()) {
-//            case Miter:
-//                _cntx.setLineJoin("miter");
-//                _cntx.setMiterLimit(aStroke.getMiterLimit());
-//                break;
-//            case Round: _cntx.setLineJoin("round"); break;
-//            case Bevel: _cntx.setLineJoin("bevel"); break;
+            case Miter:
+                _cntx.setLineJoin("miter");
+                _cntx.setMiterLimit(aStroke.getMiterLimit());
+                break;
+            case Round: _cntx.setLineJoin("round"); break;
+            case Bevel: _cntx.setLineJoin("bevel"); break;
         }
     }
 
@@ -111,7 +112,7 @@ public class CJPainter extends PainterImpl {
     public void setOpacity(double aValue)
     {
         super.setOpacity(aValue);
-//        _cntx.setGlobalAlpha(aValue);
+        _cntx.setGlobalAlpha(aValue);
     }
 
     /**
@@ -132,7 +133,7 @@ public class CJPainter extends PainterImpl {
         double[] m = aTrans.getMatrix();
 
         // Set transform with dpi scale (in case retina/hidpi)
-//        _cntx.setTransform(m[0] * _scale, m[1], m[2], m[3] * _scale, m[4], m[5]);
+        _cntx.setTransform(m[0] * _scale, m[1], m[2], m[3] * _scale, m[4], m[5]);
     }
 
     /**
@@ -142,7 +143,7 @@ public class CJPainter extends PainterImpl {
     {
         super.transform(aTrans);
         double[] m = aTrans.getMatrix();
-//        _cntx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+        _cntx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
     }
 
     /**
@@ -158,7 +159,7 @@ public class CJPainter extends PainterImpl {
         }
 
         setShape(aShape);
-//        _cntx.stroke();
+        _cntx.stroke();
     }
 
     /**
@@ -191,13 +192,13 @@ public class CJPainter extends PainterImpl {
             }
 
             // Get CanvasPattern and set
-//            CanvasImageSource isrc = (CanvasImageSource) image.getNative();
+            CanvasImageSource isrc = (CanvasImageSource) image.getNative();
 //            CanvasPattern ptrn = _cntx.createPattern(isrc, "repeat");
 //            _cntx.setFillStyle(ptrn);
         }
 
         setShape(aShape);
-//        _cntx.fill();
+        _cntx.fill();
     }
 
     /**
@@ -206,7 +207,7 @@ public class CJPainter extends PainterImpl {
     public void clip(Shape aShape)
     {
         setShape(aShape);
-//        _cntx.clip();
+        _cntx.clip();
     }
 
     /**
@@ -232,7 +233,7 @@ public class CJPainter extends PainterImpl {
      */
     public void drawImage(Image anImg, Transform xform)
     {
-//        CanvasImageSource img = (CanvasImageSource) anImg.getNative();
+        CanvasImageSource img = (CanvasImageSource) anImg.getNative();
         save();
         transform(xform);
 //        _cntx.drawImage(img, 0, 0);
@@ -255,7 +256,7 @@ public class CJPainter extends PainterImpl {
         }
 
         // Get points for corner as ints and draw image
-//        CanvasImageSource img = anImg instanceof TVImage ? (CanvasImageSource) anImg.getNative() : null;
+        CanvasImageSource img = anImg instanceof CJImage ? (CanvasImageSource) anImg.getNative() : null;
 //        _cntx.drawImage(img, srcX, srcY, srcW, srcH, dx, dy, dw, dh);
     }
 
@@ -295,7 +296,7 @@ public class CJPainter extends PainterImpl {
     public void save()
     {
         super.save();
-//        _cntx.save();
+        _cntx.save();
     }
 
     /**
@@ -304,7 +305,7 @@ public class CJPainter extends PainterImpl {
     public void restore()
     {
         super.restore();
-//        _cntx.restore();
+        _cntx.restore();
     }
 
     /**
@@ -314,10 +315,12 @@ public class CJPainter extends PainterImpl {
     {
         if (snap.util.MathUtils.equals(aValue, getImageQuality())) return;
         super.setImageQuality(aValue);
-        //if (aValue>.67) _cntx.setImageSmoothingQuality("high");
-        //else if (aValue>.33) _cntx.setImageSmoothingQuality("medium");
-        //else _cntx.setImageSmoothingQuality("low");
-        //_cntx.setImageSmoothingEnabled(aValue>.33);
+        if (aValue > .67)
+            _cntx.setImageSmoothingQuality("high");
+        else if (aValue >.33)
+            _cntx.setImageSmoothingQuality("medium");
+        else _cntx.setImageSmoothingQuality("low");
+        _cntx.setImageSmoothingEnabled(aValue > .33);
     }
 
     /**
@@ -327,10 +330,10 @@ public class CJPainter extends PainterImpl {
     {
         super.setComposite(aComp);
         switch (aComp) {
-//            case SRC_OVER: _cntx.setGlobalCompositeOperation("source-over"); break;
-//            case SRC_IN: _cntx.setGlobalCompositeOperation("source-in"); break;
-//            case DST_IN: _cntx.setGlobalCompositeOperation("destination-in"); break;
-//            case DST_OUT: _cntx.setGlobalCompositeOperation("destination-out"); break;
+            case SRC_OVER: _cntx.setGlobalCompositeOperation("source-over"); break;
+            case SRC_IN: _cntx.setGlobalCompositeOperation("source-in"); break;
+            case DST_IN: _cntx.setGlobalCompositeOperation("destination-in"); break;
+            case DST_OUT: _cntx.setGlobalCompositeOperation("destination-out"); break;
         }
     }
 }
