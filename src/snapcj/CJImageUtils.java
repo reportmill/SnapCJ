@@ -18,13 +18,17 @@ public class CJImageUtils {
 
         // Get image data and convert to bytes
         CanvasRenderingContext2D cntx = (CanvasRenderingContext2D) anImg._canvas.getContext("2d");
-        ImageData idata = cntx.getImageData(0, 0, anImg.getPixWidth(), anImg.getPixHeight());
-        Uint8ClampedArray ary8C = idata.getData();
-        int len = ary8C.getLength();
-        short[] rgba = new short[len];
-        for (int i = 0; i < len; i++)
-            rgba[i] = ary8C.get(i);
-        return rgba;
+        ImageData imageData = cntx.getImageData(0, 0, anImg.getPixWidth(), anImg.getPixHeight());
+        Uint8ClampedArray imageBytesArray = imageData.getData();
+
+        // Convert image bytes array to shorts array
+        int length = imageBytesArray.getLength();
+        short[] rgbaShorts = new short[length];
+        for (int i = 0; i < length; i++)
+            rgbaShorts[i] = imageBytesArray.get(i);
+
+        // Return
+        return rgbaShorts;
     }
 
     /**
@@ -35,11 +39,14 @@ public class CJImageUtils {
         // If HTMLImageElement, convert to canvas
         if (anImg._img != null) anImg.convertToCanvas();
 
-        // Get image data and convert to bytes
-        int len = rgba.length;
-        Uint8ClampedArray ary8C = new Uint8ClampedArray(len);
-        for (int i = 0; i < len; i++) ary8C.set(i, rgba[i]);
-        ImageData imageData = new ImageData(ary8C, anImg.getPixWidth(), anImg.getPixHeight());
+        // Create array for image values
+        int length = rgba.length;
+        Uint8ClampedArray imageBytesArray = new Uint8ClampedArray(length);
+        for (int i = 0; i < length; i++)
+            imageBytesArray.set(i, rgba[i]);
+
+        // Get ImageData for
+        ImageData imageData = new ImageData(imageBytesArray, anImg.getPixWidth(), anImg.getPixHeight());
         CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) anImg._canvas.getContext("2d");
         renderContext2D.putImageData(imageData, 0, 0, 0, 0, anImg.getPixWidth(), anImg.getPixHeight());
     }
@@ -47,20 +54,26 @@ public class CJImageUtils {
     /**
      * Returns the decoded Alpha bytes of given image.
      */
-    public static short[] getShortsAlpha(CJImage anImg)
+    public static short[] getShortsAlpha(CJImage anImage)
     {
         // If HTMLImageElement, convert to canvas
-        if (anImg._img != null) anImg.convertToCanvas();
+        if (anImage._img != null)
+            anImage.convertToCanvas();
 
         // Get image data and convert to bytes
-        CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) anImg._canvas.getContext("2d");
-        ImageData imageData = renderContext2D.getImageData(0, 0, anImg.getPixWidth(), anImg.getPixHeight());
-        Uint8ClampedArray ary8C = imageData.getData();
-        int len = ary8C.getLength(), len2 = len / 4;
-        short[] alpha = new short[len2];
-        for (int i = 0, j = 3; i < len2; i++, j += 4)
-            alpha[i] = ary8C.get(j);
-        return alpha;
+        CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) anImage._canvas.getContext("2d");
+        ImageData imageData = renderContext2D.getImageData(0, 0, anImage.getPixWidth(), anImage.getPixHeight());
+        Uint8ClampedArray imageBytesArray = imageData.getData();
+
+        // Get bytes from
+        int length = imageBytesArray.getLength();
+        int length2 = length / 4;
+        short[] alphaValuesArray = new short[length2];
+        for (int i = 0, j = 3; i < length2; i++, j += 4)
+            alphaValuesArray[i] = imageBytesArray.get(j);
+
+        // Return
+        return alphaValuesArray;
     }
 
     /**

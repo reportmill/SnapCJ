@@ -4,6 +4,7 @@ import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.util.ASCIICodec;
+import snap.util.SnapUtils;
 import snap.web.WebURL;
 import java.io.InputStream;
 
@@ -379,6 +380,9 @@ public class CJImage extends Image {
      */
     public void emboss(double aRadius, double anAzi, double anAlt)
     {
+        if (SnapUtils.isWebVM)
+            return;
+
         // Get basic info
         int imageW = (int) getWidth();
         int imageH = (int) getHeight();
