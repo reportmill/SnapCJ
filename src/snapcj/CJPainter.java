@@ -1,7 +1,5 @@
 package snapcj;
-import cjdom.CanvasImageSource;
-import cjdom.CanvasRenderingContext2D;
-import cjdom.HTMLCanvasElement;
+import cjdom.*;
 import snap.geom.PathIter;
 import snap.geom.Shape;
 import snap.geom.Transform;
@@ -152,10 +150,10 @@ public class CJPainter extends PainterImpl {
     public void draw(Shape aShape)
     {
         if (getPaint() instanceof GradientPaint) {
-            GradientPaint gpnt = (GradientPaint) getPaint();
-            GradientPaint gpnt2 = gpnt.copyForRect(aShape.getBounds());
-//            CanvasGradient cg = TV.get(gpnt2, _cntx);
-//            _cntx.setStrokeStyle(cg);
+            GradientPaint gradientPaint = (GradientPaint) getPaint();
+            GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
+            CanvasGradient canvasGradient = CJ.get(gradientPaint2, _cntx);
+            _cntx.setStrokeStyle(canvasGradient);
         }
 
         setShape(aShape);
@@ -170,10 +168,10 @@ public class CJPainter extends PainterImpl {
         // Handle GradientPaint
         Paint paint = getPaint();
         if (paint instanceof GradientPaint) {
-            GradientPaint gpnt = (GradientPaint) paint;
-            GradientPaint gpnt2 = gpnt.copyForRect(aShape.getBounds());
-//            CanvasGradient cg = TV.get(gpnt2, _cntx);
-//            _cntx.setFillStyle(cg);
+            GradientPaint gradientPaint = (GradientPaint) paint;
+            GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
+            CanvasGradient canvasGradient = CJ.get(gradientPaint2, _cntx);
+            _cntx.setFillStyle(canvasGradient);
         }
 
         // Handle ImagePaint
@@ -192,9 +190,9 @@ public class CJPainter extends PainterImpl {
             }
 
             // Get CanvasPattern and set
-            CanvasImageSource isrc = (CanvasImageSource) image.getNative();
-//            CanvasPattern ptrn = _cntx.createPattern(isrc, "repeat");
-//            _cntx.setFillStyle(ptrn);
+            CanvasImageSource imageSource = (CanvasImageSource) image.getNative();
+            CanvasPattern pattern = _cntx.createPattern(imageSource, "repeat");
+            _cntx.setFillStyle(pattern);
         }
 
         setShape(aShape);
@@ -233,10 +231,10 @@ public class CJPainter extends PainterImpl {
      */
     public void drawImage(Image anImg, Transform xform)
     {
-        CanvasImageSource img = (CanvasImageSource) anImg.getNative();
+        CanvasImageSource image = (CanvasImageSource) anImg.getNative();
         save();
         transform(xform);
-        _cntx.drawImage(img, 0, 0);
+        _cntx.drawImage(image, 0, 0);
         restore();
     }
 

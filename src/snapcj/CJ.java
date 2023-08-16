@@ -8,12 +8,12 @@ import snap.gfx.GradientPaint;
 import snap.util.SnapUtils;
 
 /**
- * Utility methods for SnapKit+TeaVM.
+ * Utility methods for SnapKit + CheerpJ.
  */
 public class CJ {
 
     /**
-     * Returns TVM color for snap color.
+     * Returns JavaScript color for snap color.
      */
     public static String get(Color aColor)
     {
@@ -27,15 +27,24 @@ public class CJ {
     }
 
     /**
-     * Returns TVM color for snap color.
+     * Returns JavaScript CanvasGradient for snap GradientPaint.
      */
-//    public static CanvasGradient get(GradientPaint aGP, CanvasRenderingContext2D aRC)
-//    {
-//        CanvasGradient cg = aRC.createLinearGradient(aGP.getStartX(), aGP.getStartY(), aGP.getEndX(), aGP.getEndY());
-//        for (int i = 0, iMax = aGP.getStopCount(); i < iMax; i++)
-//            cg.addColorStop(aGP.getStopOffset(i), get(aGP.getStopColor(i)));
-//        return cg;
-//    }
+    public static CanvasGradient get(GradientPaint gradientPaint, CanvasRenderingContext2D renderingContext)
+    {
+        // Create CanvasGradient for end points
+        double startX = gradientPaint.getStartX();
+        double startY = gradientPaint.getStartY();
+        double endX = gradientPaint.getEndX();
+        double endY = gradientPaint.getEndY();
+        CanvasGradient canvasGradient = renderingContext.createLinearGradient(startX, startY, endX, endY);
+
+        // Add stops
+        for (int i = 0, iMax = gradientPaint.getStopCount(); i < iMax; i++)
+            canvasGradient.addColorStop(gradientPaint.getStopOffset(i), get(gradientPaint.getStopColor(i)));
+
+        // Return
+        return canvasGradient;
+    }
 
     /**
      * Returns TVM font for snap font.
