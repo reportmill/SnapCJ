@@ -1,4 +1,5 @@
 package snapcj;
+import cjdom.CanvasRenderingContext2D;
 import cjdom.HTMLCanvasElement;
 import cjdom.HTMLDocument;
 import snap.geom.Rect;
@@ -16,6 +17,9 @@ public class CJRootView {
     // The HTMLCanvas
     protected HTMLCanvasElement _canvas;
     
+    // The HTMLCanvas 'double-buffering' buffer - offscreen drawing to avoid flicker of async JNI
+    protected HTMLCanvasElement _canvasBuffer;
+
     // The image dpi scale (1 = normal, 2 for retina/hidpi)
     private int  _scale = CJWindow.scale;
     
@@ -36,6 +40,13 @@ public class CJRootView {
         _canvas.getStyle().setProperty("height", "100%");
         _canvas.getStyle().setProperty("box-sizing", "border-box");
 
+        // Create Canvas Buffer - offscreen drawing to avoid flicker of async JNI
+        // Needed because all canvas drawing (JNI) calls get evaluated (and displayed) before next drawing call
+        _canvasBuffer = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        _canvasBuffer.getStyle().setProperty("width", "100%");
+        _canvasBuffer.getStyle().setProperty("height", "100%");
+        _canvasBuffer.getStyle().setProperty("box-sizing", "border-box");
+
         // Add RootView listener to propagate size changes to canvas
         _rootView.addPropChangeListener(pc -> rootViewSizeChange(), View.Width_Prop, View.Height_Prop);
         rootViewSizeChange();
@@ -49,7 +60,7 @@ public class CJRootView {
         _canvas.addEventListener("wheel", e -> e.preventDefault());
 
         // Create painer
-        _pntr = new CJPainter(_canvas, _scale);
+        _pntr = new CJPainter(_canvasBuffer, _scale);
 
         // Register for drop events
 //        _canvas.setAttribute("draggable", "true");
@@ -72,6 +83,14 @@ public class CJRootView {
         _pntr.setTransform(1,0,0,1,0,0); // I don't know why I need this!
         ViewUpdater updater = _rootView.getUpdater();
         updater.paintViews(_pntr, aRect);
+
+        // Copy buffer to canvas
+        CanvasRenderingContext2D context = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        double rectX = aRect.x * _scale;
+        double rectY = aRect.y * _scale;
+        double rectW = aRect.width * _scale;
+        double rectH = aRect.height * _scale;
+        context.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
     }
 
     /**
@@ -81,7 +100,10 @@ public class CJRootView {
     {
         int rootW = (int) Math.ceil(_rootView.getWidth());
         int rootH = (int) Math.ceil(_rootView.getHeight());
-        _canvas.setWidth(rootW*_scale); _canvas.setHeight(rootH*_scale);
+        _canvas.setWidth(rootW * _scale);
+        _canvas.setHeight(rootH * _scale);
+        _canvasBuffer.setWidth(rootW * _scale);
+        _canvasBuffer.setHeight(rootH * _scale);
     }
 
     /**
