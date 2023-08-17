@@ -270,7 +270,9 @@ public class CJRenderer extends Renderer {
 
             // Buffer indexArray
             int[] indexArray = aTriangleArray.getIndexArray();
-            _gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexArray), _gl.STATIC_DRAW);
+            short[] indexArray2 = new short[indexArray.length];
+            for (int i = 0; i < indexArray.length; i++) indexArray2[i] = (short) indexArray[i];
+            _gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexArray2), _gl.STATIC_DRAW);
 
             // Draw elements
             _gl.drawElements(_gl.TRIANGLES, indexArray.length, _gl.UNSIGNED_SHORT, 0);
