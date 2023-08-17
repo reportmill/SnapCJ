@@ -59,7 +59,7 @@ public class CJRenderer extends Renderer {
         // Get WebGL context (if missing, complain and return)
         _gl = (WebGLRenderingContext) _canvas.getContext("webgl");
         if (_gl == null) {
-            System.err.println("TVRenderer.initRenderer: canvas getContext() returned null");
+            System.err.println("CJRenderer.initRenderer: canvas getContext() returned null");
             return;
         }
 
@@ -129,8 +129,8 @@ public class CJRenderer extends Renderer {
         renderShape3D(scene);
 
         // Paint WebGL canvas to painter
-        CJPainter tvPainter = (CJPainter) aPainter;
-        tvPainter._cntx.drawImage(_canvas, 0, 0, _canvasW, _canvasH);
+        CJPainter painter = (CJPainter) aPainter;
+        painter._cntx.drawImage(_canvas, 0, 0, _canvasW, _canvasH);
     }
 
     /**
@@ -439,7 +439,7 @@ public class CJRenderer extends Renderer {
         String sourcePath = "shaders/" + getSourceName(aType, aName);
         String sourceText = SnapUtils.getText(getClass(), sourcePath);
         if (sourceText == null || sourceText.length() == 0)
-            System.err.println("TVRenderer.getSourceText: shader source not found: " + sourcePath);
+            System.err.println("CJRenderer.getSourceText: shader source not found: " + sourcePath);
         return sourceText;
     }
 

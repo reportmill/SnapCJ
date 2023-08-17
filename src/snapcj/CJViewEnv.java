@@ -35,6 +35,7 @@ public class CJViewEnv extends ViewEnv {
     {
         if (_env == null) {
             _env = _shared = this;
+            CJRenderer.registerFactory();
         }
     }
 
@@ -178,8 +179,6 @@ public class CJViewEnv extends ViewEnv {
     public static CJViewEnv get()
     {
         if (_shared != null) return _shared;
-
-//        TVRenderer.registerFactory();
 
         return _shared = new CJViewEnv();
     }
