@@ -53,7 +53,7 @@ public class CJRenderer extends Renderer {
         if (_canvas != null) return;
 
         // Create canvas and size
-        _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         resizeCanvas(aPainter);
 
         // Get WebGL context (if missing, complain and return)

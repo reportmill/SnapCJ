@@ -67,7 +67,7 @@ public class CJ {
         // Update window location
         int top = 0;
         int left = 0;
-        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.getDocument();
         for (Node emt = anEmt; emt != null && emt.getJS() != doc.getJS(); emt = emt.getParentNode()) {
             top += ((HTMLElement) emt).getOffsetTop();
             left += ((HTMLElement) emt).getOffsetLeft();

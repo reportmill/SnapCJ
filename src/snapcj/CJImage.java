@@ -48,7 +48,7 @@ public class CJImage extends Image {
         _pixH = h * _scale;
 
         // Create canvas for pixel width/height, image width/height
-        _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         _canvas.setWidth(_pixW);
         _canvas.setHeight(_pixH);
         _canvas.getStyle().setProperty("width", w + "px");
@@ -68,7 +68,7 @@ public class CJImage extends Image {
         _src = getSourceURL(aSource);
 
         // Create image
-        _img = (HTMLImageElement) HTMLDocument.current().createElement("img");
+        _img = (HTMLImageElement) HTMLDocument.getDocument().createElement("img");
         _img.setCrossOrigin("anonymous");
         _pixW = _pixH = 20;
 
@@ -323,12 +323,12 @@ public class CJImage extends Image {
         // Get canvas size and pixel size (might be 2x if HiDpi display)
         int imageW = getPixWidth();
         int imageH = getPixHeight();
-        int scale = CJWindow.scale;
+        int scale = CJWindow.PIXEL_SCALE;
         int pixW = imageW * scale;
         int pixH = imageH * scale;
 
         // Create new canvas for image size and pixel size
-        HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         canvas.setWidth(pixW);
         canvas.setHeight(pixH);
         canvas.getStyle().setProperty("width", imageW + "px");
@@ -356,7 +356,7 @@ public class CJImage extends Image {
             convertToCanvas();
 
         // Create new canvas to do blur
-        HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+        HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         canvas.setWidth(_pixW);
         canvas.setHeight(_pixH);
         canvas.getStyle().setProperty("width", (_pixW / _scale) + "px");

@@ -39,7 +39,7 @@ public class CJScreen {
     private CJScreen()
     {
         // Get Doc and body
-        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.getDocument();
         HTMLBodyElement body = doc.getBody();
 
         // Add Mouse listeners
@@ -179,7 +179,7 @@ public class CJScreen {
     public void setPointerCapture(Event anEvent)
     {
         // document.body.setPointerCapture(anEvent.pointerId)
-        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.getDocument();
         HTMLBodyElement body = doc.getBody();
         int id = anEvent.getMemberInt("pointerId");
         body.callWithDouble("setPointerCapture", id);
@@ -465,7 +465,7 @@ public class CJScreen {
     /**
      * Returns the shared screen.
      */
-    public static CJScreen get()
+    public static CJScreen getScreen()
     {
         if (_screen != null) return _screen;
         return _screen = new CJScreen();

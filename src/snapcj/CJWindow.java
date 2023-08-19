@@ -2,7 +2,9 @@ package snapcj;
 import cjdom.*;
 import cjdom.EventListener;
 import snap.geom.Point;
+import snap.geom.Rect;
 import snap.gfx.Color;
+import snap.gfx.Painter;
 import snap.props.PropChange;
 import snap.props.PropChangeListener;
 import snap.view.*;
@@ -13,70 +15,108 @@ import snap.view.*;
 public class CJWindow {
 
     // The Window View
-    protected WindowView  _win;
-
-    // The element to represent the window
-    protected HTMLElement _winEmt;
+    protected WindowView _win;
 
     // The RootView
-    protected RootView  _rootView;
+    protected RootView _rootView;
 
-    // The native RootView
-    protected CJRootView  _rootViewNtv;
+    // A div element to hold window canvas
+    protected HTMLElement _windowDiv;
 
-    // The HTML document element
-    protected HTMLDocument _doc;
+    // The HTMLCanvas to paint/show window content
+    protected HTMLCanvasElement _canvas;
 
-    // The HTML body element
-    protected HTMLBodyElement  _body;
+    // The HTMLCanvas 'double-buffering' buffer - offscreen drawing to avoid flicker of async JNI
+    protected HTMLCanvasElement _canvasBuffer;
 
-    // The parent element
-    protected HTMLElement  _parent;
+    // The Painter for window content
+    private Painter _painter;
+
+    // The parent element holding window element when showing
+    protected HTMLElement _parent;
 
     // A listener for hide
-    protected PropChangeListener  _hideLsnr;
+    protected PropChangeListener _hideLsnr;
 
     // A listener for browser window resize
     protected EventListener<?> _resizeLsnr = null;
 
+    // The body margin value
+    protected String _bodyMargin = "undefined";
+
     // The body overflow value
-    protected String  _bodyMargin = "undefined", _bodyOverflow;
+    private String _bodyOverflow;
 
     // The last top window
-    protected static int  _topWin;
+    protected static int _topWin;
 
     // The paint scale
-    public static int scale = CJDom.getDevicePixelRatio() == 2 ? 2 : 1;
+    public static int PIXEL_SCALE = CJDom.getDevicePixelRatio() == 2 ? 2 : 1;
 
     /**
-     * Sets the snap window.
+     * Constructor.
      */
-    public void setWindow(WindowView aWin)
+    public CJWindow(WindowView snapWindow)
     {
+        // Set Window and RootView
+        _win = snapWindow;
+        _rootView = _win.getRootView();
+
         // Set window and start listening to bounds, Maximized and ActiveCursor changes
-        _win = aWin;
         _win.addPropChangeListener(pc -> snapWindowMaximizedChanged(), WindowView.Maximized_Prop);
         _win.addPropChangeListener(pce -> snapWindowBoundsChanged(pce), View.X_Prop, View.Y_Prop,
                 View.Width_Prop, View.Height_Prop);
         _win.addPropChangeListener(pc -> snapWindowActiveCursorChanged(), WindowView.ActiveCursor_Prop);
 
-        // Get Doc and body elements
-        _doc = HTMLDocument.current();
-        _body = _doc.getBody();
+        // Create/configure WindowDiv, the HTMLElement to hold window and canvas
+        HTMLDocument doc = HTMLDocument.getDocument();
+        _windowDiv = doc.createElement("div");
+        _windowDiv.getStyle().setProperty("box-sizing", "border-box");
+        _windowDiv.getStyle().setProperty("background", "#F4F4F4CC");
 
-        // Create/configure WinEmt, the HTMLElement to hold window and canvas
-        _winEmt = _doc.createElement("div");
-        _winEmt.getStyle().setProperty("box-sizing", "border-box");
-        _winEmt.getStyle().setProperty("background", "#F4F4F4CC");
+        // Create canvas and configure to totally fill window element (minus padding insets)
+        _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
+        _canvas.getStyle().setProperty("width", "100%");
+        _canvas.getStyle().setProperty("height", "100%");
+        _canvas.getStyle().setProperty("box-sizing", "border-box");
 
-        // Get RootView and TVRootView
-        _rootView = _win.getRootView();
-        _rootViewNtv = new CJRootView();
-        _rootViewNtv.setView(_rootView);
+        // Create Canvas Buffer - offscreen drawing to avoid flicker of async JNI
+        // Needed because all canvas drawing (JNI) calls get evaluated (and displayed) before next drawing call
+        _canvasBuffer = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
+        _canvasBuffer.getStyle().setProperty("width", "100%");
+        _canvasBuffer.getStyle().setProperty("height", "100%");
+        _canvasBuffer.getStyle().setProperty("box-sizing", "border-box");
 
-        // Get RootView canvas and add to WinEmt
+        // Add RootView listener to propagate size changes to canvas
+        _rootView.addPropChangeListener(pc -> rootViewSizeChange(), View.Width_Prop, View.Height_Prop);
+        rootViewSizeChange();
+
+        // Have to do this so TouchEvent.preventDefault doesn't complain and iOS doesn't scroll doc
+        _canvas.getStyle().setProperty("touch-action", "none");
+        _canvas.setAttribute("touch-action", "none");
+        _canvas.addEventListener("touchstart", e -> e.preventDefault());
+        _canvas.addEventListener("touchmove", e -> e.preventDefault());
+        _canvas.addEventListener("touchend", e -> e.preventDefault());
+        _canvas.addEventListener("wheel", e -> e.preventDefault());
+
+        // Create painter
+        _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
+
+        // Register for drop events
+//        _canvas.setAttribute("draggable", "true");
+//        EventListener dragLsnr = e -> handleDragEvent((DragEvent)e);
+//        _canvas.addEventListener("dragenter", dragLsnr);
+//        _canvas.addEventListener("dragover", dragLsnr);
+//        _canvas.addEventListener("dragexit", dragLsnr);
+//        _canvas.addEventListener("drop", dragLsnr);
+
+        // Register for drag start event
+//        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
+//        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
+
+        // Get RootView canvas and add to WindowDiv
         HTMLCanvasElement canvas = getCanvas();
-        _winEmt.appendChild(canvas);
+        _windowDiv.appendChild(canvas);
     }
 
     /**
@@ -93,15 +133,15 @@ public class CJWindow {
     /**
      * Returns the canvas for the window.
      */
-    public HTMLCanvasElement getCanvas()  { return _rootViewNtv._canvas; }
+    public HTMLCanvasElement getCanvas()  { return _canvas; }
 
     /**
-     * Returns the parent DOM element of this window (WinEmt).
+     * Returns the parent DOM element of this window (WindowDiv).
      */
     public HTMLElement getParent()  { return _parent; }
 
     /**
-     * Sets the parent DOM element of this window (WinEmt).
+     * Sets the parent DOM element of this window (WindowDiv).
      */
     protected void setParent(HTMLElement aNode)
     {
@@ -109,53 +149,55 @@ public class CJWindow {
         if (aNode == _parent) return;
 
         // Set new value
-        HTMLElement par = _parent;
+        HTMLElement parent = _parent;
         _parent = aNode;
 
         // If null, just remove from old parent and return
         if (aNode == null) {
-            par.removeChild(_winEmt);
+            parent.removeChild(_windowDiv);
             return;
         }
 
-        // Add WinEmt to given node
-        aNode.appendChild(_winEmt);
+        // Add WindowDiv to given node
+        aNode.appendChild(_windowDiv);
 
         // If body, configure special
-        if (aNode == _body) {
+        HTMLBodyElement body = HTMLBodyElement.getBody();
+        if (aNode == body) {
 
             // Set body and html height so that document covers the whole browser page
-            HTMLHtmlElement html = _doc.getDocumentElement();
+            HTMLDocument doc = HTMLDocument.getDocument();
+            HTMLHtmlElement html = doc.getDocumentElement();
             html.getStyle().setProperty("height", "100%");
-            _body.getStyle().setProperty("min-height", "100%");
-            _bodyMargin = _body.getStyle().getPropertyValue("margin");
-            _body.getStyle().setProperty("margin", "0");
+            body.getStyle().setProperty("min-height", "100%");
+            _bodyMargin = body.getStyle().getPropertyValue("margin");
+            body.getStyle().setProperty("margin", "0");
 
-            // Configure WinEmt for body
-            _winEmt.getStyle().setProperty("position", _win.isMaximized() ? "fixed" : "absolute");
-            _winEmt.getStyle().setProperty("z-index", String.valueOf(_topWin++));
+            // Configure WindowDiv for body
+            _windowDiv.getStyle().setProperty("position", _win.isMaximized() ? "fixed" : "absolute");
+            _windowDiv.getStyle().setProperty("z-index", String.valueOf(_topWin++));
 
             // If not maximized, clear background and add drop shadow
             if (!_win.isMaximized()) {
-                _winEmt.getStyle().setProperty("background", null);
-                _winEmt.getStyle().setProperty("box-shadow", "1px 1px 8px grey");
+                _windowDiv.getStyle().setProperty("background", null);
+                _windowDiv.getStyle().setProperty("box-shadow", "1px 1px 8px grey");
             }
 
             // If Window.Type not PLAIN, attach WindowBar
             if (_win.getType() != WindowView.TYPE_PLAIN) {
-                WindowBar wbar = WindowBar.attachWindowBar(_rootView);
+                WindowBar windowBar = WindowBar.attachWindowBar(_rootView);
                 if (_win.isMaximized())
-                    wbar.setTitlebarHeight(18);
+                    windowBar.setTitlebarHeight(18);
             }
         }
 
         // If arbitrary element
         else {
             if (_bodyMargin != "undefined")
-                _body.getStyle().setProperty("margin", _bodyMargin);
-            _winEmt.getStyle().setProperty("position", "static");
-            _winEmt.getStyle().setProperty("width", "100%");
-            _winEmt.getStyle().setProperty("height", "100%");
+                body.getStyle().setProperty("margin", _bodyMargin);
+            _windowDiv.getStyle().setProperty("position", "static");
+            _windowDiv.getStyle().setProperty("width", "100%");
+            _windowDiv.getStyle().setProperty("height", "100%");
         }
     }
 
@@ -164,20 +206,24 @@ public class CJWindow {
      */
     private HTMLElement getParentForWin()
     {
+        // Get body
+        HTMLBodyElement body = HTMLBodyElement.getBody();
+
         // If window is maximized, parent should always be body
         if (_win.isMaximized())
-            return _body;
+            return body;
 
         // If window has named element, return that
         String parentName = _win.getName();
         if (parentName != null) {
-            HTMLElement par = _doc.getElementById(parentName);
-            if (par != null)
-                return par;
+            HTMLDocument doc = HTMLDocument.getDocument();
+            HTMLElement parent = doc.getElementById(parentName);
+            if (parent != null)
+                return parent;
         }
 
         // Default to body
-        return _body;
+        return body;
     }
 
     /**
@@ -185,20 +231,23 @@ public class CJWindow {
      */
     private boolean isChildOfBody()
     {
-        return getParent() == _body;
+        HTMLDocument doc = HTMLDocument.getDocument();
+        HTMLBodyElement body = doc.getBody();
+        return getParent() == body;
     }
 
     /**
-     * Resets the parent DOM element and Window/WinEmt bounds.
+     * Resets the parent DOM element and Window/WindowDiv bounds.
      */
     protected void resetParentAndBounds()
     {
         // Get proper parent node and set
-        HTMLElement par = getParentForWin();
-        setParent(par);
+        HTMLElement parent = getParentForWin();
+        setParent(parent);
 
-        // If window floating in body, set WinEmt bounds from Window
-        if (par == _body) {
+        // If window floating in body, set WindowDiv bounds from Window
+        HTMLBodyElement body = HTMLBodyElement.getBody();
+        if (parent == body) {
             if (_win.isMaximized())
                 _win.setBounds(CJ.getViewportBounds());
             snapWindowBoundsChanged(null);
@@ -223,11 +272,11 @@ public class CJWindow {
      */
     public void showImpl()
     {
-        // Make sure WinEmt is in proper parent node with proper bounds
+        // Make sure WindowDiv is in proper parent node with proper bounds
         resetParentAndBounds();
 
         // Add to Screen.Windows
-        CJScreen screen = CJScreen.get();
+        CJScreen screen = CJScreen.getScreen();
         screen.addWindow(_win);
 
         // Set Window showing
@@ -249,7 +298,7 @@ public class CJWindow {
         showImpl();
 
         // Register listener to activate current thread on window not showing
-        _win.addPropChangeListener(_hideLsnr = pce -> snapWindowShowingChanged(), View.Showing_Prop);
+        _win.addPropChangeListener(_hideLsnr = pc -> snapWindowShowingChanged(), View.Showing_Prop);
 
         // Start new app thread, since this thread is now tied up until window closes
 //        CJEnv.get().startNewAppThread();
@@ -260,25 +309,15 @@ public class CJWindow {
     }
 
     /**
-     * Called when window changes showing.
-     */
-    synchronized void snapWindowShowingChanged()
-    {
-        _win.removePropChangeListener(_hideLsnr);
-        _hideLsnr = null;
-        notify();
-    }
-
-    /**
      * Hides window.
      */
     public void hide()
     {
-        // Remove WinEmt from parent
+        // Remove WindowDiv from parent
         setParent(null);
 
         // Remove Window from screen
-        CJScreen screen = CJScreen.get();
+        CJScreen screen = CJScreen.getScreen();
         screen.removeWindow(_win);
 
         // Set Window not showing
@@ -298,13 +337,23 @@ public class CJWindow {
      */
     public void toFront()
     {
-        _winEmt.getStyle().setProperty("z-index", String.valueOf(_topWin++));
+        _windowDiv.getStyle().setProperty("z-index", String.valueOf(_topWin++));
+    }
+
+    /**
+     * Called when window changes showing.
+     */
+    private synchronized void snapWindowShowingChanged()
+    {
+        _win.removePropChangeListener(_hideLsnr);
+        _hideLsnr = null;
+        notify();
     }
 
     /**
      * Called when browser window resizes.
      */
-    void browserWindowSizeChanged()
+    private void browserWindowSizeChanged()
     {
         // If Window is child of body, just return
         if (isChildOfBody()) {
@@ -326,9 +375,9 @@ public class CJWindow {
     }
 
     /**
-     * Called when WindowView has bounds change to sync to WinEmt.
+     * Called when WindowView has bounds change to sync to WindowDiv.
      */
-    void snapWindowBoundsChanged(PropChange aPC)
+    private void snapWindowBoundsChanged(PropChange aPC)
     {
         // If Window not child of body, just return (parent node changes go to win, not win to parent)
         if (!isChildOfBody()) return;
@@ -342,33 +391,95 @@ public class CJWindow {
 
         // Handle changes
         if (propName == null || propName == View.X_Prop)
-            _winEmt.getStyle().setProperty("left", x + "px");
+            _windowDiv.getStyle().setProperty("left", x + "px");
         if (propName == null || propName == View.Y_Prop)
-            _winEmt.getStyle().setProperty("top", y + "px");
+            _windowDiv.getStyle().setProperty("top", y + "px");
         if (propName == null || propName == View.Width_Prop)
-            _winEmt.getStyle().setProperty("width", w + "px");
+            _windowDiv.getStyle().setProperty("width", w + "px");
         if (propName == null || propName == View.Height_Prop)
-            _winEmt.getStyle().setProperty("height", h + "px");
+            _windowDiv.getStyle().setProperty("height", h + "px");
     }
+
+    /**
+     * Called to register for repaint.
+     */
+    public void paintViews(Rect aRect)
+    {
+        _painter.setTransform(1,0,0,1,0,0); // I don't know why I need this!
+        ViewUpdater updater = _rootView.getUpdater();
+        updater.paintViews(_painter, aRect);
+
+        // Copy buffer to canvas
+        CanvasRenderingContext2D context = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        double rectX = aRect.x * PIXEL_SCALE;
+        double rectY = aRect.y * PIXEL_SCALE;
+        double rectW = aRect.width * PIXEL_SCALE;
+        double rectH = aRect.height * PIXEL_SCALE;
+        context.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
+    }
+
+    /**
+     * Called when root view size changes.
+     */
+    private void rootViewSizeChange()
+    {
+        int rootW = (int) Math.ceil(_rootView.getWidth());
+        int rootH = (int) Math.ceil(_rootView.getHeight());
+        _canvas.setWidth(rootW * PIXEL_SCALE);
+        _canvas.setHeight(rootH * PIXEL_SCALE);
+        _canvasBuffer.setWidth(rootW * PIXEL_SCALE);
+        _canvasBuffer.setHeight(rootH * PIXEL_SCALE);
+    }
+
+    /**
+     * Called to handle a drag event.
+     * Not called on app thread, because drop data must be processed when event is issued.
+     * TVEnv.runOnAppThread(() -> handleDragEvent(anEvent));
+     */
+//    public void handleDragEvent(DragEvent anEvent)
+//    {
+//        anEvent.preventDefault();
+//        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
+//        _rootView.getWindow().dispatchEventToWindow(event);
+//    }
+
+    /** Called to handle a drag event. */
+//    public void handleDragGesture(DragEvent anEvent)
+//    {
+//        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
+//        _rootView.getWindow().dispatchEventToWindow(event);
+//        if (!TVDragboard.isDragging) {
+//            anEvent.preventDefault();
+//            anEvent.stopPropagation();
+//        }
+//    }
+
+    /** Called to handle dragend event. */
+//    public void handleDragEnd(DragEvent anEvent)
+//    {
+//        ViewEvent nevent = ViewEvent.createEvent(_rootView, anEvent, null, null);
+//        _rootView.getWindow().dispatchEventToWindow(nevent);
+//    }
 
     /**
      * Called when WindowView.Maximized is changed.
      */
-    void snapWindowMaximizedChanged()
+    private void snapWindowMaximizedChanged()
     {
-        // Get canvas
+        // Get body and canvas
+        HTMLBodyElement body = HTMLBodyElement.getBody();
         HTMLCanvasElement canvas = getCanvas();
 
         // Handle Maximized on
         if (_win.isMaximized()) {
 
             // Set body overflow to hidden (to get rid of scrollbars)
-            _bodyOverflow = _body.getStyle().getPropertyValue("overflow");
-            _body.getStyle().setProperty("overflow", "hidden");
+            _bodyOverflow = body.getStyle().getPropertyValue("overflow");
+            body.getStyle().setProperty("overflow", "hidden");
 
-            // Set Window/WinEmt padding
+            // Set Window/WindowDiv padding
             _win.setPadding(5, 5, 5, 5);
-            _winEmt.getStyle().setProperty("padding", "5px");
+            _windowDiv.getStyle().setProperty("padding", "5px");
 
             // Add a shadow to canvas
             canvas.getStyle().setProperty("box-shadow", "1px 1px 8px grey");
@@ -378,17 +489,17 @@ public class CJWindow {
         else {
 
             // Restore body overflow
-            _body.getStyle().setProperty("overflow", _bodyOverflow);
+            body.getStyle().setProperty("overflow", _bodyOverflow);
 
-            // Clear Window/WinEmt padding
+            // Clear Window/WindowDiv padding
             _win.setPadding(0, 0, 0, 0);
-            _winEmt.getStyle().setProperty("padding", null);
+            _windowDiv.getStyle().setProperty("padding", null);
 
             // Remove shadow from canvas
             canvas.getStyle().setProperty("box-shadow", null);
         }
 
-        // Reset parent and Window/WinEmt bounds
+        // Reset parent and Window/WindowDiv bounds
         resetParentAndBounds();
     }
 
@@ -421,7 +532,11 @@ public class CJWindow {
      */
     private void sendWinEvent(ViewEvent.Type aType)
     {
-        if (!_win.getEventAdapter().isEnabled(aType)) return;
+        // If no listener for event type, just return
+        if (!_win.getEventAdapter().isEnabled(aType))
+            return;
+
+        // Create ViewEvent and dispatch
         ViewEvent event = ViewEvent.createEvent(_win, null, aType, null);
         _win.dispatchEventToView(event);
     }

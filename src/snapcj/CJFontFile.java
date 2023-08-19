@@ -50,7 +50,7 @@ public class CJFontFile extends FontFile {
 
         // Initialize Canvas/Context
         if (_canvas == null) {
-            _canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+            _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
             _cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
         }
     }

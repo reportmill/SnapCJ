@@ -35,8 +35,7 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
     public void setWindow(WindowView aWin)
     {
         _win = aWin;
-        _winNtv = new CJWindow();
-        _winNtv.setWindow(aWin);
+        _winNtv = new CJWindow(aWin);
     }
 
     /**
@@ -81,7 +80,7 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
      */
     public void requestPaint(Rect aRect)
     {
-        _winNtv._rootViewNtv.paintViews(aRect);
+        _winNtv.paintViews(aRect);
     }
 
     /**
@@ -105,7 +104,7 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
         _contentEditable = aValue;
 
         // Update Body.ContentEditable and TabIndex
-        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.getDocument();
         HTMLBodyElement body = doc.getBody();
         body.setContentEditable(aValue);
 

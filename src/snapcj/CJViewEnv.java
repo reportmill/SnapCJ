@@ -131,7 +131,7 @@ public class CJViewEnv extends ViewEnv {
         if(_scriptURLs != null) return _scriptURLs;
 
         // Iterate over script tags
-        HTMLDocument doc = HTMLDocument.current();
+        HTMLDocument doc = HTMLDocument.getDocument();
 //        NodeList<Element> scripts = doc.getElementsByTagName("script");
         List<String> urls = new ArrayList<>();
 //
