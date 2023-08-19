@@ -47,8 +47,6 @@ public class CJScreen {
         body.addEventListener("mousedown", lsnr);
         body.addEventListener("mousemove", lsnr);
         body.addEventListener("mouseup", lsnr);
-        body.addEventListener("click", lsnr);
-        body.addEventListener("contextmenu", lsnr);
         body.addEventListener("wheel", lsnr);
 
         // Add Key Listeners
@@ -64,7 +62,7 @@ public class CJScreen {
         body.addEventListener("touchend", lsnr);
 
         // Disable click, contextmenu events
-        EventListener stopLsnr = e -> { e.preventDefault(); e.stopPropagation(); };
+        EventListener stopLsnr = e -> { };
         body.addEventListener("click", stopLsnr);
         body.addEventListener("contextmenu", stopLsnr);
 
@@ -81,8 +79,6 @@ public class CJScreen {
     {
         // Vars
         Runnable run = null;
-        boolean stopProp = false;
-        boolean prevDefault = false;
 
         // Handle event types
         switch(e.getType()) {
@@ -91,7 +87,7 @@ public class CJScreen {
             case "mousedown":
                 run = () -> mouseDown((MouseEvent) e);
                 _mousePressWin = _mouseDownWin = getWindow((MouseEvent) e);
-                if (_mousePressWin == null) return; //stopProp = prevDefault = true;
+                if (_mousePressWin == null) return;
                 break;
 
             // Handle MouseMove
@@ -111,21 +107,18 @@ public class CJScreen {
             case "wheel":
                 if (getWindow((WheelEvent) e) == null) return;
                 run = () -> mouseWheel((WheelEvent) e);
-                stopProp = prevDefault = true;
                 break;
 
             // Handle KeyDown
             case "keydown":
                 if (_mousePressWin == null) return;
                 run = () -> keyDown((KeyboardEvent) e);
-                stopProp = prevDefault = true;
                 break;
 
             // Handle KeyUp
             case "keyup":
                 if (_mousePressWin == null) return;
                 run = () -> keyUp((KeyboardEvent) e);
-                stopProp = prevDefault = true;
                 break;
 
             // Handle TouchStart
@@ -133,21 +126,18 @@ public class CJScreen {
                 run = () -> touchStart((TouchEvent) e);
                 _mousePressWin = _mouseDownWin = getWindow((TouchEvent) e);
                 if (_mousePressWin == null) return;
-                stopProp = prevDefault = true;
                 break;
 
             // Handle TouchMove
             case "touchmove":
                 if (_mousePressWin == null) return;
                 run = () -> touchMove((TouchEvent) e);
-                stopProp = prevDefault = true;
                 break;
 
             // Handle TouchEnd
             case "touchend":
                 if (_mousePressWin == null) return;
                 run = () -> touchEnd((TouchEvent) e);
-                stopProp = prevDefault = true;
                 break;
 
             // Handle pointerDown
@@ -158,12 +148,6 @@ public class CJScreen {
             // Unknown
             default: System.err.println("CJScreen.handleEvent: Not handled: " + e.getType()); return;
         }
-
-        // Handle StopPropagation and PreventDefault
-        if (stopProp)
-            e.stopPropagation();
-        if (prevDefault)
-            e.preventDefault();
 
         // Run event
         if (run != null)

@@ -94,10 +94,10 @@ public class CJWindow {
         // Have to do this so TouchEvent.preventDefault doesn't complain and iOS doesn't scroll doc
         _canvas.getStyle().setProperty("touch-action", "none");
         _canvas.setAttribute("touch-action", "none");
-        _canvas.addEventListener("touchstart", e -> e.preventDefault());
-        _canvas.addEventListener("touchmove", e -> e.preventDefault());
-        _canvas.addEventListener("touchend", e -> e.preventDefault());
-        _canvas.addEventListener("wheel", e -> e.preventDefault());
+        //_canvas.addEventListener("touchstart", e -> e.preventDefault());
+        //_canvas.addEventListener("touchmove", e -> e.preventDefault());
+        //_canvas.addEventListener("touchend", e -> e.preventDefault());
+        //_canvas.addEventListener("wheel", e -> e.preventDefault());
 
         // Create painter
         _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
