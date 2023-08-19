@@ -63,8 +63,12 @@ public class CJScreen {
         body.addEventListener("touchmove", lsnr);
         body.addEventListener("touchend", lsnr);
 
-        // Disable selection events on iOS
+        // Disable click, contextmenu events
         EventListener stopLsnr = e -> { e.preventDefault(); e.stopPropagation(); };
+        body.addEventListener("click", stopLsnr);
+        body.addEventListener("contextmenu", stopLsnr);
+
+        // Disable selection events on iOS
         body.addEventListener("select", stopLsnr);
         body.addEventListener("selectstart", stopLsnr);
         body.addEventListener("selectend", stopLsnr);
@@ -101,13 +105,6 @@ public class CJScreen {
             case "mouseup":
                 run = () -> mouseUp((MouseEvent) e);
                 if (_mousePressWin == null) return; //stopProp = prevDefault = true;
-                break;
-
-            // Handle click, contextmenu
-            case "click":
-            case "contextmenu":
-                if (_mousePressWin == null) return;
-                stopProp = prevDefault = true;
                 break;
 
             // Handle Wheel
