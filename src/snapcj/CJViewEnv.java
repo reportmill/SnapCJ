@@ -85,8 +85,7 @@ public class CJViewEnv extends ViewEnv {
     public Clipboard getClipboard()
     {
         if (_clipboard!=null) return _clipboard;
-//        return _clipboard = CJClipboard.get();
-        return null;
+        return _clipboard = CJClipboard.get();
     }
 
     /**

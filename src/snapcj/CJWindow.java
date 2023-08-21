@@ -438,30 +438,30 @@ public class CJWindow {
      * Not called on app thread, because drop data must be processed when event is issued.
      * TVEnv.runOnAppThread(() -> handleDragEvent(anEvent));
      */
-//    public void handleDragEvent(DragEvent anEvent)
-//    {
-//        anEvent.preventDefault();
-//        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
-//        _rootView.getWindow().dispatchEventToWindow(event);
-//    }
+    public void handleDragEvent(DragEvent anEvent)
+    {
+        anEvent.preventDefault();
+        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
+        _rootView.getWindow().dispatchEventToWindow(event);
+    }
 
     /** Called to handle a drag event. */
-//    public void handleDragGesture(DragEvent anEvent)
-//    {
-//        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
-//        _rootView.getWindow().dispatchEventToWindow(event);
-//        if (!TVDragboard.isDragging) {
-//            anEvent.preventDefault();
-//            anEvent.stopPropagation();
-//        }
-//    }
+    public void handleDragGesture(DragEvent anEvent)
+    {
+        ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
+        _rootView.getWindow().dispatchEventToWindow(event);
+        if (!CJDragboard.isDragging) {
+            anEvent.preventDefault();
+            anEvent.stopPropagation();
+        }
+    }
 
     /** Called to handle dragend event. */
-//    public void handleDragEnd(DragEvent anEvent)
-//    {
-//        ViewEvent nevent = ViewEvent.createEvent(_rootView, anEvent, null, null);
-//        _rootView.getWindow().dispatchEventToWindow(nevent);
-//    }
+    public void handleDragEnd(DragEvent anEvent)
+    {
+        ViewEvent nevent = ViewEvent.createEvent(_rootView, anEvent, null, null);
+        _rootView.getWindow().dispatchEventToWindow(nevent);
+    }
 
     /**
      * Called when WindowView.Maximized is changed.
