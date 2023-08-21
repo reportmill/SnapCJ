@@ -32,6 +32,9 @@ public class CJWindow {
     // The Painter for window content
     private Painter _painter;
 
+    // The rendering context for canvas
+    private CanvasRenderingContext2D _canvasContext;
+
     // The parent element holding window element when showing
     protected HTMLElement _parent;
 
@@ -101,6 +104,7 @@ public class CJWindow {
 
         // Create painter
         _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
+        _canvasContext = (CanvasRenderingContext2D) _canvas.getContext("2d");
 
         // Register for drop events
 //        _canvas.setAttribute("draggable", "true");
@@ -114,9 +118,8 @@ public class CJWindow {
 //        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
 //        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
 
-        // Get RootView canvas and add to WindowDiv
-        HTMLCanvasElement canvas = getCanvas();
-        _windowDiv.appendChild(canvas);
+        // Add canvas to WindowDiv
+        _windowDiv.appendChild(_canvas);
     }
 
     /**
@@ -341,6 +344,23 @@ public class CJWindow {
     }
 
     /**
+     * Called to register for repaint.
+     */
+    public void paintViews(Rect aRect)
+    {
+        _painter.setTransform(1,0,0,1,0,0); // I don't know why I need this!
+        ViewUpdater updater = _rootView.getUpdater();
+        updater.paintViews(_painter, aRect);
+
+        // Copy buffer to canvas
+        double rectX = aRect.x * PIXEL_SCALE;
+        double rectY = aRect.y * PIXEL_SCALE;
+        double rectW = aRect.width * PIXEL_SCALE;
+        double rectH = aRect.height * PIXEL_SCALE;
+        _canvasContext.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
+    }
+
+    /**
      * Called when window changes showing.
      */
     private synchronized void snapWindowShowingChanged()
@@ -398,24 +418,6 @@ public class CJWindow {
             _windowDiv.getStyle().setProperty("width", w + "px");
         if (propName == null || propName == View.Height_Prop)
             _windowDiv.getStyle().setProperty("height", h + "px");
-    }
-
-    /**
-     * Called to register for repaint.
-     */
-    public void paintViews(Rect aRect)
-    {
-        _painter.setTransform(1,0,0,1,0,0); // I don't know why I need this!
-        ViewUpdater updater = _rootView.getUpdater();
-        updater.paintViews(_painter, aRect);
-
-        // Copy buffer to canvas
-        CanvasRenderingContext2D context = (CanvasRenderingContext2D) _canvas.getContext("2d");
-        double rectX = aRect.x * PIXEL_SCALE;
-        double rectY = aRect.y * PIXEL_SCALE;
-        double rectW = aRect.width * PIXEL_SCALE;
-        double rectH = aRect.height * PIXEL_SCALE;
-        context.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
     }
 
     /**
