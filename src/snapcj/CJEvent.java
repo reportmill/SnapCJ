@@ -251,10 +251,9 @@ public class CJEvent extends ViewEvent {
     /**
      * Returns the drag Clipboard for this event.
      */
-    public Clipboard getClipboard()
+    public snap.view.Clipboard getClipboard()
     {
-//        return TVDragboard.getDrag(this);
-        return null;
+        return CJDragboard.getDrag(this);
     }
 
     /**
@@ -262,7 +261,7 @@ public class CJEvent extends ViewEvent {
      */
     public void acceptDrag()
     {
-//        TVDragboard.getDrag(this).acceptDrag();
+        CJDragboard.getDrag(this).acceptDrag();
     }
 
     /**
@@ -270,6 +269,6 @@ public class CJEvent extends ViewEvent {
      */
     public void dropComplete()
     {
-//        TVDragboard.getDrag(this).dropComplete();
+        CJDragboard.getDrag(this).dropComplete();
     }
 }
