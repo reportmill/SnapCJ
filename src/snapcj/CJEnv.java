@@ -34,7 +34,6 @@ public class CJEnv extends GFXEnv {
     {
         if (_env == null) {
             _env = _shared = this;
-            startNewAppThread();
         }
     }
 
@@ -205,23 +204,6 @@ public class CJEnv extends GFXEnv {
      * This is really just here to help with TeaVM.
      */
     public void exit(int aValue)  { }
-
-    /**
-     * Starts a new app event thread.
-     */
-    public void startNewAppThread()
-    {
-//        _appThread = new CJEventThread();
-//        _appThread.start();
-    }
-
-    /**
-     * Adds given run to the event queue.
-     */
-    public static void runOnAppThread(Runnable aRun)
-    {
-//        CJEventThread.runOnAppThread(aRun);
-    }
 
     /**
      * Returns a shared instance.

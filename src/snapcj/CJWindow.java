@@ -38,9 +38,6 @@ public class CJWindow {
     // The parent element holding window element when showing
     protected HTMLElement _parent;
 
-    // A listener for hide
-    protected PropChangeListener _hideLsnr;
-
     // A listener for browser window resize
     protected EventListener<?> _resizeLsnr = null;
 
@@ -301,14 +298,26 @@ public class CJWindow {
         showImpl();
 
         // Register listener to activate current thread on window not showing
-        _win.addPropChangeListener(_hideLsnr = pc -> snapWindowShowingChanged(), View.Showing_Prop);
+        PropChangeListener hideLsnr = pc -> modalWindowShowingChanged();
+        _win.addPropChangeListener(hideLsnr, View.Showing_Prop);
 
         // Start new app thread, since this thread is now tied up until window closes
-//        CJEnv.get().startNewAppThread();
+        EventQueue.startNewEventThread();
 
         // Wait until window is hidden
         try { wait(); }
-        catch(Exception e) { throw new RuntimeException(e); }
+        catch (Exception e) { throw new RuntimeException(e); }
+
+        // Remove listener
+        _win.removePropChangeListener(hideLsnr);
+    }
+
+    /**
+     * Called when modal window sets showing to false.
+     */
+    private synchronized void modalWindowShowingChanged()
+    {
+        notify();
     }
 
     /**
@@ -358,16 +367,6 @@ public class CJWindow {
         double rectW = aRect.width * PIXEL_SCALE;
         double rectH = aRect.height * PIXEL_SCALE;
         _canvasContext.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
-    }
-
-    /**
-     * Called when window changes showing.
-     */
-    private synchronized void snapWindowShowingChanged()
-    {
-        _win.removePropChangeListener(_hideLsnr);
-        _hideLsnr = null;
-        notify();
     }
 
     /**
