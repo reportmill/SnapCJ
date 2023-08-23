@@ -107,16 +107,16 @@ public class CJWindow {
         _canvasContext = (CanvasRenderingContext2D) _canvas.getContext("2d");
 
         // Register for drop events
-//        _canvas.setAttribute("draggable", "true");
-//        EventListener dragLsnr = e -> handleDragEvent((DragEvent)e);
-//        _canvas.addEventListener("dragenter", dragLsnr);
-//        _canvas.addEventListener("dragover", dragLsnr);
-//        _canvas.addEventListener("dragexit", dragLsnr);
-//        _canvas.addEventListener("drop", dragLsnr);
+        _canvas.setAttribute("draggable", "true");
+        EventListener dragLsnr = e -> handleDragEvent((DragEvent) e);
+        _canvas.addEventListener("dragenter", dragLsnr);
+        _canvas.addEventListener("dragover", dragLsnr);
+        _canvas.addEventListener("dragexit", dragLsnr);
+        _canvas.addEventListener("drop", dragLsnr);
 
         // Register for drag start event
-//        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
-//        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
+        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
+        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
 
         // Add canvas to WindowDiv
         _windowDiv.appendChild(_canvas);
