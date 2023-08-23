@@ -126,32 +126,14 @@ public class CJClipboard extends Clipboard {
 
         // Convert to JSArray of ClipboardItem
         ClipboardItem[] clipItems = clipItemsList.toArray(new ClipboardItem[0]);
-        Array<ClipboardItem> clipItemsJS = new Array(clipItems);
+        Array<ClipboardItem> clipItemsJS = new Array<>(clipItems);
 
-        // Write to system clipboard
-        Promise<?> writePromise = null;
+        // Try to write items to clipboard
         try {
-            writePromise = cjdom.Clipboard.getClipboardWriteItemsPromise(clipItemsJS);
+            cjdom.Clipboard.getClipboardWriteItemsPromise(clipItemsJS);
         }
         catch (Exception e) {
-            System.err.println("CJClipboard.addAllDataToClipboard: Failed to do navigator.clipboard.write");
-        }
-
-        // Handle/configure promise
-        if (writePromise != null) {
-
-            // On success, log
-            writePromise.then(aJSObj -> {
-                System.out.println("CJClipboard.write: Successfully did copy");
-                return null;
-            });
-
-            // On failure, complain and return
-            writePromise.catch_(aJSObj -> {
-                System.err.println("CJClipboard.addAllDataToClipboard failed:");
-                CJDom.log(aJSObj);
-                return null;
-            });
+            System.err.println("CJClipboard.addAllDataToClipboard failed: " + e);
         }
 
         // Clear datas
@@ -239,70 +221,45 @@ public class CJClipboard extends Clipboard {
         _loadListener = aRun;
 
         // Get PermissionsPromise
-        Promise<Object> permissionsPromise = cjdom.Clipboard.getReadPermissionsPromise();
-
-        // If returned, handle
-        if (permissionsPromise != null) {
-
-            // On success, forward to didGetClipboardReadText()
-            permissionsPromise.then(perm -> didGetPermissions(perm));
-
-            // On failure, complain and return
-            permissionsPromise.catch_(anObjJS -> {
-
-                // Complain
-                System.err.println("CJClipboard.addLoadListener: failed:");
-                CJDom.log(anObjJS);
-
-                // Actually, try anyway - works on Safari
-                didGetPermissions(null);
-                return null;
-            });
+        try {
+            PermissionStatus permissionStatus = cjdom.Clipboard.getReadPermissionsPromise();
+            didGetPermissions(permissionStatus);
         }
-
-        // Otherwise, return
-        else {
-            System.out.println("CJClipboard.addLoadListener: No read permissions promise?");
-            didGetPermissions(null);
+        catch (Exception e) {
+            System.err.println("CJClipboard.addLoadListener: Failed to get read permissions: " + e);
         }
     }
 
     /**
      * Returns a readText promise
      */
-    private static Promise<String> didGetPermissions(Object aPermResult)
+    private static void didGetPermissions(PermissionStatus permissionStatus)
     {
         // Print result of permissions
-        if (aPermResult != null) {
-            String state = cjdom.Clipboard.getPermissionStatusState(aPermResult);
+        if (permissionStatus != null) {
+            PermissionStatus.State state = permissionStatus.getState();
             System.out.println("CJClipboard.didGetPermissions: Got Read Permissions: " + state);
         }
 
         // Get readText promise to call didGetClipboardReadText
-        Promise<String> readTextPromise = cjdom.Clipboard.getClipboardReadTextPromise();
-
-        // On success, forward to didGetClipboardReadText()
-        readTextPromise.then(str -> didGetClipboardReadText(str));
-
-        // On failure, complain and return
-        readTextPromise.catch_(aJSO -> {
-            System.err.println("CJClipboard.didGetPermissions: failed:");
-            CJDom.log(aJSO);
-            return null;
-        });
-
-        // Return promise
-        return readTextPromise;
+        try {
+            String clipboardStr = cjdom.Clipboard.getClipboardReadTextPromise();
+            didGetClipboardReadText(clipboardStr);
+        }
+        catch (Exception e) {
+            System.err.println("CJClipboard.didGetPermissions fails: " + e);
+        }
     }
 
     /**
      * Returns the system DataTransfer.
      */
-    private static Promise<String> didGetClipboardReadText(String str)
+    private static void didGetClipboardReadText(String str)
     {
         // Log string
         String msg = str.replace("\n", "\\n");
-        if (str.length() > 50) msg = str.substring(0, 50) + "...";
+        if (str.length() > 50)
+            msg = str.substring(0, 50) + "...";
         System.out.println("CJClipboard.didGetClipboardReadText: Read clipboard string: " + msg);
 
         // Create/set DataTransfer for string
@@ -310,7 +267,6 @@ public class CJClipboard extends Clipboard {
 
         // Trigger LoadListener
         _shared.notifyLoaded();
-        return null;
     }
 
     /**
