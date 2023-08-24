@@ -120,8 +120,7 @@ public class CJEnv extends GFXEnv {
      */
     public SoundClip getSound(Object aSource)
     {
-        //return new TVSoundClip(aSource);
-        return AWTEnv.get().getSound(aSource);
+        return new CJSoundClip(aSource);
     }
 
     /**
@@ -130,7 +129,7 @@ public class CJEnv extends GFXEnv {
     public SoundClip createSound()  { return null; }
 
     /**
-     * Returns TV prefs.
+     * Returns prefs.
      */
     @Override
     public Prefs getPrefs(String aName)
