@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.*;
 import cjdom.*;
 import snap.gfx.*;
-import snap.swing.AWTEnv;
 import snap.util.FileUtils;
 import snap.util.Prefs;
 import snap.web.*;
@@ -14,10 +13,7 @@ import snap.web.*;
  */
 public class CJEnv extends GFXEnv {
     
-    // The app thread
-    //protected static CJEventThread  _appThread;
-    
-    // The shared AWTEnv
+    // The shared Env
     private static CJEnv  _shared;
 
     // Font names, Family names
@@ -134,8 +130,7 @@ public class CJEnv extends GFXEnv {
     @Override
     public Prefs getPrefs(String aName)
     {
-        //return new TVPrefs(aName);
-        return AWTEnv.get().getPrefs(aName);
+        return new CJPrefs(aName);
     }
 
     /**
