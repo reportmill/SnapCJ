@@ -49,7 +49,7 @@ public class CJViewEnv extends ViewEnv {
      */
     public void runLater(Runnable aRun)
     {
-        Window.setTimeout(aRun, 10);
+        Window.setTimeout(aRun, 0);
     }
 
     /**
