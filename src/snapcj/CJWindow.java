@@ -53,6 +53,9 @@ public class CJWindow {
     // The paint scale
     public static int PIXEL_SCALE = CJDom.getDevicePixelRatio() == 2 ? 2 : 1;
 
+    // Whether to double buffer windows
+    private static boolean DOUBLE_BUFFER = System.getProperty("java.runtime.version").contains("2023_09_08");
+
     /**
      * Constructor.
      */
@@ -82,10 +85,13 @@ public class CJWindow {
 
         // Create Canvas Buffer - offscreen drawing to avoid flicker of async JNI
         // Needed because all canvas drawing (JNI) calls get evaluated (and displayed) before next drawing call
-        _canvasBuffer = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
-        _canvasBuffer.getStyle().setProperty("width", "100%");
-        _canvasBuffer.getStyle().setProperty("height", "100%");
-        _canvasBuffer.getStyle().setProperty("box-sizing", "border-box");
+        if (DOUBLE_BUFFER) {
+            _canvasBuffer = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
+            _canvasBuffer.getStyle().setProperty("width", "100%");
+            _canvasBuffer.getStyle().setProperty("height", "100%");
+            _canvasBuffer.getStyle().setProperty("box-sizing", "border-box");
+            System.out.println("DOUBLE-BUFFERING");
+        }
 
         // Add RootView listener to propagate size changes to canvas
         _rootView.addPropChangeListener(pc -> rootViewSizeChange(), View.Width_Prop, View.Height_Prop);
@@ -100,8 +106,11 @@ public class CJWindow {
         //_canvas.addEventListener("wheel", e -> e.preventDefault());
 
         // Create painter
-        _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
-        _canvasContext = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        if (DOUBLE_BUFFER) {
+            _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
+            _canvasContext = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        }
+        else _painter = new CJPainter(_canvas, PIXEL_SCALE);
 
         // Register for drop events
         _canvas.setAttribute("draggable", "true");
@@ -362,11 +371,13 @@ public class CJWindow {
         updater.paintViews(_painter, aRect);
 
         // Copy buffer to canvas
-        double rectX = aRect.x * PIXEL_SCALE;
-        double rectY = aRect.y * PIXEL_SCALE;
-        double rectW = aRect.width * PIXEL_SCALE;
-        double rectH = aRect.height * PIXEL_SCALE;
-        _canvasContext.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
+        if (DOUBLE_BUFFER) {
+            double rectX = aRect.x * PIXEL_SCALE;
+            double rectY = aRect.y * PIXEL_SCALE;
+            double rectW = aRect.width * PIXEL_SCALE;
+            double rectH = aRect.height * PIXEL_SCALE;
+            _canvasContext.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
+        }
     }
 
     /**
@@ -428,8 +439,10 @@ public class CJWindow {
         int rootH = (int) Math.ceil(_rootView.getHeight());
         _canvas.setWidth(rootW * PIXEL_SCALE);
         _canvas.setHeight(rootH * PIXEL_SCALE);
-        _canvasBuffer.setWidth(rootW * PIXEL_SCALE);
-        _canvasBuffer.setHeight(rootH * PIXEL_SCALE);
+        if (DOUBLE_BUFFER) {
+            _canvasBuffer.setWidth(rootW * PIXEL_SCALE);
+            _canvasBuffer.setHeight(rootH * PIXEL_SCALE);
+        }
     }
 
     /**
