@@ -200,6 +200,16 @@ public class CJEnv extends GFXEnv {
     public void exit(int aValue)  { }
 
     /**
+     * Sets the Browser window.location.hash.
+     */
+    @Override
+    public void setBrowserWindowLocationHash(String aString)
+    {
+        Window window = Window.current();
+        window.setWindowLocationHash(aString);
+    }
+
+    /**
      * Returns a shared instance.
      */
     public static CJEnv get()

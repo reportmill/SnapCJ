@@ -1,9 +1,7 @@
 package snapcj;
 import cjdom.*;
-import snap.view.PopupWindow;
-import snap.view.View;
-import snap.view.ViewEvent;
-import snap.view.WindowView;
+import cjdom.EventListener;
+import snap.view.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +58,10 @@ public class CJScreen {
         body.addEventListener("touchstart", lsnr);
         body.addEventListener("touchmove", lsnr);
         body.addEventListener("touchend", lsnr);
+
+        // Add focus/blur listeners
+        body.addEventListener("focus", e -> docGainedFocus(e));
+        body.addEventListener("blur", e -> docLostFocus(e));
 
         // Disable click, contextmenu events
         EventListener stopLsnr = e -> { };
@@ -399,6 +401,24 @@ public class CJScreen {
         // Needed to push changes to system clipboard
         anEvent.preventDefault();
     }*/
+
+    /**
+     * Called when browser document gets focus.
+     */
+    protected void docGainedFocus(Event anEvent)
+    {
+        for (WindowView win : _windows)
+            ViewUtils.setFocused(win, true);
+    }
+
+    /**
+     * Called when browser document loses focus.
+     */
+    protected void docLostFocus(Event anEvent)
+    {
+        for (WindowView win : _windows)
+            ViewUtils.setFocused(win, false);
+    }
 
     /**
      * Returns the WindowView for an event.
