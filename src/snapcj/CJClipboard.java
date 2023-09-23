@@ -1,5 +1,6 @@
 package snapcj;
 import cjdom.*;
+import snap.gfx.Image;
 import snap.view.Clipboard;
 import snap.view.ClipboardData;
 import snap.view.ViewUtils;
@@ -145,11 +146,18 @@ public class CJClipboard extends Clipboard {
      */
     private ClipboardItem getClipboardItemForClipboardData(ClipboardData aData)
     {
+        // Handle string
+        if (aData.isString()) {
+            String type = aData.getMIMEType();
+            String string = aData.getString();
+            return new ClipboardItem(type, string);
+        }
+
         // Handle image
         if (aData.isImage()) {
 
             // Get image as PNG blob
-            CJImage image = (CJImage) aData.getImage();
+            Image image = aData.getImage();
             byte[] bytes = image.getBytesPNG();
             Blob blob = new Blob(bytes, "image/png");
 
@@ -157,18 +165,14 @@ public class CJClipboard extends Clipboard {
             return new ClipboardItem(blob);
         }
 
-        // Handle anything else
-        else {
+        // Handle anything else: Get type and bytes
+        String type = aData.getMIMEType();
+        byte[] bytes = aData.getBytes();
 
-            // Get type and bytes
-            String type = aData.getMIMEType();
-            byte[] bytes = aData.getBytes();
-
-            // If valid, just wrap in ClipboardItem
-            if (type != null && bytes != null && bytes.length > 0) {
-                Blob blob = new Blob(bytes, type);
-                return new ClipboardItem(blob);
-            }
+        // If valid, just wrap in ClipboardItem
+        if (type != null && bytes != null && bytes.length > 0) {
+            Blob blob = new Blob(bytes, type);
+            return new ClipboardItem(blob);
         }
 
         // Complain and return null
