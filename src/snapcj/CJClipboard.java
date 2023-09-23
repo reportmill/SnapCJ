@@ -224,52 +224,28 @@ public class CJClipboard extends Clipboard {
         // Set LoadListener
         _loadListener = aRun;
 
-        // Get PermissionsPromise
-        try {
-            PermissionStatus permissionStatus = cjdom.Clipboard.getReadPermissionsPromise();
-            didGetPermissions(permissionStatus);
-        }
-        catch (Exception e) {
-            System.err.println("CJClipboard.addLoadListener: Failed to get read permissions: " + e);
-        }
-    }
+        // Create new data transfer
+        DataTransfer dataTransfer = new DataTransfer();
 
-    /**
-     * Returns a readText promise
-     */
-    private static void didGetPermissions(PermissionStatus permissionStatus)
-    {
-        // Print result of permissions
-        if (permissionStatus != null) {
-            PermissionStatus.State state = permissionStatus.getState();
-            System.out.println("CJClipboard.didGetPermissions: Got Read Permissions: " + state);
+        // Read clipboard items
+        ClipboardItem[] clipboardItems = cjdom.Clipboard.clipboardRead();
+
+        // Iterate over clipboard items and add to data transfer
+        for (ClipboardItem clipboardItem : clipboardItems) {
+
+            // Get clipboard item types
+            String[] types = clipboardItem.getTypes();
+
+            // Iterate over types and convert to blob and add to data transfer
+            for (String type : types) {
+                Blob blob = clipboardItem.getType(type);
+                String blobStr = blob.getText();
+                dataTransfer.setData(type, blobStr);
+            }
         }
 
-        // Get readText promise to call didGetClipboardReadText
-        try {
-            String clipboardStr = cjdom.Clipboard.getClipboardReadTextPromise();
-            didGetClipboardReadText(clipboardStr);
-        }
-        catch (Exception e) {
-            System.err.println("CJClipboard.didGetPermissions fails: " + e);
-        }
-    }
-
-    /**
-     * Returns the system DataTransfer.
-     */
-    private static void didGetClipboardReadText(String str)
-    {
-        // Log string
-        String msg = str.replace("\n", "\\n");
-        if (str.length() > 50)
-            msg = str.substring(0, 50) + "...";
-        System.out.println("CJClipboard.didGetClipboardReadText: Read clipboard string: " + msg);
-
-        // Create/set DataTransfer for string
-        _shared._dataTrans = DataTransfer.getDataTrasferForString(str);
-
-        // Trigger LoadListener
+        // Set DataTransfer and trigger LoadListener
+        _shared._dataTrans = dataTransfer;
         _shared.notifyLoaded();
     }
 
