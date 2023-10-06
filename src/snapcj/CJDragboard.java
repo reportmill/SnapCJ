@@ -2,6 +2,7 @@ package snapcj;
 import cjdom.*;
 import snap.gfx.Image;
 import snap.view.ViewEvent;
+import snap.view.ViewUtils;
 
 /**
  * A TVClipboard subclass to support drag and drop.
@@ -44,10 +45,10 @@ public class CJDragboard extends CJClipboard {
         body.appendChild(img);
 
         // Register to remove element a short time later
-        CJViewEnv.get().runDelayed(() -> {
+        ViewUtils.runDelayed(() -> {
             isDragging = false;
             body.removeChild(img);
-        }, 100, false);
+        }, 100);
     }
 
     /** Called to indicate that drop is accepted. */
