@@ -20,7 +20,7 @@ public class CJPainter extends PainterImpl {
     protected CanvasRenderingContext2D _cntx;
 
     // Constants
-//    private JSArray<JSObject> EMPTY_DASH_ARRAY = JSArray.create();
+    private Array<Number> EMPTY_DASH_ARRAY = new Array<>(0);
 
     /**
      * Creates a new painter for given canvas.
@@ -71,16 +71,16 @@ public class CJPainter extends PainterImpl {
         _cntx.setLineWidth(aStroke.getWidth());
 
         // Set DashArray null:, DashOffset
-        if (aStroke.getDashArray() == null) {
-//            _cntx.setLineDash(EMPTY_DASH_ARRAY);
-        }
+        if (aStroke.getDashArray() == null || aStroke.getDashArray().length == 0)
+            _cntx.setLineDash(EMPTY_DASH_ARRAY);
 
-            // Set DashArray
+        // Set DashArray
         else {
-            double[] da = aStroke.getDashArray();
-//            JSArray<JSObject> jsa = JSArray.create();
-//            for (double d : da) jsa.push(JSNumber.valueOf(d));
-//            _cntx.setLineDash(jsa);
+            double[] dashArray = aStroke.getDashArray();
+            Array<Number> dashArrayJS = new Array<>(0);
+            for (int i = 0; i < dashArray.length; i++)
+                dashArrayJS.set(i, dashArray[i]);
+            _cntx.setLineDash(dashArrayJS);
         }
 
         // Set DashOffset
