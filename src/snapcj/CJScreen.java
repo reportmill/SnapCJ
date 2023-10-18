@@ -31,6 +31,9 @@ public class CJScreen {
     // The shared screen object
     private static CJScreen _screen;
 
+    // The element used as screen
+    protected static HTMLElement _screenDiv;
+
     /**
      * Creates a TVScreen.
      */
@@ -38,40 +41,63 @@ public class CJScreen {
     {
         // Get Doc and body
         HTMLDocument doc = HTMLDocument.getDocument();
-        HTMLBodyElement body = doc.getBody();
+        HTMLElement html = doc.getDocumentElement();
+        HTMLElement body = doc.getBody();
+
+        // Configure html and body elements
+        html.getStyle().setProperty("margin", "0");
+        html.getStyle().setProperty("height", "100%");
+        body.getStyle().setProperty("margin", "0");
+        body.getStyle().setProperty("height", "100%");
+
+        // Create and configure ScreenDiv
+        _screenDiv = doc.createElement("div");
+        _screenDiv.setId("ScreenDiv");
+        _screenDiv.getStyle().setProperty("margin", "0");
+        _screenDiv.getStyle().setProperty("width", "100%");
+        _screenDiv.getStyle().setProperty("height", "100%");
+        if (_screenDiv != body)
+            body.appendChild(_screenDiv);
+        _screenDiv.focus();
+
+        // Add element with tabindex to allow keyboard focus
+        HTMLElement focusEnabler = doc.createElement("div");
+        focusEnabler.setMemberInt("tabIndex", 0);
+        _screenDiv.appendChild(focusEnabler);
+        focusEnabler.focus();
 
         // Add Mouse listeners
-        cjdom.EventListener lsnr = e -> handleEvent(e);
-        body.addEventListener("mousedown", lsnr);
-        body.addEventListener("mousemove", lsnr);
-        body.addEventListener("mouseup", lsnr);
-        body.addEventListener("wheel", lsnr);
+        EventListener<?> lsnr = e -> handleEvent(e);
+        _screenDiv.addEventListener("mousedown", lsnr);
+        _screenDiv.addEventListener("mousemove", lsnr);
+        _screenDiv.addEventListener("mouseup", lsnr);
+        _screenDiv.addEventListener("wheel", lsnr);
 
         // Add Key Listeners
-        body.addEventListener("keydown", lsnr);
-        body.addEventListener("keyup", lsnr);
+        _screenDiv.addEventListener("keydown", lsnr);
+        _screenDiv.addEventListener("keyup", lsnr);
 
         // Add pointerdown: Used to keep getting events when mousedown goes outside window
-        body.addEventListener("pointerdown", lsnr);
+        _screenDiv.addEventListener("pointerdown", lsnr);
 
         // Add Touch Listeners
-        body.addEventListener("touchstart", lsnr);
-        body.addEventListener("touchmove", lsnr);
-        body.addEventListener("touchend", lsnr);
+        _screenDiv.addEventListener("touchstart", lsnr);
+        _screenDiv.addEventListener("touchmove", lsnr);
+        _screenDiv.addEventListener("touchend", lsnr);
 
         // Add focus/blur listeners
-        body.addEventListener("focus", e -> docGainedFocus(e));
-        body.addEventListener("blur", e -> docLostFocus(e));
+        _screenDiv.addEventListener("focus", e -> docGainedFocus(e));
+        _screenDiv.addEventListener("blur", e -> docLostFocus(e));
 
         // Disable click, contextmenu events
-        EventListener stopLsnr = e -> { };
-        body.addEventListener("click", stopLsnr);
-        body.addEventListener("contextmenu", stopLsnr);
+        EventListener<?> stopLsnr = e -> { };
+        _screenDiv.addEventListener("click", stopLsnr);
+        _screenDiv.addEventListener("contextmenu", stopLsnr);
 
         // Disable selection events on iOS
-        body.addEventListener("select", stopLsnr);
-        body.addEventListener("selectstart", stopLsnr);
-        body.addEventListener("selectend", stopLsnr);
+        _screenDiv.addEventListener("select", stopLsnr);
+        _screenDiv.addEventListener("selectstart", stopLsnr);
+        _screenDiv.addEventListener("selectend", stopLsnr);
     }
 
     /**
@@ -153,19 +179,17 @@ public class CJScreen {
 
         // Run event
         if (run != null)
-            run.run(); // CJEnv.runOnAppThread(run);
+            run.run();
     }
 
     /**
      * This is used to keep getting events even when mousedown goes outside window.
      */
-    public void setPointerCapture(Event anEvent)
+    public void setPointerCapture(Event pointerEvent)
     {
-        // document.body.setPointerCapture(anEvent.pointerId)
-        HTMLDocument doc = HTMLDocument.getDocument();
-        HTMLBodyElement body = doc.getBody();
-        int id = anEvent.getMemberInt("pointerId");
-        body.callWithDouble("setPointerCapture", id);
+        HTMLElement screenDiv = CJScreen.getScreenDiv();
+        int id = pointerEvent.getMemberInt("pointerId");
+        screenDiv.setPointerCapture(id);
     }
 
     /**
@@ -470,5 +494,15 @@ public class CJScreen {
     {
         if (_screen != null) return _screen;
         return _screen = new CJScreen();
+    }
+
+    /**
+     * Returns the screen div.
+     */
+    public static HTMLElement getScreenDiv()
+    {
+        if (_screenDiv != null) return _screenDiv;
+        getScreen();
+        return _screenDiv;
     }
 }

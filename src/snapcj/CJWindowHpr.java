@@ -1,6 +1,5 @@
 package snapcj;
-import cjdom.HTMLBodyElement;
-import cjdom.HTMLDocument;
+import cjdom.HTMLElement;
 import snap.geom.Rect;
 import snap.view.TextArea;
 import snap.view.TextField;
@@ -103,12 +102,11 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
         // Set value
         _contentEditable = aValue;
 
-        // Update Body.ContentEditable and TabIndex
-        HTMLDocument doc = HTMLDocument.getDocument();
-        HTMLBodyElement body = doc.getBody();
-        body.setContentEditable(aValue);
+        // Update screenDiv.ContentEditable and TabIndex
+        HTMLElement screenDiv = CJScreen.getScreenDiv();
+        //screenDiv.setContentEditable(aValue);
 
         // Focus element
-        body.focus();
+        screenDiv.focus();
     }
 }

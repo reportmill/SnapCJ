@@ -26,9 +26,6 @@ public class CJWindow {
     // The HTMLCanvas to paint/show window content
     protected HTMLCanvasElement _canvas;
 
-    // The HTMLCanvas 'double-buffering' buffer - offscreen drawing to avoid flicker of async JNI
-    protected HTMLCanvasElement _canvasBuffer;
-
     // The Painter for window content
     private Painter _painter;
 
@@ -41,9 +38,6 @@ public class CJWindow {
     // A listener for browser window resize
     protected EventListener<?> _resizeLsnr = null;
 
-    // The body margin value
-    protected String _bodyMargin = "undefined";
-
     // The body overflow value
     private String _bodyOverflow;
 
@@ -52,9 +46,6 @@ public class CJWindow {
 
     // The paint scale
     public static int PIXEL_SCALE = CJDom.getDevicePixelRatio() == 2 ? 2 : 1;
-
-    // Whether to double buffer windows
-    private static boolean DOUBLE_BUFFER = System.getProperty("java.runtime.version").contains("2023_09_08");
 
     /**
      * Constructor.
@@ -74,6 +65,7 @@ public class CJWindow {
         // Create/configure WindowDiv, the HTMLElement to hold window and canvas
         HTMLDocument doc = HTMLDocument.getDocument();
         _windowDiv = doc.createElement("div");
+        _windowDiv.setId("WindowDiv");
         _windowDiv.getStyle().setProperty("box-sizing", "border-box");
         _windowDiv.getStyle().setProperty("background", "#F4F4F4CC");
 
@@ -82,16 +74,6 @@ public class CJWindow {
         _canvas.getStyle().setProperty("width", "100%");
         _canvas.getStyle().setProperty("height", "100%");
         _canvas.getStyle().setProperty("box-sizing", "border-box");
-
-        // Create Canvas Buffer - offscreen drawing to avoid flicker of async JNI
-        // Needed because all canvas drawing (JNI) calls get evaluated (and displayed) before next drawing call
-        if (DOUBLE_BUFFER) {
-            _canvasBuffer = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
-            _canvasBuffer.getStyle().setProperty("width", "100%");
-            _canvasBuffer.getStyle().setProperty("height", "100%");
-            _canvasBuffer.getStyle().setProperty("box-sizing", "border-box");
-            System.out.println("DOUBLE-BUFFERING");
-        }
 
         // Add RootView listener to propagate size changes to canvas
         _rootView.addPropChangeListener(pc -> rootViewSizeChange(), View.Width_Prop, View.Height_Prop);
@@ -106,11 +88,7 @@ public class CJWindow {
         //_canvas.addEventListener("wheel", e -> e.preventDefault());
 
         // Create painter
-        if (DOUBLE_BUFFER) {
-            _painter = new CJPainter(_canvasBuffer, PIXEL_SCALE);
-            _canvasContext = (CanvasRenderingContext2D) _canvas.getContext("2d");
-        }
-        else _painter = new CJPainter(_canvas, PIXEL_SCALE);
+        _painter = new CJPainter(_canvas, PIXEL_SCALE);
 
         // Register for drop events
         _canvas.setAttribute("draggable", "true");
@@ -170,17 +148,8 @@ public class CJWindow {
         // Add WindowDiv to given node
         aNode.appendChild(_windowDiv);
 
-        // If body, configure special
-        HTMLBodyElement body = HTMLBodyElement.getBody();
-        if (aNode == body) {
-
-            // Set body and html height so that document covers the whole browser page
-            HTMLDocument doc = HTMLDocument.getDocument();
-            HTMLHtmlElement html = doc.getDocumentElement();
-            html.getStyle().setProperty("height", "100%");
-            body.getStyle().setProperty("min-height", "100%");
-            _bodyMargin = body.getStyle().getPropertyValue("margin");
-            body.getStyle().setProperty("margin", "0");
+        // If screenDiv, configure special
+        if (aNode == CJScreen.getScreenDiv()) {
 
             // Configure WindowDiv for body
             _windowDiv.getStyle().setProperty("position", _win.isMaximized() ? "fixed" : "absolute");
@@ -202,8 +171,6 @@ public class CJWindow {
 
         // If arbitrary element
         else {
-            if (_bodyMargin != "undefined")
-                body.getStyle().setProperty("margin", _bodyMargin);
             _windowDiv.getStyle().setProperty("position", "static");
             _windowDiv.getStyle().setProperty("width", "100%");
             _windowDiv.getStyle().setProperty("height", "100%");
@@ -215,12 +182,9 @@ public class CJWindow {
      */
     private HTMLElement getParentForWin()
     {
-        // Get body
-        HTMLBodyElement body = HTMLBodyElement.getBody();
-
         // If window is maximized, parent should always be body
         if (_win.isMaximized())
-            return body;
+            return CJScreen.getScreenDiv();
 
         // If window has named element, return that
         String parentName = _win.getName();
@@ -231,18 +195,16 @@ public class CJWindow {
                 return parent;
         }
 
-        // Default to body
-        return body;
+        // Default to ScreenDiv
+        return CJScreen.getScreenDiv();
     }
 
     /**
-     * Returns whether window is child of body.
+     * Returns whether window is child of screen.
      */
     private boolean isChildOfBody()
     {
-        HTMLDocument doc = HTMLDocument.getDocument();
-        HTMLBodyElement body = doc.getBody();
-        return getParent() == body;
+        return getParent() == CJScreen.getScreenDiv();
     }
 
     /**
@@ -254,9 +216,8 @@ public class CJWindow {
         HTMLElement parent = getParentForWin();
         setParent(parent);
 
-        // If window floating in body, set WindowDiv bounds from Window
-        HTMLBodyElement body = HTMLBodyElement.getBody();
-        if (parent == body) {
+        // If window is in screen, set WindowDiv bounds from Window
+        if (parent == CJScreen.getScreenDiv()) {
             if (_win.isMaximized())
                 _win.setBounds(CJ.getViewportBounds());
             snapWindowBoundsChanged(null);
@@ -369,15 +330,6 @@ public class CJWindow {
         _painter.setTransform(1,0,0,1,0,0); // I don't know why I need this!
         ViewUpdater updater = _rootView.getUpdater();
         updater.paintViews(_painter, aRect);
-
-        // Copy buffer to canvas
-        if (DOUBLE_BUFFER) {
-            double rectX = aRect.x * PIXEL_SCALE;
-            double rectY = aRect.y * PIXEL_SCALE;
-            double rectW = aRect.width * PIXEL_SCALE;
-            double rectH = aRect.height * PIXEL_SCALE;
-            _canvasContext.drawImage(_canvasBuffer, rectX, rectY, rectW, rectH, rectX, rectY, rectW, rectH);
-        }
     }
 
     /**
@@ -439,10 +391,6 @@ public class CJWindow {
         int rootH = (int) Math.ceil(_rootView.getHeight());
         _canvas.setWidth(rootW * PIXEL_SCALE);
         _canvas.setHeight(rootH * PIXEL_SCALE);
-        if (DOUBLE_BUFFER) {
-            _canvasBuffer.setWidth(rootW * PIXEL_SCALE);
-            _canvasBuffer.setHeight(rootH * PIXEL_SCALE);
-        }
     }
 
     /**

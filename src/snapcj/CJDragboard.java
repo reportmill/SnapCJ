@@ -40,14 +40,14 @@ public class CJDragboard extends CJClipboard {
         // Start Drag
         _dataTrans.setDragImage(img, dx, dy);
 
-        // Add image element to canvas so browsers can generate image
-        HTMLElement body = HTMLBodyElement.getBody();
-        body.appendChild(img);
+        // Add image element to screenDiv so browsers can generate image
+        HTMLElement screenDiv = CJScreen.getScreenDiv();
+        screenDiv.appendChild(img);
 
         // Register to remove element a short time later
         ViewUtils.runDelayed(() -> {
             isDragging = false;
-            body.removeChild(img);
+            screenDiv.removeChild(img);
         }, 100);
     }
 
