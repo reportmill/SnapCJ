@@ -15,7 +15,7 @@ public class WindowBar extends ParentView {
     private View  _content;
     
     // The title bar height
-    private double  _titleBarHeight;
+    private double _barHeight;
     
     // The buttons
     private Shape  _closeButton, _minButton, _maxButton;
@@ -41,7 +41,7 @@ public class WindowBar extends ParentView {
     {
         WindowView win = aView.getWindow();
         double titleBarH = win.getType() == WindowView.TYPE_MAIN ? 24 : 18;
-        setTitlebarHeight(titleBarH);
+        setBarHeight(titleBarH);
         enableEvents(MousePress, MouseDrag, MouseRelease);
         setContent(aView);
     }
@@ -61,17 +61,22 @@ public class WindowBar extends ParentView {
     }
 
     /**
+     * Returns the title bar height.
+     */
+    public double getBarHeight()  { return _barHeight; }
+
+    /**
      * Sets the title bar height.
      */
-    public void setTitlebarHeight(double aValue)
+    public void setBarHeight(double aValue)
     {
-        _titleBarHeight = aValue;
-        setPadding(_titleBarHeight,0,0,0);
+        _barHeight = aValue;
+        setPadding(_barHeight,0,0,0);
 
         // Create buttons
         double buttonY = 6;
         double buttonW = 12;
-        if (_titleBarHeight != 24) {
+        if (_barHeight != 24) {
             buttonY = 4; buttonW = 10;
         }
 
@@ -81,7 +86,7 @@ public class WindowBar extends ParentView {
         _maxButton = new Arc(50, buttonY, buttonW, buttonW,0,360);
 
         // Set font
-        double fontSize = _titleBarHeight == 24 ? 14 : 11;
+        double fontSize = _barHeight == 24 ? 14 : 11;
         _font = Font.Arial10.deriveFont(fontSize);
     }
 
@@ -90,11 +95,11 @@ public class WindowBar extends ParentView {
      */
     protected void paintFront(Painter aPntr)
     {
-        if (_titleBarHeight == 0) return;
+        if (_barHeight == 0) return;
 
         // Paint title bar
         ButtonPainter buttonPainter = ViewTheme.getClassic().getButtonPainter();
-        RoundRect buttonRect = new RoundRect(0, 0, getWidth(), _titleBarHeight, 4).copyForPosition(Pos.TOP_CENTER);
+        RoundRect buttonRect = new RoundRect(0, 0, getWidth(), _barHeight, 4).copyForPosition(Pos.TOP_CENTER);
         buttonPainter.paintButtonInShape(aPntr, buttonRect, 0, false);
 
         // Paint buttons
@@ -122,7 +127,7 @@ public class WindowBar extends ParentView {
         // Paint title
         String title = getWindow().getTitle();
         if (title != null) {
-            double strY = _titleBarHeight == 24 ? 4 : 3;
+            double strY = _barHeight == 24 ? 4 : 3;
             double strW = _font.getStringAdvance(title);
             double strX = Math.round((getWidth() - strW) / 2);
             aPntr.setColor(Color.DARKGRAY);
@@ -140,7 +145,7 @@ public class WindowBar extends ParentView {
 
         // Handle MousePress: Update MousePoint
         if (anEvent.isMousePress()) {
-            _mousePoint = anEvent.getY() <= _titleBarHeight ? anEvent.getPoint(null) : null;
+            _mousePoint = anEvent.getY() <= _barHeight ? anEvent.getPoint(null) : null;
             return;
         }
 
@@ -233,14 +238,14 @@ public class WindowBar extends ParentView {
         // Create WindowBar
         WindowBar windowBar = new WindowBar(content);
         if (window.isMaximized())
-            windowBar.setTitlebarHeight(18);
+            windowBar.setBarHeight(18);
 
         // Set WindowBar as RootView content
         rootView.setContent(windowBar);
 
         // If window was at PrefHeight, resize window for windowBar height
         if (windowAtPrefHeight)
-            window.setHeight(windowH + windowBar.getPrefHeight());
+            window.setHeight(windowH + windowBar.getBarHeight());
 
         // Register to repaint when Title changes
         window.addPropChangeListener(pc -> windowBar.repaint(), WindowView.Title_Prop);
