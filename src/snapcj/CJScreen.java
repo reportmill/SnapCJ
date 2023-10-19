@@ -35,7 +35,7 @@ public class CJScreen {
     protected static HTMLElement _screenDiv;
 
     /**
-     * Creates a TVScreen.
+     * Constructor.
      */
     private CJScreen()
     {
@@ -54,6 +54,7 @@ public class CJScreen {
         _screenDiv = doc.createElement("div");
         _screenDiv.setId("ScreenDiv");
         _screenDiv.getStyle().setProperty("margin", "0");
+        _screenDiv.getStyle().setProperty("position", "fixed");
         _screenDiv.getStyle().setProperty("width", "100%");
         _screenDiv.getStyle().setProperty("height", "100%");
         if (_screenDiv != body)
@@ -62,6 +63,7 @@ public class CJScreen {
 
         // Add element with tabindex to allow keyboard focus
         HTMLElement focusEnabler = doc.createElement("div");
+        focusEnabler.setId("FocusEnabler");
         focusEnabler.setMemberInt("tabIndex", 0);
         _screenDiv.appendChild(focusEnabler);
         focusEnabler.focus();

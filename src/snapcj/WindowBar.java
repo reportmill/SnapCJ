@@ -214,28 +214,36 @@ public class WindowBar extends ParentView {
     }
 
     /**
-     * Attaches a WindowBar to a view.
+     * Attaches a WindowBar to given root view.
+     * This is not great - should really probably be done in JavaScript and/or at WindowView level.
      */
-    public static WindowBar attachWindowBar(View aView)
+    public static void attachWindowBar(View aView)
     {
         RootView rootView = aView.getRootView();
         View content = rootView.getContent();
         if (content instanceof WindowBar)
-            return (WindowBar) content;
+            return;
 
-        Size size = rootView.getSize();
-        Size prefSize = rootView.getPrefSize();
-        WindowBar windowBar = new WindowBar(content);
-        rootView.setContent(windowBar);
+        // Get whether Window is currently at pref height
         WindowView window = rootView.getWindow();
-        if (size.equals(prefSize))
-            window.setSize(window.getPrefSize());
+        double windowH = window.getHeight();
+        double windowPrefH = window.getPrefHeight();
+        boolean windowAtPrefHeight = windowH == windowPrefH;
+
+        // Create WindowBar
+        WindowBar windowBar = new WindowBar(content);
+        if (window.isMaximized())
+            windowBar.setTitlebarHeight(18);
+
+        // Set WindowBar as RootView content
+        rootView.setContent(windowBar);
+
+        // If window was at PrefHeight, resize window for windowBar height
+        if (windowAtPrefHeight)
+            window.setHeight(windowH + windowBar.getPrefHeight());
 
         // Register to repaint when Title changes
         window.addPropChangeListener(pc -> windowBar.repaint(), WindowView.Title_Prop);
-
-        // Return
-        return windowBar;
     }
 
     /**

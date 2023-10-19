@@ -56,6 +56,10 @@ public class CJWindow {
         _win = snapWindow;
         _rootView = _win.getRootView();
 
+        // If Window.Type not PLAIN, attach WindowBar
+        if (_win.getType() != WindowView.TYPE_PLAIN)
+            WindowBar.attachWindowBar(_rootView);
+
         // Set window and start listening to bounds, Maximized and ActiveCursor changes
         _win.addPropChangeListener(pc -> snapWindowMaximizedChanged(), WindowView.Maximized_Prop);
         _win.addPropChangeListener(pce -> snapWindowBoundsChanged(pce), View.X_Prop, View.Y_Prop,
@@ -159,13 +163,6 @@ public class CJWindow {
             if (!_win.isMaximized()) {
                 _windowDiv.getStyle().setProperty("background", null);
                 _windowDiv.getStyle().setProperty("box-shadow", "1px 1px 8px grey");
-            }
-
-            // If Window.Type not PLAIN, attach WindowBar
-            if (_win.getType() != WindowView.TYPE_PLAIN) {
-                WindowBar windowBar = WindowBar.attachWindowBar(_rootView);
-                if (_win.isMaximized())
-                    windowBar.setTitlebarHeight(18);
             }
         }
 
