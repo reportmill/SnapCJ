@@ -88,8 +88,8 @@ public class CJScreen {
         _screenDiv.addEventListener("touchend", lsnr);
 
         // Add focus/blur listeners
-        _screenDiv.addEventListener("focus", e -> docGainedFocus(e));
-        _screenDiv.addEventListener("blur", e -> docLostFocus(e));
+        focusEnabler.addEventListener("focus", e -> docGainedFocus(e));
+        focusEnabler.addEventListener("blur", e -> docLostFocus(e));
 
         // Disable click, contextmenu events
         EventListener<?> stopLsnr = e -> { };
