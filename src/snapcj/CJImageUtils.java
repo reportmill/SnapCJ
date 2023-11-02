@@ -16,19 +16,13 @@ public class CJImageUtils {
         // If HTMLImageElement, convert to canvas
         if (anImg._img != null) anImg.convertToCanvas();
 
-        // Get image data and convert to bytes
+        // Get image data as Uint8ClampedArray
         CanvasRenderingContext2D cntx = (CanvasRenderingContext2D) anImg._canvas.getContext("2d");
         ImageData imageData = cntx.getImageData(0, 0, anImg.getPixWidth(), anImg.getPixHeight());
         Uint8ClampedArray imageBytesArray = imageData.getData();
 
-        // Convert image bytes array to shorts array
-        int length = imageBytesArray.getLength();
-        short[] rgbaShorts = new short[length];
-        for (int i = 0; i < length; i++)
-            rgbaShorts[i] = imageBytesArray.get(i);
-
-        // Return
-        return rgbaShorts;
+        // Return shorts array
+        return imageBytesArray.getShortsArray();
     }
 
     /**
@@ -40,10 +34,7 @@ public class CJImageUtils {
         if (anImg._img != null) anImg.convertToCanvas();
 
         // Create array for image values
-        int length = rgba.length;
-        Uint8ClampedArray imageBytesArray = new Uint8ClampedArray(length);
-        for (int i = 0; i < length; i++)
-            imageBytesArray.set(i, rgba[i]);
+        Uint8ClampedArray imageBytesArray = new Uint8ClampedArray(rgba);
 
         // Get ImageData for
         ImageData imageData = new ImageData(imageBytesArray, anImg.getPixWidth(), anImg.getPixHeight());
@@ -65,15 +56,8 @@ public class CJImageUtils {
         ImageData imageData = renderContext2D.getImageData(0, 0, anImage.getPixWidth(), anImage.getPixHeight());
         Uint8ClampedArray imageBytesArray = imageData.getData();
 
-        // Get bytes from
-        int length = imageBytesArray.getLength();
-        int length2 = length / 4;
-        short[] alphaValuesArray = new short[length2];
-        for (int i = 0, j = 3; i < length2; i++, j += 4)
-            alphaValuesArray[i] = imageBytesArray.get(j);
-
-        // Return
-        return alphaValuesArray;
+        // Return shorts array for alpha channel index (3) and channel count (4)
+        return imageBytesArray.getShortsArrayForChannelIndexAndCount(3, 4);
     }
 
     /**
