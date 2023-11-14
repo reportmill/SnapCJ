@@ -19,9 +19,6 @@ public class CJPainter extends PainterImpl {
     // The RenderContext2D
     protected CanvasRenderingContext2D _cntx;
 
-    // Constants
-    private Array<Number> EMPTY_DASH_ARRAY = new Array<>(0);
-
     /**
      * Creates a new painter for given canvas.
      */
@@ -71,17 +68,8 @@ public class CJPainter extends PainterImpl {
         _cntx.setLineWidth(aStroke.getWidth());
 
         // Set DashArray null:, DashOffset
-        if (aStroke.getDashArray() == null || aStroke.getDashArray().length == 0)
-            _cntx.setLineDash(EMPTY_DASH_ARRAY);
-
-        // Set DashArray
-        else {
-            double[] dashArray = aStroke.getDashArray();
-            Array<Number> dashArrayJS = new Array<>(0);
-            for (int i = 0; i < dashArray.length; i++)
-                dashArrayJS.set(i, dashArray[i]);
-            _cntx.setLineDash(dashArrayJS);
-        }
+        double[] dashArray = aStroke.getDashArray();
+        _cntx.setLineDash(dashArray);
 
         // Set DashOffset
         _cntx.setLineDashOffset(aStroke.getDashOffset());
