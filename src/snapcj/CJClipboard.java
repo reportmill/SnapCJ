@@ -126,12 +126,11 @@ public class CJClipboard extends Clipboard {
         }
 
         // Convert to JSArray of ClipboardItem
-        ClipboardItem[] clipItems = clipItemsList.toArray(new ClipboardItem[0]);
-        Array<ClipboardItem> clipItemsJS = new Array<>(clipItems);
+        ClipboardItem[] clipboardItems = clipItemsList.toArray(new ClipboardItem[0]);
 
         // Try to write items to clipboard
         try {
-            cjdom.Clipboard.getClipboardWriteItemsPromise(clipItemsJS);
+            cjdom.Clipboard.writeClipboardItems(clipboardItems);
         }
         catch (Exception e) {
             System.err.println("CJClipboard.addAllDataToClipboard failed: " + e);
@@ -228,7 +227,7 @@ public class CJClipboard extends Clipboard {
         DataTransfer dataTransfer = new DataTransfer();
 
         // Read clipboard items
-        ClipboardItem[] clipboardItems = cjdom.Clipboard.clipboardRead();
+        ClipboardItem[] clipboardItems = cjdom.Clipboard.readClipboardItems();
 
         // Iterate over clipboard items and add to data transfer
         for (ClipboardItem clipboardItem : clipboardItems) {
