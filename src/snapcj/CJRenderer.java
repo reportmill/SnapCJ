@@ -224,9 +224,8 @@ public class CJRenderer extends Renderer {
         // Otherwise, set VertexArray color (was program.setColor(color) )
         else {
             Color color = aTriangleArray.getColor(); if (color == null) color = Color.RED;
-            WebGLUniformLocation colorUniform = _gl.getUniformLocation(program, "vertColor");
-            float[] colorArray = { (float) color.getRed(), (float) color.getGreen(), (float) color.getBlue() };
-            _gl.uniform3fv(colorUniform, colorArray);
+            WebGLUniformLocation vertColorLoc = _gl.getUniformLocation(program, "vertColor");
+            _gl.uniform3f(vertColorLoc, (float) color.getRed(), (float) color.getGreen(), (float) color.getBlue());
         }
 
         // Set VertexShader texture coords
