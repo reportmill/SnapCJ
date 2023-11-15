@@ -1,6 +1,7 @@
 package snapcj;
 import cjdom.*;
 import snap.geom.PathIter;
+import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.geom.Transform;
 import snap.gfx.*;
@@ -144,8 +145,14 @@ public class CJPainter extends PainterImpl {
             _cntx.setStrokeStyle(canvasGradient);
         }
 
-        setShape(aShape);
-        _cntx.stroke();
+        if (aShape instanceof Rect) {
+            Rect rect = (Rect) aShape;
+            _cntx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        }
+        else {
+            setShape(aShape);
+            _cntx.stroke();
+        }
     }
 
     /**
@@ -183,8 +190,14 @@ public class CJPainter extends PainterImpl {
             _cntx.setFillStyle(pattern);
         }
 
-        setShape(aShape);
-        _cntx.fill();
+        if (aShape instanceof Rect) {
+            Rect rect = (Rect) aShape;
+            _cntx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+        else {
+            setShape(aShape);
+            _cntx.fill();
+        }
     }
 
     /**
