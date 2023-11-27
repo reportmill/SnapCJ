@@ -31,7 +31,7 @@ public class CJImage extends Image {
     private boolean _hasAlpha = true;
 
     /**
-     * Creates a TVImage for given size.
+     * Constructor for given size.
      */
     public CJImage(double aWidth, double aHeight, boolean hasAlpha, double aScale)
     {
@@ -56,7 +56,7 @@ public class CJImage extends Image {
     }
 
     /**
-     * Creates a TVImage from given source.
+     * Constructor for given source.
      */
     public CJImage(Object aSource)
     {
