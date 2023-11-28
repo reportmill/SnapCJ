@@ -1,10 +1,7 @@
 package snapcj;
 import cjdom.HTMLElement;
 import snap.geom.Rect;
-import snap.view.TextArea;
-import snap.view.TextField;
-import snap.view.View;
-import snap.view.WindowView;
+import snap.view.*;
 
 /**
  * A WindowHpr to map WindowView to TVWindow.
@@ -87,8 +84,8 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
      */
     public void focusDidChange(View aView)
     {
-        boolean isText = aView instanceof TextArea || aView instanceof TextField;
-        setContentEditable(isText);
+        boolean acceptsKeyPress = aView != null && aView.getEventAdapter().isEnabled(ViewEvent.Type.KeyPress);
+        setContentEditable(acceptsKeyPress);
     }
 
     /**
