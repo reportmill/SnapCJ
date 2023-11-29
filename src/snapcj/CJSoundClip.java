@@ -13,6 +13,9 @@ public class CJSoundClip extends SoundClip {
     // The Audio Element
     private HTMLAudioElement _snd, _snd2;
 
+    // The mime type
+    private String _mimeType = "audio/wav";
+
     /**
      * Constructor.
      */
@@ -33,7 +36,7 @@ public class CJSoundClip extends SoundClip {
         // Handle byte[] and InputStream
         if (aSource instanceof byte[]) {
             byte[] bytes = (byte[]) aSource;
-            Blob blob = new Blob(bytes, "dunno");
+            Blob blob = new Blob(bytes, _mimeType);
             String urls = blob.createURL();
             return urls;
         }
@@ -42,6 +45,18 @@ public class CJSoundClip extends SoundClip {
         WebURL url = WebURL.getURL(aSource);
         if (url == null)
             return null;
+
+        // Set mime type
+        String type = url.getType();
+        if (type.equals("mp3"))
+            _mimeType = "audio/mpeg";
+        else if (type.equals("oga"))
+            _mimeType = "audio/ogg";
+        else if (type.equals("aac"))
+            _mimeType = "audio/aac";
+        else if (type.equals("mid") || type.equals("midi"))
+            _mimeType = "audio/midi";
+
 
         // If URL can't be fetched by browser, load from bytes
         if (!isBrowsable(url)) {
