@@ -8,7 +8,7 @@ import snap.web.WebURL;
 import java.io.InputStream;
 
 /**
- * An Image subclass for TeaVM.
+ * An Image subclass for CheerpJ.
  */
 public class CJImage extends Image {
 
@@ -25,7 +25,7 @@ public class CJImage extends Image {
     private int _pixW, _pixH;
 
     // The dpi scale (1 = normal, 2 = retina/hidpi)
-    private int _scale = 1;
+    private int _dpiScale = 1;
 
     // Whether image has transparency
     private boolean _hasAlpha = true;
@@ -33,25 +33,25 @@ public class CJImage extends Image {
     /**
      * Constructor for given size.
      */
-    public CJImage(double aWidth, double aHeight, boolean hasAlpha, double aScale)
+    public CJImage(double aWidth, double aHeight, boolean hasAlpha, double dpiScale)
     {
         // Get scale (complain if not 1 or 2)
-        _scale = (int) Math.round(aScale);
-        if (_scale != 1 && _scale != 2)
-            System.out.println("CJImage.init: Odd scale" + _scale);
+        _dpiScale = (int) Math.round(dpiScale);
+        if (_dpiScale != 1 && _dpiScale != 2)
+            System.out.println("CJImage.init: Odd scale" + _dpiScale);
 
         // Get image size, pixel size
-        int w = (int) Math.round(aWidth);
-        int h = (int) Math.round(aHeight);
-        _pixW = w * _scale;
-        _pixH = h * _scale;
+        int imageW = (int) Math.round(aWidth);
+        int imageH = (int) Math.round(aHeight);
+        _pixW = imageW * _dpiScale;
+        _pixH = imageH * _dpiScale;
 
         // Create canvas for pixel width/height, image width/height
         _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         _canvas.setWidth(_pixW);
         _canvas.setHeight(_pixH);
-        _canvas.getStyle().setProperty("width", w + "px");
-        _canvas.getStyle().setProperty("height", h + "px");
+        _canvas.getStyle().setProperty("width", imageW + "px");
+        _canvas.getStyle().setProperty("height", imageH + "px");
         _hasAlpha = hasAlpha;
     }
 
@@ -80,7 +80,7 @@ public class CJImage extends Image {
     /**
      * Returns a Source URL from source object.
      */
-    String getSourceURL(Object aSource)
+    private String getSourceURL(Object aSource)
     {
         // Handle byte[] and InputStream
         if (aSource instanceof byte[] || aSource instanceof InputStream) {
@@ -109,7 +109,7 @@ public class CJImage extends Image {
     /**
      * Called when image has finished load.
      */
-    void didFinishLoad()
+    private void didFinishLoad()
     {
         _pixW = _img.getWidth();
         _pixH = _img.getHeight();  //_loaded = true; notifyAll();
@@ -130,75 +130,27 @@ public class CJImage extends Image {
     /**
      * Returns the width of given image in pixels.
      */
-    public int getPixWidth()
-    {
-        return _pixW;
-    }
+    public int getPixWidth()  { return _pixW; }
 
     /**
      * Returns the height of given image in pixels.
      */
-    public int getPixHeight()
-    {
-        return _pixH;
-    }
+    public int getPixHeight()  { return _pixH; }
 
     /**
-     * Returns the width of given image.
+     * Returns the horizontal dpi of image.
      */
-    public double getDPIX()
-    {
-        return 72 * _scale;
-    }
+    public double getDpiX()  { return 72 * _dpiScale; }
 
     /**
-     * Returns the height of given image.
+     * Returns the vertical dpi of image.
      */
-    public double getDPIY()
-    {
-        return 72 * _scale;
-    }
+    public double getDpiY()  { return 72 * _dpiScale; }
 
     /**
      * Returns whether image has alpha.
      */
-    public boolean hasAlpha()
-    {
-        return _hasAlpha;
-    }
-
-    /**
-     * Implement to avoid errors.
-     */
-    protected int getPixWidthImpl()
-    {
-        System.err.println("TVImage.getPixWidthImpl: WTF");
-        return 0;
-    }
-
-    protected int getPixHeightImpl()
-    {
-        System.err.println("TVImage.getPixHeightImpl: WTF");
-        return 0;
-    }
-
-    protected double getDPIXImpl()
-    {
-        System.err.println("TVImage.getDPIXImpl: WTF");
-        return 0;
-    }
-
-    protected double getDPIYImpl()
-    {
-        System.err.println("TVImage.getDPIYImpl: WTF");
-        return 0;
-    }
-
-    protected boolean hasAlphaImpl()
-    {
-        System.err.println("TVImage.hasAlphaImpl: WTF");
-        return false;
-    }
+    public boolean hasAlpha()  { return _hasAlpha; }
 
     /**
      * Returns an RGB integer for given x, y.
@@ -210,7 +162,7 @@ public class CJImage extends Image {
 
         // Get image data and return rgb at point
         CanvasRenderingContext2D cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
-        ImageData idata = cntx.getImageData(aX * _scale, aY * _scale, 1, 1);
+        ImageData idata = cntx.getImageData(aX * _dpiScale, aY * _dpiScale, 1, 1);
         Uint8ClampedArray data = idata.getData();
         int d1 = data.get(0), d2 = data.get(1), d3 = data.get(2), d4 = data.get(3);
         return d4 << 24 | d1 << 16 | d2 << 8 | d3;
@@ -301,7 +253,7 @@ public class CJImage extends Image {
             convertToCanvas();
 
         // Return painter for canvas
-        return new CJPainter(_canvas, _scale);
+        return new CJPainter(_canvas, _dpiScale);
     }
 
     /**
@@ -342,7 +294,7 @@ public class CJImage extends Image {
         _img = null;
         _pixW = pixW;
         _pixH = pixH;
-        _scale = scale;
+        _dpiScale = scale;
     }
 
     /**
@@ -358,12 +310,12 @@ public class CJImage extends Image {
         HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         canvas.setWidth(_pixW);
         canvas.setHeight(_pixH);
-        canvas.getStyle().setProperty("width", (_pixW / _scale) + "px");
-        canvas.getStyle().setProperty("height", (_pixH / _scale) + "px");
+        canvas.getStyle().setProperty("width", (_pixW / _dpiScale) + "px");
+        canvas.getStyle().setProperty("height", (_pixH / _dpiScale) + "px");
 
         // Paint image into new canvas with ShadowBlur, offset so that only shadow appears
-        CJPainter pntr = new CJPainter(canvas, _scale);
-        pntr._cntx.setShadowBlur(aRad * _scale);
+        CJPainter pntr = new CJPainter(canvas, _dpiScale);
+        pntr._cntx.setShadowBlur(aRad * _dpiScale);
         if (aColor != null)
             pntr._cntx.setShadowColor(CJ.get(aColor));
         else pntr._cntx.setShadowColor("gray");
@@ -398,7 +350,7 @@ public class CJImage extends Image {
         short[] bumpImagePixels = CJImageUtils.getShortsAlpha(bumpImg);
 
         // Call emboss method and reset pix
-        CJImageUtils.emboss(sourceImagePixels, bumpImagePixels, pixW, pixH, radius * _scale, anAzi * Math.PI / 180, anAlt * Math.PI / 180);
+        CJImageUtils.emboss(sourceImagePixels, bumpImagePixels, pixW, pixH, radius * _dpiScale, anAzi * Math.PI / 180, anAlt * Math.PI / 180);
         CJImageUtils.putShortsRGBA(this, sourceImagePixels);
     }
 
