@@ -21,15 +21,6 @@ public class CJImage extends Image {
     // The canvas object
     protected HTMLCanvasElement _canvas;
 
-    // The size
-    private int _pixW, _pixH;
-
-    // The dpi scale (1 = normal, 2 = retina/hidpi)
-    private int _dpiScale = 1;
-
-    // Whether image has transparency
-    private boolean _hasAlpha = true;
-
     /**
      * Constructor for given size.
      */
@@ -39,19 +30,21 @@ public class CJImage extends Image {
         _dpiScale = (int) Math.round(dpiScale);
         if (_dpiScale != 1 && _dpiScale != 2)
             System.out.println("CJImage.init: Odd scale" + _dpiScale);
+        _dpiX = 72 * _dpiScale;
+        _dpiY = 72 * _dpiScale;
 
         // Get image size, pixel size
-        int imageW = (int) Math.round(aWidth);
-        int imageH = (int) Math.round(aHeight);
-        _pixW = imageW * _dpiScale;
-        _pixH = imageH * _dpiScale;
+        _width = (int) Math.round(aWidth);
+        _height = (int) Math.round(aHeight);
+        _pixW = (int) Math.round(_width * _dpiScale);
+        _pixH = (int) Math.round(_height * _dpiScale);
 
         // Create canvas for pixel width/height, image width/height
         _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
         _canvas.setWidth(_pixW);
         _canvas.setHeight(_pixH);
-        _canvas.getStyle().setProperty("width", imageW + "px");
-        _canvas.getStyle().setProperty("height", imageH + "px");
+        _canvas.getStyle().setProperty("width", _width + "px");
+        _canvas.getStyle().setProperty("height", _height + "px");
         _hasAlpha = hasAlpha;
     }
 
@@ -69,6 +62,7 @@ public class CJImage extends Image {
         // Create image
         _img = (HTMLImageElement) HTMLDocument.getDocument().createElement("img");
         _img.setCrossOrigin("anonymous");
+        _width = _height = 20;
         _pixW = _pixH = 20;
 
         // Set src and wait till loaded
@@ -111,11 +105,10 @@ public class CJImage extends Image {
      */
     private void didFinishLoad()
     {
-        _pixW = _img.getWidth();
-        _pixH = _img.getHeight();  //_loaded = true; notifyAll();
-        if (_src.toLowerCase().endsWith(".jpg"))
-            _hasAlpha = false;
-        snap.view.ViewUtils.runLater(() -> setLoaded(true));
+        _width = _pixW = _img.getWidth();
+        _height = _pixH = _img.getHeight();
+        _hasAlpha = !_src.toLowerCase().endsWith(".jpg");
+        setLoaded(true);
     }
 
     /**
@@ -126,31 +119,6 @@ public class CJImage extends Image {
         String scheme = aURL.getScheme();
         return scheme.equals("http") || scheme.equals("https") || scheme.equals("data") || scheme.equals("blob");
     }
-
-    /**
-     * Returns the width of given image in pixels.
-     */
-    public int getPixWidth()  { return _pixW; }
-
-    /**
-     * Returns the height of given image in pixels.
-     */
-    public int getPixHeight()  { return _pixH; }
-
-    /**
-     * Returns the horizontal dpi of image.
-     */
-    public double getDpiX()  { return 72 * _dpiScale; }
-
-    /**
-     * Returns the vertical dpi of image.
-     */
-    public double getDpiY()  { return 72 * _dpiScale; }
-
-    /**
-     * Returns whether image has alpha.
-     */
-    public boolean hasAlpha()  { return _hasAlpha; }
 
     /**
      * Returns an RGB integer for given x, y.
@@ -274,9 +242,9 @@ public class CJImage extends Image {
         // Get canvas size and pixel size (might be 2x if HiDpi display)
         int imageW = getPixWidth();
         int imageH = getPixHeight();
-        int scale = CJWindow.PIXEL_SCALE;
-        int pixW = imageW * scale;
-        int pixH = imageH * scale;
+        int dpiScale = CJWindow.PIXEL_SCALE;
+        int pixW = imageW * dpiScale;
+        int pixH = imageH * dpiScale;
 
         // Create new canvas for image size and pixel size
         HTMLCanvasElement canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
@@ -286,7 +254,7 @@ public class CJImage extends Image {
         canvas.getStyle().setProperty("height", imageH + "px");
 
         // Copy ImageElement to Canvas
-        Painter pntr = new CJPainter(canvas, scale);
+        Painter pntr = new CJPainter(canvas, dpiScale);
         pntr.drawImage(this, 0, 0);
 
         // Swap in canvas for image element
@@ -294,7 +262,9 @@ public class CJImage extends Image {
         _img = null;
         _pixW = pixW;
         _pixH = pixH;
-        _dpiScale = scale;
+        _dpiScale = dpiScale;
+        _dpiX = 72 * dpiScale;
+        _dpiY = 72 * dpiScale;
     }
 
     /**
