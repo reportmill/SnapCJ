@@ -57,13 +57,19 @@ public class CJScreen {
         _screenDiv.getStyle().setProperty("position", "fixed");
         _screenDiv.getStyle().setProperty("width", "100%");
         _screenDiv.getStyle().setProperty("height", "100%");
+        _screenDiv.setMemberInt("tabIndex", -1); // iOS
+        _screenDiv.getStyle().setProperty("cursor", "unset"); // iOS
         if (_screenDiv != body)
             body.appendChild(_screenDiv);
         _screenDiv.focus();
 
         // Add element with tabindex to allow keyboard focus
-        HTMLElement focusEnabler = doc.createElement("div");
+        HTMLElement focusEnabler = doc.createElement("input");
         focusEnabler.setId("FocusEnabler");
+        focusEnabler.getStyle().setProperty("position", "absolute");
+        focusEnabler.getStyle().setProperty("opacity", "0");
+        focusEnabler.getStyle().setProperty("padding", "0px");
+        focusEnabler.getStyle().setProperty("border", "0px");
         focusEnabler.setMemberInt("tabIndex", 0);
         _screenDiv.appendChild(focusEnabler);
         focusEnabler.focus();

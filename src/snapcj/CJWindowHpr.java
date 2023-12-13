@@ -1,5 +1,4 @@
 package snapcj;
-import cjdom.HTMLElement;
 import snap.geom.Rect;
 import snap.view.*;
 
@@ -13,9 +12,6 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
 
     // The snap CJWindow
     protected CJWindow  _winNtv;
-
-    // Whether content is editable
-    private boolean _contentEditable;
 
     /**
      * Creates the native.
@@ -77,33 +73,5 @@ public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
     public void requestPaint(Rect aRect)
     {
         _winNtv.paintViews(aRect);
-    }
-
-    /**
-     * Notifies that focus changed.
-     */
-    public void focusDidChange(View aView)
-    {
-        boolean acceptsKeyPress = aView != null && aView.getEventAdapter().isEnabled(ViewEvent.Type.KeyPress);
-        setContentEditable(acceptsKeyPress);
-    }
-
-    /**
-     * Sets ContentEditable on canvas.
-     */
-    public void setContentEditable(boolean aValue)
-    {
-        // If already set, just return
-        if (aValue == _contentEditable) return;
-
-        // Set value
-        _contentEditable = aValue;
-
-        // Update screenDiv.ContentEditable and TabIndex
-        HTMLElement screenDiv = CJScreen.getScreenDiv();
-        //screenDiv.setContentEditable(aValue);
-
-        // Focus element
-        screenDiv.focus();
     }
 }
