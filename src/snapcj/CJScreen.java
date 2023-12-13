@@ -100,6 +100,9 @@ public class CJScreen {
         _screenDiv.addEventListener("select", stopLsnr);
         _screenDiv.addEventListener("selectstart", stopLsnr);
         _screenDiv.addEventListener("selectend", stopLsnr);
+
+        // Stop weird Safari iOS element selection
+        html.getStyle().setProperty("-webkit-user-select", "none");
     }
 
     /**
