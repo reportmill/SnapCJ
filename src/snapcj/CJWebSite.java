@@ -118,7 +118,7 @@ public class CJWebSite extends WebSite {
         // Get connection, stream, stream bytes, then close stream and return bytes
         java.net.URLConnection conn = aURL.openConnection();
         java.io.InputStream stream = conn.getInputStream();  // Get stream for URL
-        byte[] bytes = SnapUtils.getBytesOrThrow(stream);  // Get bytes for stream, close and return bytes
+        byte[] bytes = SnapUtils.getInputStreamBytes(stream);  // Get bytes for stream, close and return bytes
         stream.close();
         return bytes;
     }
