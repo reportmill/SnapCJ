@@ -43,7 +43,7 @@ public class CJProcess extends Process {
         HTMLDocument doc = HTMLDocument.getDocument();
         _iframe = (HTMLIFrameElement) doc.createElement("iframe");
         _iframe.setSrc("launcher.html");
-        _iframe.getStyle().setCssText("position: absolute; right: 36px; top: 200px; width: 40%; height: 60%; background-color: white; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px; ");
+        _iframe.getStyle().setCssText("position: absolute; right: 36px; top: 30%; width: 50%; height: 60%; background-color: white; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px; ");
 
         // Add to doc body
         HTMLBodyElement body = doc.getBody();
