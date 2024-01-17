@@ -34,6 +34,9 @@ public class CJScreen {
     // The element used as screen
     protected static HTMLElement _screenDiv;
 
+    // The input element used to get text input
+    private HTMLElement _focusEnabler;
+
     /**
      * Constructor.
      */
@@ -64,15 +67,15 @@ public class CJScreen {
         _screenDiv.focus();
 
         // Add element with tabindex to allow keyboard focus
-        HTMLElement focusEnabler = doc.createElement("input");
-        focusEnabler.setId("FocusEnabler");
-        focusEnabler.getStyle().setProperty("position", "absolute");
-        focusEnabler.getStyle().setProperty("opacity", "0");
-        focusEnabler.getStyle().setProperty("padding", "0px");
-        focusEnabler.getStyle().setProperty("border", "0px");
-        focusEnabler.setMemberInt("tabIndex", 0);
-        _screenDiv.appendChild(focusEnabler);
-        focusEnabler.focus();
+        _focusEnabler = doc.createElement("input");
+        _focusEnabler.setId("FocusEnabler");
+        _focusEnabler.getStyle().setProperty("position", "absolute");
+        _focusEnabler.getStyle().setProperty("opacity", "0");
+        _focusEnabler.getStyle().setProperty("padding", "0px");
+        _focusEnabler.getStyle().setProperty("border", "0px");
+        _focusEnabler.setMemberInt("tabIndex", 0);
+        _screenDiv.appendChild(_focusEnabler);
+        _focusEnabler.focus();
 
         // Add Mouse listeners
         EventListener<?> lsnr = e -> handleEvent(e);
@@ -94,8 +97,8 @@ public class CJScreen {
         _screenDiv.addEventListener("touchend", lsnr);
 
         // Add focus/blur listeners
-        focusEnabler.addEventListener("focus", e -> docGainedFocus(e));
-        focusEnabler.addEventListener("blur", e -> docLostFocus(e));
+        _focusEnabler.addEventListener("focus", e -> docGainedFocus(e));
+        _focusEnabler.addEventListener("blur", e -> docLostFocus(e));
 
         // Disable click, contextmenu events
         EventListener<?> stopLsnr = e -> { };
@@ -261,6 +264,9 @@ public class CJScreen {
      */
     public void mouseDown(MouseEvent anEvent)
     {
+        // Restore focus if need be
+        _focusEnabler.focus();
+
         // Get Click count and set MouseDown
         long time = System.currentTimeMillis();
         _clicks = time - _lastReleaseTime < 400 ? (_clicks + 1) : 1;
