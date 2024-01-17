@@ -211,6 +211,15 @@ public class CJEnv extends GFXEnv {
     }
 
     /**
+     * Executes a process.
+     */
+    @Override
+    public Process execProcess(String[] args)
+    {
+        return new CJProcess(args);
+    }
+
+    /**
      * Returns a shared instance.
      */
     public static CJEnv get()
