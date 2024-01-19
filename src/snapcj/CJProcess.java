@@ -17,6 +17,9 @@ public class CJProcess extends Process {
     // The class path
     private String _classPath;
 
+    // Whether to use CJDom
+    private boolean _useCJDom;
+
     // The iframe that holds new process
     private HTMLIFrameElement _iframe;
 
@@ -40,6 +43,14 @@ public class CJProcess extends Process {
         int cpArgIndex = ArrayUtils.indexOf(args, "-cp");
         _classPath = args[cpArgIndex + 1];
         _mainClassName = args[cpArgIndex + 2];
+
+        // If UseCJDom, add CJDom and SnapCJ
+        _useCJDom = true;
+        if (_useCJDom)
+            _classPath = "/app/CJDom-2024.01.jar:/app/SnapCJ-2024.01.jar:" + _classPath;
+
+        System.out.println("MainClass: " + _mainClassName);
+        System.out.println("ClassPath: " + _classPath);
 
         execProcess(args);
     }
@@ -72,8 +83,19 @@ public class CJProcess extends Process {
      */
     private void didFinishIFrameLoad()
     {
-        // Create and add a console div
         HTMLDocument iframeDoc = _iframe.getContentDocument();
+        HTMLHtmlElement iframeHtml = iframeDoc.getDocumentElement();
+
+        // Add SwingParent div
+        if (!_useCJDom) {
+            HTMLDivElement swingParentDiv = (HTMLDivElement) iframeDoc.createElement("div");
+            swingParentDiv.setId("SwingParent");
+            swingParentDiv.getStyle().setCssText("margin: 0; width: 100%; height: 100%;");
+            HTMLBodyElement body = iframeDoc.getBody();
+            body.appendChild(swingParentDiv);
+        }
+
+        // Create and add a console div
         _consoleDiv = (HTMLDivElement) iframeDoc.createElement("div");
         _consoleDiv.setId("console");
         _consoleDiv.getStyle().setProperty("display", "none");
@@ -84,20 +106,56 @@ public class CJProcess extends Process {
         MutationObserver mutationObserver = new MutationObserver(this::handleConsoleDivChanges);
         mutationObserver.observe(_consoleDiv, MutationObserver.Option.childList);
 
+        // If using CJDom, add cjdom.js
+        if (_useCJDom) {
+            HTMLScriptElement cjdomScript = (HTMLScriptElement) iframeDoc.createElement("script");
+            cjdomScript.setSrc("cjdom.js");
+            iframeHtml.appendChild(cjdomScript);
+
+            // Listen for load then add main script, otherwise they will load at same time instead of in order
+            cjdomScript.addEventListener("load", e -> addMainScript());
+        }
+
+        // Otherwise just add script
+        else addMainScript();
+    }
+
+    /**
+     * Adds the main script.
+     */
+    private void addMainScript()
+    {
         // Create script to run main for new class and class path
+        HTMLDocument iframeDoc = _iframe.getContentDocument();
         HTMLScriptElement mainScript = (HTMLScriptElement) iframeDoc.createElement("script");
-        String scriptText =
-            "  async function myInit() {\n" +
-            "    await cheerpjInit();\n" +
-            "    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n" +
-            "    await cheerpjRunMain('" + _mainClassName + "', '" + _classPath + "');\n" +
-            "  }\n" +
-            "  myInit();\n";
+        String scriptText = getScriptText();
         mainScript.setText(scriptText);
 
-        // Add script to iframe doc element
+        // Add script
         HTMLHtmlElement iframeHtml = iframeDoc.getDocumentElement();
         iframeHtml.appendChild(mainScript);
+    }
+
+    /**
+     * Returns the script text.
+     */
+    private String getScriptText()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("  async function myInit() {\n");
+        if (_useCJDom)
+            sb.append("    await cheerpjInit({ natives: cjdomNativeMethods });\n");
+        else {
+            sb.append("    await cheerpjInit();\n");
+            sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
+        }
+        sb.append("    await cheerpjRunMain('" + _mainClassName + "', '" + _classPath + "');\n");
+        sb.append("  }\n");
+        sb.append("  myInit();\n");
+
+        // Return
+        return sb.toString();
     }
 
     /**
