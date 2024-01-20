@@ -23,6 +23,9 @@ public class CJProcess extends Process {
     // The iframe that holds new process
     private HTMLIFrameElement _iframe;
 
+    // The iframe.document
+    HTMLDocument _iframeDoc;
+
     // The div element that holds the console
     private HTMLDivElement _consoleDiv;
 
@@ -45,7 +48,7 @@ public class CJProcess extends Process {
         _mainClassName = args[cpArgIndex + 2];
 
         // If UseCJDom, add CJDom and SnapCJ
-        _useCJDom = true;
+        _useCJDom = args[0].equals("java-dom");
         if (_useCJDom)
             _classPath = "/app/CJDom-2024.01.jar:/app/SnapCJ-2024.01.jar:" + _classPath;
 
@@ -83,41 +86,48 @@ public class CJProcess extends Process {
      */
     private void didFinishIFrameLoad()
     {
-        HTMLDocument iframeDoc = _iframe.getContentDocument();
-        HTMLHtmlElement iframeHtml = iframeDoc.getDocumentElement();
+        // Get/set iframeDoc
+        _iframeDoc = _iframe.getContentDocument();
 
         // Add SwingParent div
-        if (!_useCJDom) {
-            HTMLDivElement swingParentDiv = (HTMLDivElement) iframeDoc.createElement("div");
-            swingParentDiv.setId("SwingParent");
-            swingParentDiv.getStyle().setCssText("margin: 0; width: 100%; height: 100%;");
-            HTMLBodyElement body = iframeDoc.getBody();
-            body.appendChild(swingParentDiv);
-        }
+        if (!_useCJDom)
+            addSwingParentDiv();
 
-        // Create and add a console div
-        _consoleDiv = (HTMLDivElement) iframeDoc.createElement("div");
+        addConsoleDiv();
+
+        // If using CJDom, add cjdom.js
+        //if (_useCJDom) { addCJDomScript(); return; }
+
+        // Otherwise just add script
+        addMainScript();
+    }
+
+    /**
+     * Adds the SwingParent div used by cheerpjCreateDisplay().
+     */
+    private void addSwingParentDiv()
+    {
+        HTMLDivElement swingParentDiv = (HTMLDivElement) _iframeDoc.createElement("div");
+        swingParentDiv.setId("SwingParent");
+        swingParentDiv.getStyle().setCssText("margin: 0; width: 100%; height: 100%;");
+        HTMLBodyElement body = _iframeDoc.getBody();
+        body.appendChild(swingParentDiv);
+    }
+
+    /**
+     * Adds the Console div.
+     */
+    private void addConsoleDiv()
+    {
+        _consoleDiv = (HTMLDivElement) _iframeDoc.createElement("div");
         _consoleDiv.setId("console");
         _consoleDiv.getStyle().setProperty("display", "none");
-        HTMLBodyElement body = iframeDoc.getBody();
+        HTMLBodyElement body = _iframeDoc.getBody();
         body.appendChild(_consoleDiv);
 
         // Register for mutations
         MutationObserver mutationObserver = new MutationObserver(this::handleConsoleDivChanges);
         mutationObserver.observe(_consoleDiv, MutationObserver.Option.childList);
-
-        // If using CJDom, add cjdom.js
-        if (_useCJDom) {
-            HTMLScriptElement cjdomScript = (HTMLScriptElement) iframeDoc.createElement("script");
-            cjdomScript.setSrc("cjdom.js");
-            iframeHtml.appendChild(cjdomScript);
-
-            // Listen for load then add main script, otherwise they will load at same time instead of in order
-            cjdomScript.addEventListener("load", e -> addMainScript());
-        }
-
-        // Otherwise just add script
-        else addMainScript();
     }
 
     /**
@@ -126,13 +136,12 @@ public class CJProcess extends Process {
     private void addMainScript()
     {
         // Create script to run main for new class and class path
-        HTMLDocument iframeDoc = _iframe.getContentDocument();
-        HTMLScriptElement mainScript = (HTMLScriptElement) iframeDoc.createElement("script");
+        HTMLScriptElement mainScript = (HTMLScriptElement) _iframeDoc.createElement("script");
         String scriptText = getScriptText();
         mainScript.setText(scriptText);
 
         // Add script
-        HTMLHtmlElement iframeHtml = iframeDoc.getDocumentElement();
+        HTMLHtmlElement iframeHtml = _iframeDoc.getDocumentElement();
         iframeHtml.appendChild(mainScript);
     }
 
@@ -156,6 +165,23 @@ public class CJProcess extends Process {
 
         // Return
         return sb.toString();
+    }
+
+    /**
+     * Adds CJDom script.
+     */
+    private void addCJDomScript()
+    {
+        // Create script to import cjdom.js
+        HTMLScriptElement cjdomScript = (HTMLScriptElement) _iframeDoc.createElement("script");
+        cjdomScript.setSrc("cjdom.js");
+
+        // Add script to <html> element
+        HTMLHtmlElement iframeHtml = _iframeDoc.getDocumentElement();
+        iframeHtml.appendChild(cjdomScript);
+
+        // Listen for load then add main script, otherwise they will load at same time instead of in order
+        cjdomScript.addEventListener("load", e -> addMainScript());
     }
 
     /**
