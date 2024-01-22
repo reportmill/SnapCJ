@@ -1,6 +1,7 @@
 package snapcj;
 import cjdom.*;
 import snap.util.ArrayUtils;
+import snap.view.ViewUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -164,6 +165,7 @@ public class CJProcess extends Process {
             sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
         }
         sb.append("    await cheerpjRunMain('" + _mainClassName + "', '" + _classPath + "');\n");
+        sb.append("    document.getElementById('console').appendChild(new Text('Process exited'));\n");
         sb.append("  }\n");
         sb.append("  myInit();\n");
 
@@ -201,6 +203,10 @@ public class CJProcess extends Process {
         if (parentNode != null)
             parentNode.removeChild(_iframe);
         _iframe = null;
+
+        // Close input stream
+        try { _inputStream.close(); }
+        catch (Exception ignore) { }
     }
 
     @Override
@@ -227,6 +233,8 @@ public class CJProcess extends Process {
         if (consoleDivText.length() > _inputStream._writeBytesLength) {
             String newText = consoleDivText.substring(_inputStream._writeBytesLength);
             _inputStream.addString(newText);
+            if (newText.contains("exited"))
+                ViewUtils.runLater(() -> destroy());
         }
 
         // Iterate over mutation records
@@ -263,6 +271,9 @@ public class CJProcess extends Process {
         // Whether waiting for more input
         private boolean  _waiting;
 
+        // Whether closed
+        private boolean _closed;
+
         /** Constructor */
         public ReadWriteInputStream()
         {
@@ -288,7 +299,7 @@ public class CJProcess extends Process {
             // If waiting, wake up
             if (_waiting) {
                 synchronized (this) {
-                    try { notifyAll(); _waiting = false; }
+                    try { notifyAll(); }
                     catch(Exception e) { throw new RuntimeException(e); }
                 }
             }
@@ -306,20 +317,35 @@ public class CJProcess extends Process {
         @Override
         public int read(byte[] theBytes, int offset, int length)
         {
+            // If closed, just return EOF
+            if (_closed)
+                return -1;
+
+            // If no bytes available, make read thread wait
             while (_readBytesIndex >= _writeBytesLength) {
                 synchronized (this) {
                     try { _waiting = true; wait(); }
                     catch(Exception ignore) { }
+                    finally { _waiting = false; }
+                    if (_closed)
+                        return -1;
                 }
             }
 
+            // Get available bytes to read - if none, return EOF
             int availableBytesCount = _writeBytesLength - _readBytesIndex;
+            if (availableBytesCount <= 0 || _closed)
+                return -1;
+
+            // If buffer larger than available bytes, trim bytes read
             if (length > availableBytesCount)
                 length = availableBytesCount;
-            if (length <= 0)
-                return 0;
+
+            // Copy bytes
             System.arraycopy(_writeBytesBuffer, _readBytesIndex, theBytes, offset, length);
             _readBytesIndex += length;
+
+            // Return bytes read
             return length;
         }
 
@@ -348,6 +374,17 @@ public class CJProcess extends Process {
         public synchronized void reset() { _readBytesIndex = _markedIndex; }
 
         /** Closing a <tt>BytesArrayInputStream</tt> has no effect. */
-        public void close() throws IOException  { }
+        public void close() throws IOException
+        {
+            _closed = true;
+
+            // If waiting, wake up
+            if (_waiting) {
+                synchronized (this) {
+                    try { notifyAll(); }
+                    catch(Exception e) { throw new RuntimeException(e); }
+                }
+            }
+        }
     }
 }
