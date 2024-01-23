@@ -216,6 +216,10 @@ public class CJScreen {
      */
     public void addWindow(WindowView aWin)
     {
+        // If first window, see if 'snap_loader' needs to be removed
+        if (_windows.size() == 0)
+            removeSnapLoader();
+
         // Add to list
         _windows.add(aWin);
 
@@ -360,6 +364,9 @@ public class CJScreen {
      */
     public void touchStart(TouchEvent anEvent)
     {
+        // Restore focus if need be
+        _focusEnabler.focus();
+
         // Don't think this can happen
         if (anEvent.getTouch() == null) return;
 
@@ -502,6 +509,17 @@ public class CJScreen {
         View rootView = aWin.getRootView();
         ViewEvent event = ViewEvent.createEvent(rootView, anEvent, aType, aName);
         return event;
+    }
+
+    /**
+     * Look for 'snap_loader' element and remove if found.
+     */
+    private void removeSnapLoader()
+    {
+        HTMLDocument doc = HTMLDocument.getDocument();
+        HTMLElement snapLoader = doc.getElementById("snap_loader");
+        if (snapLoader != null)
+            CJUtils.removeElementWithFadeAnim(snapLoader);
     }
 
     /**
