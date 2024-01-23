@@ -94,9 +94,14 @@ public class CJProcess extends Process {
         // Get/set iframeDoc
         _iframeDoc = _iframe.getContentDocument();
 
-        // Add SwingParent div
-        if (!_useCJDom)
-            addSwingParentDiv();
+        // Set full width/height for <html> and <body>
+        _iframeDoc.getDocumentElement().getStyle().setCssText("margin: 0; padding: 0; height: 100%;");
+        _iframeDoc.getBody().getStyle().setCssText("margin: 0; padding: 0; height: 100%; overflow: hidden;");
+
+        // If CJDom, add loader script, otherwise add SwingParent div
+        if (_useCJDom)
+            addLoaderScript();
+        else addSwingParentDiv();
 
         addConsoleDiv();
 
@@ -142,7 +147,7 @@ public class CJProcess extends Process {
     {
         // Create script to run main for new class and class path
         HTMLScriptElement mainScript = (HTMLScriptElement) _iframeDoc.createElement("script");
-        String scriptText = getScriptText();
+        String scriptText = getMainScriptText();
         mainScript.setText(scriptText);
 
         // Add script
@@ -151,9 +156,9 @@ public class CJProcess extends Process {
     }
 
     /**
-     * Returns the script text.
+     * Returns the main script text.
      */
-    private String getScriptText()
+    private String getMainScriptText()
     {
         StringBuilder sb = new StringBuilder();
 
@@ -168,6 +173,36 @@ public class CJProcess extends Process {
         sb.append("    document.getElementById('console').appendChild(new Text('Process exited'));\n");
         sb.append("  }\n");
         sb.append("  myInit();\n");
+
+        // Return
+        return sb.toString();
+    }
+
+    /**
+     * Adds loader script.
+     */
+    private void addLoaderScript()
+    {
+        // Create script to run main for new class and class path
+        HTMLScriptElement loaderScript = (HTMLScriptElement) _iframeDoc.createElement("script");
+        String scriptText = getLoaderScriptText();
+        loaderScript.setText(scriptText);
+
+        // Add script to body
+        HTMLBodyElement iframeBody = _iframeDoc.getBody();
+        iframeBody.appendChild(loaderScript);
+    }
+
+    /**
+     * Returns the loader script text.
+     */
+    private String getLoaderScriptText()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("    var iframe = document.createElement('iframe');\n");
+        sb.append("    iframe.id = 'snap_loader'; iframe.width = '99%'; iframe.height = '99%';\n");
+        sb.append("    iframe.src = 'https://reportmill.com/shared/cloudsx/#").append(_mainClassName).append("';\n");
+        sb.append("    document.body.appendChild(iframe);\n");
 
         // Return
         return sb.toString();
