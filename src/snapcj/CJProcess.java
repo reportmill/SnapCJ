@@ -169,7 +169,7 @@ public class CJProcess extends Process {
             sb.append("    await cheerpjInit();\n");
             sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
         }
-        sb.append("    await cheerpjRunMain('" + _mainClassName + "', '" + _classPath + "');\n");
+        sb.append("    await cheerpjRunMain('").append(_mainClassName).append("', '").append(_classPath).append("');\n");
         sb.append("    document.getElementById('console').appendChild(new Text('Process exited'));\n");
         sb.append("  }\n");
         sb.append("  myInit();\n");
@@ -198,14 +198,13 @@ public class CJProcess extends Process {
      */
     private String getLoaderScriptText()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("    var iframe = document.createElement('iframe');\n");
-        sb.append("    iframe.id = 'snap_loader'; iframe.width = '99%'; iframe.height = '99%';\n");
-        sb.append("    iframe.src = 'https://reportmill.com/shared/cloudsx/#").append(_mainClassName).append("';\n");
-        sb.append("    document.body.appendChild(iframe);\n");
+        String sb = "    var iframe = document.createElement('iframe');\n" +
+                    "    iframe.id = 'snap_loader'; iframe.width = '99%'; iframe.height = '99%';\n" +
+                    "    iframe.src = 'https://reportmill.com/shared/cloudsx/#" + _mainClassName + "';\n" +
+                    "    document.body.appendChild(iframe);\n";
 
         // Return
-        return sb.toString();
+        return sb;
     }
 
     /**
@@ -234,9 +233,7 @@ public class CJProcess extends Process {
         if (_iframe == null) return;
 
         // Remove iframe from parent
-        Node parentNode = _iframe.getParentNode();
-        if (parentNode != null)
-            parentNode.removeChild(_iframe);
+        CJUtils.removeElementWithFadeAnim(_iframe, 200);
         _iframe = null;
 
         // Close input stream

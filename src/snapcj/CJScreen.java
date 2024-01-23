@@ -519,7 +519,7 @@ public class CJScreen {
         HTMLDocument doc = HTMLDocument.getDocument();
         HTMLElement snapLoader = doc.getElementById("snap_loader");
         if (snapLoader != null)
-            CJUtils.removeElementWithFadeAnim(snapLoader);
+            CJUtils.removeElementWithFadeAnim(snapLoader, 500);
     }
 
     /**
