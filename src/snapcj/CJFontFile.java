@@ -6,7 +6,7 @@ import cjdom.TextMetrics;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.gfx.FontFile;
-
+import snap.util.MathUtils;
 import java.util.Arrays;
 
 /**
@@ -53,6 +53,10 @@ public class CJFontFile extends FontFile {
             _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
             _cntx = (CanvasRenderingContext2D) _canvas.getContext("2d");
         }
+
+        // If font not available, reset family to Arial
+        if (!isAvailable())
+            _familyName = "Arial";
     }
 
     /**
@@ -199,6 +203,18 @@ public class CJFontFile extends FontFile {
     protected boolean canDisplayImpl(char aChar)
     {
         return true;
+    }
+
+    /**
+     * Returns whether font is available.
+     */
+    private boolean isAvailable()
+    {
+        _cntx.setFont("72px Arial");
+        double defaultSize = _cntx.measureText("ABC123").getWidth();
+        _cntx.setFont("72px " + _familyName + ", Arial");
+        double testSize = _cntx.measureText("ABC123").getWidth();
+        return !MathUtils.equals(testSize, defaultSize);
     }
 
     /** Override to return TVM font. */
