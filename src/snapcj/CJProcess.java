@@ -76,7 +76,7 @@ public class CJProcess extends Process {
         HTMLDocument doc = HTMLDocument.getDocument();
         _iframe = (HTMLIFrameElement) doc.createElement("iframe");
         _iframe.setSrc("launcher.html");
-        _iframe.getStyle().setCssText("position: absolute; right: 36px; top: 30%; width: 50%; height: 60%; background-color: white; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px; ");
+        _iframe.getStyle().setCssText("margin: 0; padding: 0; border: none; position: absolute; right: 36px; top: 30%; width: 50%; height: 60%; background-color: white; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px;");
 
         // Add to doc body
         HTMLBodyElement body = doc.getBody();
@@ -93,10 +93,6 @@ public class CJProcess extends Process {
     {
         // Get/set iframeDoc
         _iframeDoc = _iframe.getContentDocument();
-
-        // Set full width/height for <html> and <body>
-        _iframeDoc.getDocumentElement().getStyle().setCssText("margin: 0; padding: 0; height: 100%;");
-        _iframeDoc.getBody().getStyle().setCssText("margin: 0; padding: 0; height: 100%; overflow: hidden;");
 
         // If CJDom, add loader script, otherwise add SwingParent div
         if (_useCJDom)
@@ -199,7 +195,8 @@ public class CJProcess extends Process {
     private String getLoaderScriptText()
     {
         String sb = "    var iframe = document.createElement('iframe');\n" +
-                    "    iframe.id = 'snap_loader'; iframe.width = '99%'; iframe.height = '99%';\n" +
+                    "    iframe.id = 'snap_loader'; iframe.width = '100%'; iframe.height = '100%';\n" +
+                    "    iframe.style = 'margin: 0; padding: 0; border: none;';\n" +
                     "    iframe.src = 'https://reportmill.com/shared/cloudsx/#" + _mainClassName + "';\n" +
                     "    document.body.appendChild(iframe);\n";
 
