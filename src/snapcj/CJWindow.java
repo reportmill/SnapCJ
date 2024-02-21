@@ -29,9 +29,6 @@ public class CJWindow {
     // The Painter for window content
     private Painter _painter;
 
-    // The rendering context for canvas
-    private CanvasRenderingContext2D _canvasContext;
-
     // The parent element holding window element when showing
     protected HTMLElement _parent;
 
@@ -96,7 +93,7 @@ public class CJWindow {
 
         // Register for drop events
         _canvas.setAttribute("draggable", "true");
-        EventListener dragLsnr = e -> handleDragEvent((DragEvent) e);
+        EventListener<DragEvent> dragLsnr = e -> handleDragEvent(e);
         _canvas.addEventListener("dragenter", dragLsnr);
         _canvas.addEventListener("dragover", dragLsnr);
         _canvas.addEventListener("dragexit", dragLsnr);
@@ -259,7 +256,7 @@ public class CJWindow {
     /**
      * Shows modal window.
      */
-    protected synchronized void showModal()
+    protected void showModal()
     {
         // Do normal show
         showImpl();
@@ -269,11 +266,7 @@ public class CJWindow {
         _win.addPropChangeListener(hideLsnr, View.Showing_Prop);
 
         // Start new app thread, since this thread is now tied up until window closes
-        EventQueue.getShared().startNewEventThread();
-
-        // Wait until window is hidden
-        try { wait(); }
-        catch (Exception e) { throw new RuntimeException(e); }
+        EventQueue.getShared().startNewEventThreadAndWait();
 
         // Remove listener
         _win.removePropChangeListener(hideLsnr);
@@ -282,9 +275,9 @@ public class CJWindow {
     /**
      * Called when modal window sets showing to false.
      */
-    private synchronized void modalWindowShowingChanged()
+    private void modalWindowShowingChanged()
     {
-        notify();
+        EventQueue.getShared().stopEventThreadAndNotify();
     }
 
     /**
