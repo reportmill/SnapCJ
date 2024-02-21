@@ -269,7 +269,7 @@ public class CJWindow {
         _win.addPropChangeListener(hideLsnr, View.Showing_Prop);
 
         // Start new app thread, since this thread is now tied up until window closes
-        EventQueue.startNewEventThread();
+        EventQueue.getShared().startNewEventThread();
 
         // Wait until window is hidden
         try { wait(); }

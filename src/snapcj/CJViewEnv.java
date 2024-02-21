@@ -1,4 +1,5 @@
 package snapcj;
+import cjdom.EventQueue;
 import cjdom.HTMLDocument;
 import cjdom.Window;
 import snap.geom.Rect;
@@ -42,7 +43,7 @@ public class CJViewEnv extends ViewEnv {
     /**
      * Returns whether current thread is event thread.
      */
-    public boolean isEventThread()  { return true; }
+    public boolean isEventThread()  { return EventQueue.isEventThread(); }
 
     /**
      * Run later.
