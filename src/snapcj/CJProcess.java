@@ -197,7 +197,7 @@ public class CJProcess extends Process {
         String sb = "    var iframe = document.createElement('iframe');\n" +
                     "    iframe.id = 'snap_loader'; iframe.width = '100%'; iframe.height = '100%';\n" +
                     "    iframe.style = 'margin: 0; padding: 0; border: none;';\n" +
-                    "    iframe.src = 'https://reportmill.com/shared/cloudsx/#" + _mainClassName + "';\n" +
+                    "    iframe.src = 'https://reportmill.com/SnapCode/loader/#" + _mainClassName + "';\n" +
                     "    document.body.appendChild(iframe);\n";
 
         // Return
