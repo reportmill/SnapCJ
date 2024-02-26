@@ -86,13 +86,12 @@ public class CJEvent extends ViewEvent {
         int keyCode = keyboardEvent.getKeyCode();
 
         // Remap some codes
-        if (keyCode == 13)
-            keyCode = KeyCode.ENTER;
-        if (keyCode == 91)
-            keyCode = KeyCode.COMMAND;
-
-        // Return
-        return keyCode;
+        switch (keyCode) {
+            case 13: return KeyCode.ENTER;
+            case 91: return KeyCode.COMMAND;
+            case 190: return KeyCode.DELETE;
+            default: return keyCode;
+        }
     }
 
     /**
