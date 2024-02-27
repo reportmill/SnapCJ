@@ -8,6 +8,9 @@ import snap.view.*;
  */
 public class CJEvent extends ViewEvent {
 
+    // Whether platform is windows
+    private static boolean _isWindows = CJDom.isWindows();
+
     /**
      * Returns the event point from browser mouse event.
      */
@@ -155,12 +158,18 @@ public class CJEvent extends ViewEvent {
     public boolean isShortcutDown()
     {
         KeyboardEvent keyEvent = getKeyEvent();
-        if (keyEvent != null)
+        if (keyEvent != null) {
+            if (_isWindows)
+                return keyEvent.isCtrlKey();
             return keyEvent.isMetaKey();
+        }
 
         UIEvent uiEvent = getUIEvent();
-        if (uiEvent != null)
-            return isMetaDown() || isControlDown();
+        if (uiEvent != null) {
+            if (_isWindows)
+                return isControlDown();
+            return isMetaDown();
+        }
         return false;
     }
 
