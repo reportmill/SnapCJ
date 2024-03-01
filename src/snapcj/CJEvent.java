@@ -92,7 +92,7 @@ public class CJEvent extends ViewEvent {
         switch (keyCode) {
             case 13: return KeyCode.ENTER;
             case 91: return KeyCode.COMMAND;
-            case 190: return KeyCode.DELETE;
+            case 46: return KeyCode.DELETE;
             default: return keyCode;
         }
     }
