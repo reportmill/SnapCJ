@@ -39,7 +39,8 @@ public class CJEvent extends ViewEvent {
     {
         // Get event X/Y and convert to view
         View view = getView();
-        boolean winMaximized = view.getWindow().isMaximized();
+        WindowView window = view.getWindow(); // Can be null for MouseExit sent to removed view
+        boolean winMaximized = window != null && window.isMaximized();
         double viewX = winMaximized ? mouseEvent.getClientX() : mouseEvent.getPageX(); viewX = Math.round(viewX);
         double viewY = winMaximized ? mouseEvent.getClientY() : mouseEvent.getPageY(); viewY = Math.round(viewY);
         Point point = view.parentToLocal(viewX, viewY, null);
