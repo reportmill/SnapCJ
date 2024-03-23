@@ -21,6 +21,9 @@ public class CJImage extends Image {
     // The canvas object
     protected HTMLCanvasElement _canvas;
 
+    // Whether waiting for image load
+    private boolean _waitingForImageLoad;
+
     /**
      * Constructor for given size.
      */
@@ -65,9 +68,9 @@ public class CJImage extends Image {
         _width = _height = 20;
         _pixW = _pixH = 20;
 
-        // Set src and wait till loaded
+        // Set src and wait till loaded (use special 'load' event queue)
         setLoaded(false);
-        _img.addEventListener("load", e -> didFinishLoad());
+        _img.addLoadEventListener(e -> didFinishLoad());
         _img.setSrc(_src);
     }
 
@@ -109,6 +112,8 @@ public class CJImage extends Image {
         _height = _pixH = _img.getHeight();
         _hasAlpha = !_src.toLowerCase().endsWith(".jpg");
         setLoaded(true);
+        if (_waitingForImageLoad)
+            wakeForImageLoad();
     }
 
     /**
@@ -330,5 +335,28 @@ public class CJImage extends Image {
     public CanvasImageSource getNative()
     {
         return _img != null ? _img : _canvas;
+    }
+
+    /**
+     * Override to wait.
+     */
+    public synchronized void waitForImageLoad()
+    {
+        if (!isLoaded()) {
+            try {
+                _waitingForImageLoad = true;
+                wait();
+                _waitingForImageLoad = false;
+            }
+            catch (Exception e) { System.out.println("CJImage.waitForImageLoad: Failure: " + e.getMessage()); }
+        }
+    }
+
+    /**
+     * Stop wait.
+     */
+    private synchronized void wakeForImageLoad()
+    {
+        notify();
     }
 }
