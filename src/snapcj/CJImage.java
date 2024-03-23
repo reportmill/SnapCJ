@@ -2,6 +2,7 @@ package snapcj;
 import cjdom.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
+import snap.gfx.ImageUtils;
 import snap.gfx.Painter;
 import snap.util.ASCIICodec;
 import snap.web.WebURL;
@@ -59,14 +60,16 @@ public class CJImage extends Image {
         // Set source
         setSource(aSource);
 
+        // Initialize size to placeholder 20 x 20
+        _width = _height = 20;
+        _pixW = _pixH = 20;
+
         // Get Src URL string
         _src = getSourceURL(aSource);
 
         // Create image
         _img = (HTMLImageElement) HTMLDocument.getDocument().createElement("img");
         _img.setCrossOrigin("anonymous");
-        _width = _height = 20;
-        _pixW = _pixH = 20;
 
         // Set src and wait till loaded (use special 'load' event queue)
         setLoaded(false);
@@ -82,9 +85,9 @@ public class CJImage extends Image {
         // Handle byte[] and InputStream
         if (aSource instanceof byte[] || aSource instanceof InputStream) {
             byte[] bytes = getBytes();
+            setSizesFromBytes(bytes);
             Blob blob = new Blob(bytes, "dunno");
-            String urls = blob.createURL();
-            return urls;
+            return blob.createURL();
         }
 
         // Get URL
@@ -99,8 +102,29 @@ public class CJImage extends Image {
         }
 
         // Return URL string
-        String urls = url.getString().replace("!", "");
-        return urls;
+        return url.getString().replace("!", "");
+    }
+
+    /**
+     * Sets image info from bytes (pix size, actual size, dpi - (only jpg supported)).
+     */
+    private void setSizesFromBytes(byte[] theBytes)
+    {
+        // Get type
+        String type = ImageUtils.getImageType(theBytes);
+
+        // If JPG, get sizes from bytes
+        if (type.equals("jpg")) {
+            ImageUtils.ImageInfo imageInfo = ImageUtils.getInfoJPG(theBytes);
+            _width = _pixW = imageInfo.width;
+            _height = _pixH = imageInfo.height;
+            _dpiX = (int) Math.round(imageInfo.dpiX);
+            _dpiY = (int) Math.round(imageInfo.dpiY);
+            if (_dpiX != 72) {
+                _width = Math.round(72d / _dpiX * _pixW);
+                _height = Math.round(72d / _dpiY * _pixH);
+            }
+        }
     }
 
     /**
@@ -108,8 +132,18 @@ public class CJImage extends Image {
      */
     private void didFinishLoad()
     {
-        _width = _pixW = _img.getWidth();
-        _height = _pixH = _img.getHeight();
+        // If sizes not yet set, set from loaded image element
+        if (_pixW == 20) {
+            _width = _pixW = _img.getWidth();
+            _height = _pixH = _img.getHeight();
+        }
+
+        // If sizes read from bytes and dpi is not 72, reset actual width/height
+        else if (_dpiX != 72) {
+            _img.getStyle().setProperty("width", _width + "px");
+            _img.getStyle().setProperty("height", _height + "px");
+        }
+
         _hasAlpha = !_src.toLowerCase().endsWith(".jpg");
         setLoaded(true);
         if (_waitingForImageLoad)
@@ -119,7 +153,7 @@ public class CJImage extends Image {
     /**
      * Returns whether URL can be fetched by browser.
      */
-    boolean isBrowsable(WebURL aURL)
+    private boolean isBrowsable(WebURL aURL)
     {
         String scheme = aURL.getScheme();
         return scheme.equals("http") || scheme.equals("https") || scheme.equals("data") || scheme.equals("blob");
