@@ -2,10 +2,9 @@ package snapcj;
 import cjdom.*;
 import snap.gfx.Image;
 import snap.view.ViewEvent;
-import snap.view.ViewUtils;
 
 /**
- * A TVClipboard subclass to support drag and drop.
+ * A CJClipboard subclass to support drag and drop.
  */
 public class CJDragboard extends CJClipboard {
 
@@ -16,8 +15,17 @@ public class CJDragboard extends CJClipboard {
     private static CJDragboard  _sharedDrag;
 
     /**
+     * Constructor.
+     */
+    public CJDragboard()
+    {
+        super();
+    }
+
+    /**
      * Starts the drag.
      */
+    @Override
     public void startDrag()
     {
         // Set Dragging true and consume event
@@ -51,8 +59,12 @@ public class CJDragboard extends CJClipboard {
     protected void setEvent(ViewEvent anEvent)
     {
         _viewEvent = anEvent;
+
+        // If DragGesture, create new DataTrans for client to configure
         if (anEvent.isDragGesture())
             _dataTrans = new DataTransfer();
+
+        // If DragDrop etc., get DataTransfer from drag event
         else {
             DragEvent dragEvent = (DragEvent) anEvent.getEvent();
             _dataTrans = dragEvent.getDataTransfer();
@@ -60,14 +72,19 @@ public class CJDragboard extends CJClipboard {
     }
 
     /**
-     * Returns the shared TVClipboard for drag and drop.
+     * Returns the shared Clipboard for drag and drop.
      */
     public static CJClipboard getDrag(ViewEvent anEvent)
     {
+        // Create if missing
         if (_sharedDrag == null)
             _sharedDrag = new CJDragboard();
+
+        // Set event
         if (anEvent != null)
             _sharedDrag.setEvent(anEvent);
+
+        // Return
         return _sharedDrag;
     }
 }

@@ -244,8 +244,8 @@ public class CJClipboard extends Clipboard {
         }
 
         // Set DataTransfer and trigger LoadListener
-        _shared._dataTrans = dataTransfer;
-        _shared.notifyLoaded();
+        _dataTrans = dataTransfer;
+        notifyLoaded();
     }
 
     /**
