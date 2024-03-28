@@ -28,23 +28,15 @@ public class CJDragboard extends CJClipboard {
         if (dragImage == null)
             dragImage = Image.getImageForSize(1,1,true);
 
-        // Get native HTML element for image
+        // Get native HTML element for image (set style to hide when added on screen for drag)
         HTMLElement img = (HTMLElement) dragImage.getNative();
         double dx = getDragImageOffset().x;
         double dy = getDragImageOffset().y;
-
-        // Start Drag
-        //_dataTrans.setDragImage(img, dx, dy);
-
-        // Add image element to screenDiv so browsers can generate image
-        HTMLElement screenDiv = CJScreen.getScreenDiv();
-        screenDiv.appendChild(img);
+        img.getStyle().setProperty("position", "absolute");
+        img.getStyle().setProperty("left", "-100%");
 
         // Start drag
         _dataTrans.startDrag(img, dx, dy);
-
-        // Register to remove element a short time later
-        ViewUtils.runDelayed(() -> screenDiv.removeChild(img), 2000);
     }
 
     /** Called to indicate that drop is accepted. */
