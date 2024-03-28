@@ -400,10 +400,6 @@ public class CJWindow {
     {
         ViewEvent event = ViewEvent.createEvent(_rootView, anEvent, null, null);
         _rootView.getWindow().dispatchEventToWindow(event);
-        if (!CJDragboard.isDragging) {
-            anEvent.preventDefault();
-            anEvent.stopPropagation();
-        }
     }
 
     /** Called to handle dragend event. */

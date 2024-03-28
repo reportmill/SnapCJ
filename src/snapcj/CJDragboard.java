@@ -12,9 +12,6 @@ public class CJDragboard extends CJClipboard {
     // The view event
     private ViewEvent  _viewEvent;
 
-    // Whether dragging is in progress
-    public static boolean isDragging;
-
     // The shared clipboard for system drag/drop
     private static CJDragboard  _sharedDrag;
 
@@ -24,7 +21,6 @@ public class CJDragboard extends CJClipboard {
     public void startDrag()
     {
         // Set Dragging true and consume event
-        isDragging = true;
         _viewEvent.consume();
 
         // Get drag image
@@ -38,17 +34,17 @@ public class CJDragboard extends CJClipboard {
         double dy = getDragImageOffset().y;
 
         // Start Drag
-        _dataTrans.setDragImage(img, dx, dy);
+        //_dataTrans.setDragImage(img, dx, dy);
 
         // Add image element to screenDiv so browsers can generate image
         HTMLElement screenDiv = CJScreen.getScreenDiv();
         screenDiv.appendChild(img);
 
+        // Start drag
+        _dataTrans.startDrag(img, dx, dy);
+
         // Register to remove element a short time later
-        ViewUtils.runDelayed(() -> {
-            isDragging = false;
-            screenDiv.removeChild(img);
-        }, 100);
+        ViewUtils.runDelayed(() -> screenDiv.removeChild(img), 2000);
     }
 
     /** Called to indicate that drop is accepted. */
@@ -63,8 +59,12 @@ public class CJDragboard extends CJClipboard {
     protected void setEvent(ViewEvent anEvent)
     {
         _viewEvent = anEvent;
-        DragEvent dragEvent = (DragEvent) anEvent.getEvent();
-        _dataTrans = dragEvent.getDataTransfer();
+        if (anEvent.isDragGesture())
+            _dataTrans = new DataTransfer();
+        else {
+            DragEvent dragEvent = (DragEvent) anEvent.getEvent();
+            _dataTrans = dragEvent.getDataTransfer();
+        }
     }
 
     /**
