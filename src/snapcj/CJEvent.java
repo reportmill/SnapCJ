@@ -84,6 +84,7 @@ public class CJEvent extends ViewEvent {
     /**
      * Returns the event keycode.
      */
+    @Override
     public int getKeyCode()
     {
         KeyboardEvent keyboardEvent = getKeyEvent();
@@ -98,15 +99,33 @@ public class CJEvent extends ViewEvent {
         }
     }
 
+    /** Returns the event key char. */
+    @Override
+    public char getKeyChar()
+    {
+        // If KeyString is valid, return first char
+        String keyString = getKeyString();
+        if (keyString.length() == 1)
+            return keyString.charAt(0);
+
+        // Handle some known values
+        switch (keyString) {
+            case "Backspace": return 8;
+            case "Delete": return 127;
+        }
+
+        // Return 0
+        return KeyCode.CHAR_UNDEFINED;
+    }
+
     /**
      * Returns the event key char.
      */
+    @Override
     public String getKeyString()
     {
         KeyboardEvent keyboardEvent = getKeyEvent();
-        String str = keyboardEvent.getKey();
-        if (str.length() > 1) str = "";
-        return str;
+        return keyboardEvent.getKey();
     }
 
     /**
