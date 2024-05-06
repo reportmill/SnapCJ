@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A snap Clipboard implementation for TeaVM.
+ * A snap Clipboard implementation for CJ.
  */
 public class CJClipboard extends Clipboard {
     
@@ -28,6 +28,14 @@ public class CJClipboard extends Clipboard {
 
     // The shared clipboard for system copy/paste
     private static CJClipboard  _shared;
+
+    /**
+     * Constructor.
+     */
+    public CJClipboard()
+    {
+        super();
+    }
 
     /**
      * Returns the clipboard content.
