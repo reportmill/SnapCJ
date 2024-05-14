@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Prefs implementation for TeaVM using LocalStorage.
+ * A Prefs implementation for CheerpJ using LocalStorage.
  */
 public class CJPrefs extends Prefs {
 
     // The name of this prefs node
-    private static String  _name;
+    private String  _name;
 
     /**
      * Constructor.
@@ -19,7 +19,14 @@ public class CJPrefs extends Prefs {
     public CJPrefs(String aName)
     {
         _name = aName;
+        assert (_name != null);
     }
+
+    /**
+     * Override to return name.
+     */
+    @Override
+    public String getName()  { return _name; }
 
     /**
      * Override to use LocalStorage.
@@ -35,7 +42,7 @@ public class CJPrefs extends Prefs {
         // Get value from LocalStorage
         Storage localStorage = Storage.getLocalStorage();
         String val = localStorage.getItem(key);
-        return val!=null ? val : aDefault;
+        return val != null ? val : aDefault;
     }
 
     /**
@@ -88,6 +95,18 @@ public class CJPrefs extends Prefs {
     public void clear()
     {
         Storage localStorage = Storage.getLocalStorage();
-        localStorage.clear();
+        String[] keys = getKeys();
+        for (String key : keys)
+            localStorage.removeItem(_name + '.' + key);
+    }
+
+    /**
+     * Returns a child node for name.
+     */
+    @Override
+    public Prefs getChild(String aName)
+    {
+        String childName = _name + '.' + aName;
+        return new CJPrefs(childName);
     }
 }

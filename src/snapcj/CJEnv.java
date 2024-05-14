@@ -9,7 +9,7 @@ import snap.util.Prefs;
 import snap.web.*;
 
 /**
- * A GFXEnv implementation for TeaVM.
+ * A GFXEnv implementation for CheerpJ.
  */
 public class CJEnv extends GFXEnv {
     
