@@ -22,9 +22,6 @@ public class CJImage extends Image {
     // The canvas object
     protected HTMLCanvasElement _canvas;
 
-    // Whether waiting for image load
-    private boolean _waitingForImageLoad;
-
     /**
      * Constructor for given size.
      */
@@ -146,8 +143,6 @@ public class CJImage extends Image {
 
         _hasAlpha = !_src.toLowerCase().endsWith(".jpg");
         setLoaded(true);
-        if (_waitingForImageLoad)
-            wakeForImageLoad();
     }
 
     /**
@@ -369,28 +364,5 @@ public class CJImage extends Image {
     public CanvasImageSource getNative()
     {
         return _img != null ? _img : _canvas;
-    }
-
-    /**
-     * Override to wait.
-     */
-    public synchronized void waitForImageLoad()
-    {
-        if (!isLoaded()) {
-            try {
-                _waitingForImageLoad = true;
-                wait();
-                _waitingForImageLoad = false;
-            }
-            catch (Exception e) { System.out.println("CJImage.waitForImageLoad: Failure: " + e.getMessage()); }
-        }
-    }
-
-    /**
-     * Stop wait.
-     */
-    private synchronized void wakeForImageLoad()
-    {
-        notify();
     }
 }
