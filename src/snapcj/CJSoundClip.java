@@ -47,7 +47,7 @@ public class CJSoundClip extends SoundClip {
             return null;
 
         // Set mime type
-        String type = url.getType();
+        String type = url.getFileType();
         if (type.equals("mp3"))
             _mimeType = "audio/mpeg";
         else if (type.equals("oga"))
