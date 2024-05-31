@@ -101,9 +101,10 @@ public class CJClipboard extends Clipboard {
             // Handle string data
             if (aData.isString())
                 _dataTrans.setData(aMimeType, aData.getString());
+            else _dataTrans.setData(aMimeType, aData.getBytes());
 
-                // Otherwise complain
-            else System.err.println("CJClipboard.addDataImpl: Unsupported data type: " + aMimeType + ", " + aData.getSource());
+            // Otherwise complain
+            //else System.err.println("CJClipboard.addDataImpl: Unsupported data type: " + aMimeType + ", " + aData.getSource());
         }
 
         // Handle system clipboard copy: Wait till all types added, then update clipboard

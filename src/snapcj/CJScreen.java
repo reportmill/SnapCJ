@@ -285,12 +285,17 @@ public class CJScreen {
         event.setClickCount(_clicks);
         _mouseDownWin.dispatchEventToWindow(event);
 
-        // If MousePressView wants DragGesture, go ahead and send event (start drag will just set cjdom._dragGestureDataTransfer)
+        // Get MousePressView
         EventDispatcher eventDispatcher = _mouseDownWin.getDispatcher();
         View mousePressView = eventDispatcher.getMousePressView();
-        if (mousePressView != null && mousePressView.getEventAdapter().isEnabled(ViewEvent.Type.DragGesture)) {
-            ViewEvent dragGestureEvent = createEvent(_mouseDownWin, anEvent, ViewEvent.Type.DragGesture, null);
-            _mouseDownWin.dispatchEventToWindow(dragGestureEvent);
+
+        // If MousePressView wants DragGesture, go ahead and send event (start drag will just set cjdom._dragGestureDataTransfer)
+        for (View mousePressV = mousePressView; mousePressV != null; mousePressV = mousePressV.getParent()) {
+            if (mousePressV.getEventAdapter().isEnabled(ViewEvent.Type.DragGesture)) {
+                ViewEvent dragGestureEvent = createEvent(_mouseDownWin, anEvent, ViewEvent.Type.DragGesture, null);
+                _mouseDownWin.dispatchEventToWindow(dragGestureEvent);
+                break;
+            }
         }
     }
 
