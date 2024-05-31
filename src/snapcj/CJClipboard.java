@@ -1,6 +1,7 @@
 package snapcj;
 import cjdom.*;
 import snap.gfx.Image;
+import snap.util.ListUtils;
 import snap.view.Clipboard;
 import snap.view.ClipboardData;
 import snap.view.ViewUtils;
@@ -124,18 +125,10 @@ public class CJClipboard extends Clipboard {
 
         // Get list of ClipbardData
         Map<String,ClipboardData> clipDataMap = getClipboardDatas();
-        Collection<ClipboardData> clipDataList = clipDataMap.values();
-
-        // Convert to list of ClipboardItem
-        List<ClipboardItem> clipItemsList = new ArrayList<>();
-        for (ClipboardData clipboardData : clipDataList) {
-            ClipboardItem clipboardItem = getClipboardItemForClipboardData(clipboardData);
-            if (clipboardItem != null)
-                clipItemsList.add(clipboardItem);
-        }
+        Collection<ClipboardData> clipboardDatas = clipDataMap.values();
 
         // Convert to JSArray of ClipboardItem
-        ClipboardItem[] clipboardItems = clipItemsList.toArray(new ClipboardItem[0]);
+        ClipboardItem[] clipboardItems = ListUtils.mapNonNullToArray(clipboardDatas, cdata -> getClipboardItemForData(cdata), ClipboardItem.class);
 
         // Try to write items to clipboard
         try {
@@ -152,7 +145,7 @@ public class CJClipboard extends Clipboard {
     /**
      * Returns a ClipboardItem for given ClipboardData.
      */
-    private ClipboardItem getClipboardItemForClipboardData(ClipboardData aData)
+    private ClipboardItem getClipboardItemForData(ClipboardData aData)
     {
         // Handle string
         if (aData.isString()) {
