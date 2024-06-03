@@ -168,6 +168,31 @@ public class CJEnv extends GFXEnv {
     }
 
     /**
+     * Download a file.
+     */
+    @Override
+    public void downloadFile(WebFile aFile)
+    {
+        // Create Blob and get URL address
+        byte[] fileBytes = aFile.getBytes();
+        String fileType = aFile.getFileType();
+        String mimeType = MIMEType.getMimeTypeForFileType(fileType);
+        Blob fileBlob = new Blob(fileBytes, mimeType);
+        String fileUrlAddress = fileBlob.createURL(); // URL.createObjectURL(blob)
+
+        // Create anchor element and configure url and file name
+        HTMLAnchorElement anchorElement = (HTMLAnchorElement) HTMLDocument.getDocument().createElement("a");
+        anchorElement.setHref(fileUrlAddress);
+        anchorElement.setDownload(aFile.getName());
+
+        // Programmatically click the link to trigger the download
+        anchorElement.click();
+
+        // Revoke the object URL after download
+        //URL.revokeObjectURL(url);
+    }
+
+    /**
      * Tries to open the given URL with the platform reader.
      */
     public void openURL(Object aSource)
