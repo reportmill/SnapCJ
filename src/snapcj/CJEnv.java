@@ -38,8 +38,6 @@ public class CJEnv extends GFXEnv {
      */
     public URL getResource(Class<?> aClass, String aPath)
     {
-//        CJWebSite site = CJWebSite.get();
-//        return site.getJavaURL(aClass, aPath);
         return aClass.getResource(aPath);
     }
 
@@ -157,16 +155,16 @@ public class CJEnv extends GFXEnv {
         java.io.File file = FileUtils.getFile(aSource);
 
         // Get file name, type, bytes
-        String name = file.getName().toLowerCase();
-        String type = name.endsWith("pdf") ? "application/pdf" : name.endsWith("html") ? "text/html" : null;
-        byte[] bytes = FileUtils.getBytes(file);
+        String filename = file.getName();
+        String mimeType = MIMEType.getMimeTypeForPath(filename);
+        byte[] fileBytes = FileUtils.getBytes(file);
 
         // Create file and URL string
-        File fileJS = new File(name, type, bytes);
-        String urls = fileJS.createURL();
+        File fileJS = new File(filename, mimeType, fileBytes);
+        String fileUrlAddress = fileJS.createURL();
 
-        // Open
-        Window.current().open(urls, "_blank");
+        // Open file url address
+        Window.current().open(fileUrlAddress, "_blank");
     }
 
     /**
@@ -175,11 +173,11 @@ public class CJEnv extends GFXEnv {
     public void openURL(Object aSource)
     {
         WebURL url = WebURL.getURL(aSource);
-        String urls = url != null ? url.getString() : null;
-        if (urls != null)
-            urls = urls.replace("!", "");
-        System.out.println("Open URL: " + urls);
-        Window.current().open(urls, "_blank", "menubar=no");
+        String urlAddress = url != null ? url.getString() : null;
+        if (urlAddress != null)
+            urlAddress = urlAddress.replace("!", "");
+        System.out.println("Open URL: " + urlAddress);
+        Window.current().open(urlAddress, "_blank", "menubar=no");
     }
 
     /**
