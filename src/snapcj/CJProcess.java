@@ -1,7 +1,6 @@
 package snapcj;
 import cjdom.*;
 import snap.util.ArrayUtils;
-import snap.util.FilePathUtils;
 import snap.view.ViewUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -413,7 +412,7 @@ public class CJProcess extends Process {
         public synchronized void reset() { _readBytesIndex = _markedIndex; }
 
         /** Closing a <tt>BytesArrayInputStream</tt> has no effect. */
-        public void close() throws IOException
+        public void close()
         {
             _closed = true;
 
