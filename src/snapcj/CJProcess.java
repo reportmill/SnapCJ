@@ -1,6 +1,7 @@
 package snapcj;
 import cjdom.*;
 import snap.util.ArrayUtils;
+import snap.util.FilePathUtils;
 import snap.view.ViewUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +18,9 @@ public class CJProcess extends Process {
 
     // The class path
     private String _classPath;
+
+    // The app name
+    private String _appName;
 
     // Whether to use CJDom
     private boolean _useCJDom;
@@ -47,6 +51,10 @@ public class CJProcess extends Process {
         int cpArgIndex = ArrayUtils.indexOf(args, "-cp");
         _classPath = args[cpArgIndex + 1];
         _mainClassName = args[cpArgIndex + 2];
+
+        // Get app name from main class name
+        int dotIndex = _mainClassName.lastIndexOf('.');
+        _appName = dotIndex < 0 ? _mainClassName : _mainClassName.substring(dotIndex + 1);
 
         // If UseCJDom, add CJDom and SnapCJ
         _useCJDom = args[0].equals("java-dom");
@@ -199,7 +207,7 @@ public class CJProcess extends Process {
         String sb = "    var iframe = document.createElement('iframe');\n" +
                     "    iframe.id = 'snap_loader'; iframe.width = '100%'; iframe.height = '100%';\n" +
                     "    iframe.style = 'margin: 0; padding: 0; border: none;';\n" +
-                    "    iframe.src = 'https://reportmill.com/SnapCode/loader/#" + _mainClassName + "';\n" +
+                    "    iframe.src = 'https://reportmill.com/SnapCode/loader/#" + _appName + "';\n" +
                     "    document.body.appendChild(iframe);\n";
 
         // Return
