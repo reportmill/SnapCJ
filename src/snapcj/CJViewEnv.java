@@ -1,13 +1,16 @@
 package snapcj;
 import cjdom.EventQueue;
+import cjdom.FilePicker;
 import cjdom.HTMLDocument;
 import cjdom.Window;
 import snap.geom.Rect;
 import snap.view.*;
+import snap.web.WebFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * A ViewEnv implementation for TeaVM.
@@ -123,6 +126,37 @@ public class CJViewEnv extends ViewEnv {
     public Rect getScreenBoundsInset()
     {
         return CJ.getViewportBounds();
+    }
+
+    /**
+     * Shows a file picker.
+     */
+    @Override
+    public void showFilePicker(String[] fileTypes, Consumer<WebFile> pickedFileHandler)
+    {
+        FilePicker filePicker = new FilePicker();
+        filePicker.showFilePicker(fileTypes, fp -> handleFilePicked(fp, pickedFileHandler));
+    }
+
+    /**
+     * Called when user has picked file (or cancelled).
+     */
+    private void handleFilePicked(FilePicker filePicker, Consumer<WebFile> pickedFileHandler)
+    {
+        // Get filename and file bytes
+        String filename = filePicker.getPickedFilename();
+        byte[] fileBytes = filePicker.getPickedFileBytes();
+
+        // Create pickedFile if filename and file bytes are available
+        WebFile pickedFile = null;
+        if (filename != null && fileBytes != null) {
+            pickedFile = WebFile.createTempFileForName(filename, false);
+            pickedFile.setBytes(fileBytes);
+            pickedFile.save();
+        }
+
+        // Call handler
+        pickedFileHandler.accept(pickedFile);
     }
 
     /**
