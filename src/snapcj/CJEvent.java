@@ -9,7 +9,7 @@ import snap.view.*;
 public class CJEvent extends ViewEvent {
 
     // Whether platform is windows
-    private static boolean _isWindows = CJDom.isWindows();
+    private static boolean _isWindows = Navigator.isWindows();
 
     /**
      * Returns the event point from browser mouse event.
