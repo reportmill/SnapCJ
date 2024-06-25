@@ -486,6 +486,6 @@ public class CJWindow {
 
         // Create ViewEvent and dispatch
         ViewEvent event = ViewEvent.createEvent(_win, null, aType, null);
-        _win.processEventAll(event);
+        _win.dispatchEventToWindow(event);
     }
 }
