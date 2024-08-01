@@ -281,6 +281,28 @@ public class CJPainter extends PainterImpl {
     }
 
     /**
+     * Stroke string at location.
+     */
+    @Override
+    public void strokeString(String aStr, double aX, double aY, double charSpacing)
+    {
+        // Handle no char spacing
+        if (charSpacing == 0)
+            _cntx.strokeText(aStr, aX, aY);
+
+            // Handle char spacing
+        else {
+            Font font = getFont();
+            double charX = aX;
+            for (int i = 0, iMax = aStr.length(); i < iMax; i++) {
+                char c = aStr.charAt(i);
+                _cntx.strokeText(String.valueOf(c), charX, aY);
+                charX += font.charAdvance(c) + charSpacing;
+            }
+        }
+    }
+
+    /**
      * Clears a rect.
      */
     public void clearRect(double aX, double aY, double aW, double aH)
