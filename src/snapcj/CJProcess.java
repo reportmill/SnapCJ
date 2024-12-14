@@ -57,7 +57,7 @@ public class CJProcess extends Process {
         // If UseCJDom, add CJDom and SnapCJ
         _useCJDom = args[0].equals("java-dom");
         if (_useCJDom) {
-            String cjdomJars = "/app/CJDom-2024.11.jar:/app/SnapCJ-2024.11.jar:";
+            String cjdomJars = "/app/CJDom-2024.12.jar:/app/SnapCJ-2024.12.jar:";
             if (_classPath.contains("app/SnapCode/app/app11"))
                 cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/app11/");
             else if (_classPath.contains("app/SnapCode/app"))
