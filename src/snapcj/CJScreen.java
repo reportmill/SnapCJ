@@ -217,7 +217,7 @@ public class CJScreen {
     public void addWindow(WindowView aWin)
     {
         // If first window, see if 'snap_loader' needs to be removed
-        if (_windows.size() == 0)
+        if (_windows.isEmpty())
             removeSnapLoader();
 
         // Add to list
@@ -277,23 +277,29 @@ public class CJScreen {
         _lastReleaseTime = time;
 
         // Get MouseDownWin for event
-        _mouseDownWin = getWindow(anEvent);
-        if (_mouseDownWin == null) return;
+        WindowView mouseDownWin = _mouseDownWin = getWindow(anEvent);
+        if (mouseDownWin == null)
+            return;
 
         // Dispatch MousePress event
-        ViewEvent event = createEvent(_mouseDownWin, anEvent, View.MousePress, null);
+        ViewEvent event = createEvent(mouseDownWin, anEvent, View.MousePress, null);
         event.setClickCount(_clicks);
-        _mouseDownWin.dispatchEventToWindow(event);
+        mouseDownWin.dispatchEventToWindow(event);
+
+        // If MouseDownWin changed, just return. Modal window started new event loop - maybe should eat next drag/up events.
+        // There really should be more code to prevent mouse loop straddling event queues
+        if (mouseDownWin != _mouseDownWin)
+            return;
 
         // Get MousePressView
-        EventDispatcher eventDispatcher = _mouseDownWin.getDispatcher();
+        EventDispatcher eventDispatcher = mouseDownWin.getDispatcher();
         View mousePressView = eventDispatcher.getMousePressView();
 
         // If MousePressView wants DragGesture, go ahead and send event (start drag will just set cjdom._dragGestureDataTransfer)
         for (View mousePressV = mousePressView; mousePressV != null; mousePressV = mousePressV.getParent()) {
             if (mousePressV.getEventAdapter().isEnabled(ViewEvent.Type.DragGesture)) {
-                ViewEvent dragGestureEvent = createEvent(_mouseDownWin, anEvent, ViewEvent.Type.DragGesture, null);
-                _mouseDownWin.dispatchEventToWindow(dragGestureEvent);
+                ViewEvent dragGestureEvent = createEvent(mouseDownWin, anEvent, ViewEvent.Type.DragGesture, null);
+                mouseDownWin.dispatchEventToWindow(dragGestureEvent);
                 break;
             }
         }
@@ -347,7 +353,7 @@ public class CJScreen {
         _win.dispatchEventToWindow(event); //anEvent.stopPropagation();
 
         String str = anEvent.getKey();
-        if (str == null || str.length() == 0) return;
+        if (str == null || str.isEmpty()) return;
         if (str.equals("Control") || str.equals("Alt") || str.equals("Meta") || str.equals("Shift")) return;
         if (str.equals("ArrowUp") || str.equals("ArrowDown") || str.equals("ArrowLeft") || str.equals("ArrowRight")) return;
         if (str.equals("Enter") || str.equals("Backspace") || str.equals("Escape")) return;
