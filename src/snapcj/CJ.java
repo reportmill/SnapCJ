@@ -5,7 +5,7 @@ import snap.geom.Rect;
 import snap.gfx.Color;
 import snap.gfx.Font;
 import snap.gfx.GradientPaint;
-import snap.util.SnapUtils;
+import snap.util.SnapEnv;
 
 /**
  * Utility methods for SnapKit + CheerpJ.
@@ -94,6 +94,6 @@ public class CJ {
      */
     public static void set()
     {
-        if (SnapUtils.isWebVM) CJViewEnv.set();
+        if (SnapEnv.isWebVM) CJViewEnv.set();
     }
 }
