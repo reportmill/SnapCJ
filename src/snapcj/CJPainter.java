@@ -7,7 +7,7 @@ import snap.geom.Transform;
 import snap.gfx.*;
 
 /**
- * A snap Painter for rendering to a TeaVM HTMLCanvasElement.
+ * A snap Painter for rendering to a CheerpJ HTMLCanvasElement.
  */
 public class CJPainter extends PainterImpl {
 
@@ -355,5 +355,13 @@ public class CJPainter extends PainterImpl {
             case DST_IN: _cntx.setGlobalCompositeOperation("destination-in"); break;
             case DST_OUT: _cntx.setGlobalCompositeOperation("destination-out"); break;
         }
+    }
+
+    /**
+     * Paints PainterDVR2.
+     */
+    public void paintStacks(int[] instructionStack, int instructionStackSize, int[] intStack, double[] doubleStack, String[] stringStack, Object[] objectStack)
+    {
+        _cntx.paintStacks(instructionStack, instructionStackSize, intStack, doubleStack, stringStack, objectStack);
     }
 }

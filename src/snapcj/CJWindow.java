@@ -320,6 +320,7 @@ public class CJWindow {
         _painter.setTransform(1,0,0,1,0,0); // I don't know why I need this!
         ViewUpdater updater = _rootView.getUpdater();
         updater.paintViews(_painter, aRect);
+        _painter.flush();
     }
 
     /**
