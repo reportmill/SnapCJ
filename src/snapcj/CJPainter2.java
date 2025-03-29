@@ -1,12 +1,6 @@
 package snapcj;
 import cjdom.*;
-import snap.geom.PathIter;
-import snap.geom.Rect;
-import snap.geom.Shape;
-import snap.geom.Transform;
 import snap.gfx.*;
-
-import java.util.Arrays;
 
 /**
  * A snap Painter for rendering to a CheerpJ HTMLCanvasElement.
@@ -14,16 +8,11 @@ import java.util.Arrays;
 public class CJPainter2 extends PainterDVR2 {
 
     /**
-     * Creates a new painter for given canvas.
+     * Constructor for given canvas.
      */
     public CJPainter2(HTMLCanvasElement aCnvs, int aScale)
     {
         super(new CJPainter(aCnvs, aScale));
-
-        // Clip to canvas bounds
-        int canvasW = aCnvs.getWidth();
-        int canvasH = aCnvs.getHeight();
-        clipRect(0, 0, canvasW, canvasH);
     }
 
     @Override
