@@ -21,7 +21,7 @@ public class CJPainter extends PainterImpl {
     protected CanvasRenderingContext2D _cntx;
 
     /**
-     * Creates a new painter for given canvas.
+     * Constructor for given canvas.
      */
     public CJPainter(HTMLCanvasElement aCnvs, int aScale)
     {
@@ -362,6 +362,6 @@ public class CJPainter extends PainterImpl {
      */
     public void paintStacks(int[] instructionStack, int instructionStackSize, int[] intStack, double[] doubleStack, String[] stringStack, Object[] objectStack)
     {
-        _cntx.paintStacks(instructionStack, instructionStackSize, intStack, doubleStack, stringStack, objectStack);
+        _cntx.paintStacks(_scale, instructionStack, instructionStackSize, intStack, doubleStack, stringStack, objectStack);
     }
 }

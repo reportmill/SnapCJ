@@ -15,10 +15,12 @@ public class CJPainter2 extends PainterDVR2 {
         super(new CJPainter(aCnvs, aScale));
     }
 
+    /**
+     * Override to have CJPainter paint stacks.
+     */
     @Override
     public void flush()
     {
-        System.out.println("CJPainter2 flush, instruction count: " + _instructionStackSize);
         CJPainter painter = (CJPainter) _pntr;
         for (int i = 0; i < _nativeStackSize; i++)
             _nativeStack[i] = toNative(_nativeStack[i]);
@@ -26,16 +28,25 @@ public class CJPainter2 extends PainterDVR2 {
         clear();
     }
 
+    /**
+     * Converts objects in native stack to JavaScript friendly object.
+     */
     private static Object toNative(Object anObj)
     {
+        // Handle Paint: Convert to paint string
         if (anObj instanceof Paint)
             return CJ.get(((Paint) anObj).getColor());
+
+        // Handle Font: Convert to font string
+        if (anObj instanceof Font)
+            return CJ.get((Font) anObj);
+
+        // Handle image: Convert to Native.JS
         if (anObj instanceof Image) {
             CanvasImageSource imgSrc = (CanvasImageSource) ((Image) anObj).getNative();
             return ((HTMLElement) imgSrc).getJS();
         }
-        if (anObj instanceof Font)
-            return CJ.get((Font) anObj);
+
         return anObj;
     }
 }
