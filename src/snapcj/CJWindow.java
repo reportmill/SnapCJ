@@ -89,7 +89,7 @@ public class CJWindow {
         //_canvas.addEventListener("wheel", e -> e.preventDefault());
 
         // Create painter
-        _painter = new CJPainter2(_canvas, PIXEL_SCALE);
+        _painter = new CJPainter(_canvas, PIXEL_SCALE);
 
         // Register for drop events
         _canvas.setAttribute("draggable", "true");
