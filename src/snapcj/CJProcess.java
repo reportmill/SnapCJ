@@ -57,9 +57,9 @@ public class CJProcess extends Process {
         // If UseCJDom, add CJDom and SnapCJ
         _useCJDom = args[0].equals("java-dom");
         if (_useCJDom) {
-            String cjdomJars = "/app/CJDom-2025.03.jar:/app/SnapCJ-2025.03.jar:";
-            if (_classPath.contains("app/SnapCode/app/app03"))
-                cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/app03/");
+            String cjdomJars = "/app/CJDom-2025.04.jar:/app/SnapCJ-2025.04.jar:";
+            if (_classPath.contains("app/SnapCode/app/app04"))
+                cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/app04/");
             else if (_classPath.contains("app/SnapCode/app"))
                 cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/");
             _classPath = cjdomJars + _classPath;
@@ -170,9 +170,9 @@ public class CJProcess extends Process {
 
         sb.append("  async function myInit() {\n");
         if (_useCJDom)
-            sb.append("    await cheerpjInit({ natives: cjdomNativeMethods });\n");
+            sb.append("    await cheerpjInit({ version:11, enableDebug:true, natives: cjdomNativeMethods });\n");
         else {
-            sb.append("    await cheerpjInit();\n");
+            sb.append("    await cheerpjInit({ version:11 });\n");
             sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
         }
         sb.append("    await cheerpjRunMain('").append(_mainClassName).append("', '").append(_classPath).append("');\n");
