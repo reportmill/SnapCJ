@@ -170,7 +170,7 @@ public class CJProcess extends Process {
 
         sb.append("  async function myInit() {\n");
         if (_useCJDom)
-            sb.append("    await cheerpjInit({ version:11, enableDebug:true, natives: cjdomNativeMethods });\n");
+            sb.append("    await cheerpjInit({ version:11, natives: cjdomNativeMethods });\n");
         else {
             sb.append("    await cheerpjInit({ version:11 });\n");
             sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
