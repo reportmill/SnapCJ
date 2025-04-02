@@ -47,10 +47,18 @@ public class CJPainter extends PainterImpl {
     public void setPaint(Paint aPaint)
     {
         super.setPaint(aPaint);
+
+        // Handle Color
         if (aPaint instanceof Color) {
-            String cstr = CJ.get((Color) aPaint);
+            String cstr = CJ.getColorJS((Color) aPaint);
             _cntx.setFillStyle(cstr);
             _cntx.setStrokeStyle(cstr);
+        }
+
+        // Handle ImagePaint
+        else if (aPaint instanceof ImagePaint) {
+            CanvasPattern canvasPattern = CJ.getTextureJS((ImagePaint) aPaint, _cntx);
+            _cntx.setFillStyle(canvasPattern);
         }
     }
 
@@ -108,7 +116,7 @@ public class CJPainter extends PainterImpl {
     public void setFont(Font aFont)
     {
         super.setFont(aFont);
-        _cntx.setFont(CJ.get(aFont));
+        _cntx.setFont(CJ.getFontJS(aFont));
     }
 
     /**
@@ -141,7 +149,7 @@ public class CJPainter extends PainterImpl {
         if (getPaint() instanceof GradientPaint) {
             GradientPaint gradientPaint = (GradientPaint) getPaint();
             GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
-            CanvasGradient canvasGradient = CJ.get(gradientPaint2, _cntx);
+            CanvasGradient canvasGradient = CJ.getGradientJS(gradientPaint2, _cntx);
             _cntx.setStrokeStyle(canvasGradient);
         }
 
@@ -165,29 +173,8 @@ public class CJPainter extends PainterImpl {
         if (paint instanceof GradientPaint) {
             GradientPaint gradientPaint = (GradientPaint) paint;
             GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
-            CanvasGradient canvasGradient = CJ.get(gradientPaint2, _cntx);
+            CanvasGradient canvasGradient = CJ.getGradientJS(gradientPaint2, _cntx);
             _cntx.setFillStyle(canvasGradient);
-        }
-
-        // Handle ImagePaint
-        else if (paint instanceof ImagePaint) {
-
-            // Get image - if HiDPI, reduce because CanvasPattern seems to render at pixel sizes
-            ImagePaint imagePaint = (ImagePaint) paint;
-            Image image = imagePaint.getImage();
-
-            // If HiDPI, reduce because CanvasPattern seems to render at pixel sizes
-            if (image.getWidth() != image.getPixWidth()) {
-                Image img2 = Image.getImageForSize(image.getPixWidth() / 4, image.getPixHeight() / 4, image.hasAlpha());
-                Painter pntr = img2.getPainter();
-                pntr.drawImage(image, 0, 0, img2.getWidth(), img2.getHeight());
-                image = img2;
-            }
-
-            // Get CanvasPattern and set
-            CanvasImageSource imageSource = (CanvasImageSource) image.getNative();
-            CanvasPattern pattern = _cntx.createPattern(imageSource, "repeat");
-            _cntx.setFillStyle(pattern);
         }
 
         if (aShape instanceof Rect) {

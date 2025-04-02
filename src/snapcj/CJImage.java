@@ -321,7 +321,7 @@ public class CJImage extends Image {
         CJPainter pntr = new CJPainter(canvas, _dpiScale);
         pntr._cntx.setShadowBlur(aRad * _dpiScale);
         if (aColor != null)
-            pntr._cntx.setShadowColor(CJ.get(aColor));
+            pntr._cntx.setShadowColor(CJ.getColorJS(aColor));
         else pntr._cntx.setShadowColor("gray");
         pntr._cntx.setShadowOffsetX(-_pixW);
         pntr._cntx.setShadowOffsetY(-_pixH);

@@ -2,9 +2,7 @@ package snapcj;
 import cjdom.*;
 import snap.geom.Point;
 import snap.geom.Rect;
-import snap.gfx.Color;
-import snap.gfx.Font;
-import snap.gfx.GradientPaint;
+import snap.gfx.*;
 import snap.util.SnapEnv;
 
 /**
@@ -15,7 +13,7 @@ public class CJ {
     /**
      * Returns JavaScript color for snap color.
      */
-    public static String get(Color aColor)
+    public static String getColorJS(Color aColor)
     {
         if (aColor == null) return null;
         int r = aColor.getRedInt(), g = aColor.getGreenInt(), b = aColor.getBlueInt(), a = aColor.getAlphaInt();
@@ -29,7 +27,7 @@ public class CJ {
     /**
      * Returns JavaScript CanvasGradient for snap GradientPaint.
      */
-    public static CanvasGradient get(GradientPaint gradientPaint, CanvasRenderingContext2D renderingContext)
+    public static CanvasGradient getGradientJS(GradientPaint gradientPaint, CanvasRenderingContext2D renderingContext)
     {
         // Create CanvasGradient for end points
         double startX = gradientPaint.getStartX();
@@ -40,16 +38,33 @@ public class CJ {
 
         // Add stops
         for (int i = 0, iMax = gradientPaint.getStopCount(); i < iMax; i++)
-            canvasGradient.addColorStop(gradientPaint.getStopOffset(i), get(gradientPaint.getStopColor(i)));
+            canvasGradient.addColorStop(gradientPaint.getStopOffset(i), getColorJS(gradientPaint.getStopColor(i)));
 
         // Return
         return canvasGradient;
     }
 
     /**
-     * Returns TVM font for snap font.
+     * Returns JavaScript CanvasPattern for snap ImagePaint.
      */
-    public static String get(Font aFont)
+    public static CanvasPattern getTextureJS(ImagePaint imagePaint, CanvasRenderingContext2D renderingContext)
+    {
+        // Get image
+        Image image = imagePaint.getImage();
+
+        // If HiDPI, reduce because CanvasPattern seems to render at pixel sizes
+        if (image.getWidth() != image.getPixWidth())
+            image = image.cloneForSizeAndDpiScale(image.getPixWidth() / 4, image.getPixHeight() / 4, 1);
+
+        // Get CanvasPattern and set
+        CanvasImageSource imageSource = (CanvasImageSource) image.getNative();
+        return renderingContext.createPattern(imageSource, "repeat");
+    }
+
+    /**
+     * Returns JavaScript font for snap font.
+     */
+    public static String getFontJS(Font aFont)
     {
         String str = "";
         if (aFont.isBold()) str += "Bold ";
@@ -90,7 +105,7 @@ public class CJ {
     }
 
     /**
-     * Sets the TeaVM environment.
+     * Sets the CheerpJ environment.
      */
     public static void set()
     {
