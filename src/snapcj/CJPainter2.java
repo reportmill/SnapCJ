@@ -48,9 +48,9 @@ public class CJPainter2 extends PainterDVR2 {
         // Handle texture, gradient: Convert to canvas versions
         if (anObj instanceof Paint) {
             if (anObj instanceof ImagePaint)
-                return CJ.getTextureJS((ImagePaint) anObj, _cntx);
+                return CJ.getTextureJS((ImagePaint) anObj, _cntx).getJS();
             if (anObj instanceof GradientPaint)
-                return CJ.getGradientJS((GradientPaint) anObj, _cntx);
+                return CJ.getGradientJS((GradientPaint) anObj, _cntx).getJS();
             return CJ.getColorJS(((Paint) anObj).getColor());
         }
 
