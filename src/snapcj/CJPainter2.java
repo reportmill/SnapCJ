@@ -41,10 +41,16 @@ public class CJPainter2 extends PainterDVR2 {
      */
     private Object toNative(Object anObj)
     {
-        // Handle Paint: Convert to paint string
+        // Handle Color: Convert to color string
+        if (anObj instanceof Color)
+            return CJ.getColorJS((Color) anObj);
+
+        // Handle texture, gradient: Convert to canvas versions
         if (anObj instanceof Paint) {
             if (anObj instanceof ImagePaint)
                 return CJ.getTextureJS((ImagePaint) anObj, _cntx);
+            if (anObj instanceof GradientPaint)
+                return CJ.getGradientJS((GradientPaint) anObj, _cntx);
             return CJ.getColorJS(((Paint) anObj).getColor());
         }
 

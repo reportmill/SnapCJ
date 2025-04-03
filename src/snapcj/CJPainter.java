@@ -60,6 +60,12 @@ public class CJPainter extends PainterImpl {
             CanvasPattern canvasPattern = CJ.getTextureJS((ImagePaint) aPaint, _cntx);
             _cntx.setFillStyle(canvasPattern);
         }
+
+        // Handle Gradient
+        else if (aPaint instanceof GradientPaint) {
+            CanvasGradient canvasGradient = CJ.getGradientJS((GradientPaint) aPaint, _cntx);
+            _cntx.setFillStyle(canvasGradient);
+        }
     }
 
     /**
@@ -146,12 +152,9 @@ public class CJPainter extends PainterImpl {
      */
     public void draw(Shape aShape)
     {
-        if (getPaint() instanceof GradientPaint) {
-            GradientPaint gradientPaint = (GradientPaint) getPaint();
-            GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
-            CanvasGradient canvasGradient = CJ.getGradientJS(gradientPaint2, _cntx);
-            _cntx.setStrokeStyle(canvasGradient);
-        }
+        // If gradient is set, resize to given shape
+        if (getPaint() instanceof GradientPaint)
+            sizeGradientPaintToShape(aShape);
 
         if (aShape instanceof Rect) {
             Rect rect = (Rect) aShape;
@@ -168,14 +171,9 @@ public class CJPainter extends PainterImpl {
      */
     public void fill(Shape aShape)
     {
-        // Handle GradientPaint
-        Paint paint = getPaint();
-        if (paint instanceof GradientPaint) {
-            GradientPaint gradientPaint = (GradientPaint) paint;
-            GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
-            CanvasGradient canvasGradient = CJ.getGradientJS(gradientPaint2, _cntx);
-            _cntx.setFillStyle(canvasGradient);
-        }
+        // If gradient is set, resize to given shape
+        if (getPaint() instanceof GradientPaint)
+            sizeGradientPaintToShape(aShape);
 
         if (aShape instanceof Rect) {
             Rect rect = (Rect) aShape;
@@ -184,6 +182,18 @@ public class CJPainter extends PainterImpl {
         else {
             setShape(aShape);
             _cntx.fill();
+        }
+    }
+
+    /**
+     * Resets gradient paint to given shape.
+     */
+    private void sizeGradientPaintToShape(Shape aShape)
+    {
+        GradientPaint gradientPaint = (GradientPaint) getPaint();
+        if (!gradientPaint.isAbsolute()) {
+            GradientPaint gradientPaint2 = gradientPaint.copyForRect(aShape.getBounds());
+            setPaint(gradientPaint2);
         }
     }
 
