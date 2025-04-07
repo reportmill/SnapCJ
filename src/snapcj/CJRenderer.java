@@ -4,6 +4,7 @@
 package snapcj;
 import cjdom.*;
 import snap.gfx.Color;
+import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.gfx3d.*;
 import snap.util.SnapUtils;
@@ -35,6 +36,9 @@ public class CJRenderer extends Renderer {
 
     // Canvas size in points
     private int  _canvasW, _canvasH;
+
+    // Wrapper image
+    private Image _image;
 
     /**
      * Constructor.
@@ -97,6 +101,9 @@ public class CJRenderer extends Renderer {
         // If Context already around, resize viewport
         if (_gl != null)
             _gl.viewport(0, 0, canvasPixW, canvasPixH);
+
+        // Set image
+        _image = new CJImage(_canvas, _canvasW, _canvasH, aPainter._scale);
     }
 
     /**
@@ -111,15 +118,20 @@ public class CJRenderer extends Renderer {
     @Override
     public void renderAndPaint(Painter aPainter)
     {
+        CJPainter painter;
+        if (aPainter instanceof CJPainter2)
+            painter = ((CJPainter2) aPainter).getPainter();
+        else painter = (CJPainter) aPainter;
+
         // Make sure OpenGL is initialized
         if (_gl == null) {
-            initCanvas((CJPainter) aPainter);
+            initCanvas(painter);
             if (_gl == null)
                 return;
         }
 
         // Make sure canvas is still right size
-        else resizeCanvas((CJPainter) aPainter);
+        else resizeCanvas(painter);
 
         // Get GL and clear
         _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
@@ -129,8 +141,7 @@ public class CJRenderer extends Renderer {
         renderShape3D(scene);
 
         // Paint WebGL canvas to painter
-        CJPainter painter = (CJPainter) aPainter;
-        painter._cntx.drawImage(_canvas, 0, 0, _canvasW, _canvasH);
+        aPainter.drawImage(_image, 0, 0);
     }
 
     /**

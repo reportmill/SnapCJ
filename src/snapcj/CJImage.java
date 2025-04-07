@@ -75,6 +75,24 @@ public class CJImage extends Image {
     }
 
     /**
+     * Constructor for given HTMLCanvasElement.
+     */
+    public CJImage(HTMLCanvasElement aCanvas, double aWidth, double aHeight, double dpiScale)
+    {
+        super();
+        _canvas = aCanvas;
+        _dpiScale = (int) Math.round(dpiScale);
+        _dpiX = 72 * _dpiScale;
+        _dpiY = 72 * _dpiScale;
+
+        // Get image size, pixel size
+        _width = (int) Math.round(aWidth);
+        _height = (int) Math.round(aHeight);
+        _pixW = (int) Math.round(_width * _dpiScale);
+        _pixH = (int) Math.round(_height * _dpiScale);
+    }
+
+    /**
      * Returns a Source URL from source object.
      */
     private String getSourceURL(Object aSource)

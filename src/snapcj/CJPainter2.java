@@ -19,6 +19,11 @@ public class CJPainter2 extends PainterDVR2 {
     }
 
     /**
+     * Returns the real painter.
+     */
+    public CJPainter getPainter()  { return (CJPainter) _pntr; }
+
+    /**
      * Override to have CJPainter paint stacks.
      */
     @Override
