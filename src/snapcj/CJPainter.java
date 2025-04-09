@@ -211,9 +211,16 @@ public class CJPainter extends PainterImpl {
      */
     public void setShape(Shape aShape)
     {
+        _cntx.beginPath();
+
+        if (aShape instanceof Rect) {
+            Rect rect = (Rect) aShape;
+            _cntx.rect(rect.x, rect.y, rect.width, rect.height);
+            return;
+        }
+
         double[] pnts = new double[6];
         PathIter pathIter = aShape.getPathIter(null);
-        _cntx.beginPath();
         while (pathIter.hasNext()) {
             switch (pathIter.getNext(pnts)) {
                 case MoveTo: _cntx.moveTo(pnts[0], pnts[1]); break;
