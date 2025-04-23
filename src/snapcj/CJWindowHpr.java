@@ -5,7 +5,7 @@ import snap.view.*;
 /**
  * A WindowHpr to map WindowView to TVWindow.
  */
-public class CJWindowHpr extends WindowView.WindowHpr<CJWindow> {
+public class CJWindowHpr extends WindowView.WindowHpr {
 
     // The snap Window
     protected WindowView  _win;
