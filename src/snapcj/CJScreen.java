@@ -1,9 +1,11 @@
 package snapcj;
 import cjdom.*;
 import cjdom.EventListener;
+import snap.util.ListUtils;
 import snap.view.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A class to work with the browser web page.
@@ -97,8 +99,8 @@ public class CJScreen {
         _screenDiv.addEventListener("touchend", lsnr);
 
         // Add focus/blur listeners
-        _focusEnabler.addEventListener("focus", e -> docGainedFocus(e));
-        _focusEnabler.addEventListener("blur", e -> docLostFocus(e));
+        _focusEnabler.addEventListener("focus", this::handleDocumentGainedFocus);
+        _focusEnabler.addEventListener("blur", this::handleDocumentLostFocus);
 
         // Disable click, contextmenu events
         EventListener<?> stopLsnr = e -> { };
@@ -223,9 +225,8 @@ public class CJScreen {
         // Add to list
         _windows.add(aWin);
 
-        // If not Popup, make window main window
-        if (!(aWin instanceof PopupWindow))
-            _win = _mousePressWin = aWin;
+        // Make window main window
+        _win = _mousePressWin = aWin;
     }
 
     /**
@@ -237,14 +238,7 @@ public class CJScreen {
         _windows.remove(aWin);
 
         // Make next window in list main window
-        _win = null;
-        for (int i = _windows.size() - 1; i >= 0; i--) {
-            WindowView win = _windows.get(i);
-            if (!(win instanceof PopupWindow)) {
-                _win = win;
-                break;
-            }
-        }
+        _win = ListUtils.getLast(_windows);
     }
 
     /**
@@ -340,8 +334,6 @@ public class CJScreen {
         WindowView win = getWindow(anEvent); if (win == null) return;
         ViewEvent event = createEvent(win, anEvent, View.Scroll, null);
         win.dispatchEventToWindow(event);
-
-        // if (event.isConsumed()) { anEvent.stopPropagation(); anEvent.preventDefault(); }
     }
 
     /**
@@ -350,15 +342,20 @@ public class CJScreen {
     public void keyDown(KeyboardEvent anEvent)
     {
         ViewEvent event = createEvent(_win, anEvent, View.KeyPress, null);
-        _win.dispatchEventToWindow(event); //anEvent.stopPropagation();
+        _win.dispatchEventToWindow(event);
 
-        String str = anEvent.getKey();
-        if (str == null || str.isEmpty()) return;
-        if (str.equals("Control") || str.equals("Alt") || str.equals("Meta") || str.equals("Shift")) return;
-        if (str.equals("ArrowUp") || str.equals("ArrowDown") || str.equals("ArrowLeft") || str.equals("ArrowRight")) return;
-        if (str.equals("Enter") || str.equals("Backspace") || str.equals("Escape")) return;
+        // If key name is special/modifier key name, just return
+        String keyName = anEvent.getKey();
+        if (keyName == null || keyName.isEmpty() || IGNORE_KEY_NAMES.contains(keyName))
+            return;
+
+        // Forward to keyPress
         keyPress(anEvent);
     }
+
+    // Key names to ignore
+    private static Set<String> IGNORE_KEY_NAMES = Set.of("Control", "Alt", "Meta", "Shift", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+        "Enter", "Backspace", "Escape");
 
     /**
      * Called when body gets keyPress.
@@ -366,7 +363,7 @@ public class CJScreen {
     public void keyPress(KeyboardEvent anEvent)
     {
         ViewEvent event = createEvent(_win, anEvent, View.KeyType, null);
-        _win.dispatchEventToWindow(event); //anEvent.stopPropagation();
+        _win.dispatchEventToWindow(event);
     }
 
     /**
@@ -375,7 +372,7 @@ public class CJScreen {
     public void keyUp(KeyboardEvent anEvent)
     {
         ViewEvent event = createEvent(_win, anEvent, View.KeyRelease, null);
-        _win.dispatchEventToWindow(event); //anEvent.stopPropagation();
+        _win.dispatchEventToWindow(event);
     }
 
     /**
@@ -472,7 +469,7 @@ public class CJScreen {
     /**
      * Called when browser document gets focus.
      */
-    protected void docGainedFocus(Event anEvent)
+    protected void handleDocumentGainedFocus(Event anEvent)
     {
         for (WindowView win : _windows)
             ViewUtils.setFocused(win, true);
@@ -481,7 +478,7 @@ public class CJScreen {
     /**
      * Called when browser document loses focus.
      */
-    protected void docLostFocus(Event anEvent)
+    protected void handleDocumentLostFocus(Event anEvent)
     {
         for (WindowView win : _windows)
             ViewUtils.setFocused(win, false);
