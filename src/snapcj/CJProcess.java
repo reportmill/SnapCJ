@@ -1,10 +1,12 @@
 package snapcj;
 import cjdom.*;
 import snap.util.ArrayUtils;
+import snap.util.ListUtils;
 import snap.view.ViewUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This Process subclass tries to implement Process for CheerpJ.
@@ -56,14 +58,8 @@ public class CJProcess extends Process {
 
         // If UseCJDom, add CJDom and SnapCJ
         _useCJDom = args[0].equals("java-dom");
-        if (_useCJDom) {
-            String cjdomJars = "/app/CJDom-2025.04.jar:/app/SnapCJ-2025.04.jar:";
-            if (_classPath.contains("app/SnapCode/app/app04"))
-                cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/app04/");
-            else if (_classPath.contains("app/SnapCode/app"))
-                cjdomJars = cjdomJars.replace("/app/", "/app/SnapCode/app/");
-            _classPath = cjdomJars + _classPath;
-        }
+        if (_useCJDom)
+            _classPath = getCJDomJarsString() + ':' + _classPath;
 
         System.out.println("MainClass: " + _mainClassName);
         System.out.println("ClassPath: " + _classPath);
@@ -285,6 +281,17 @@ public class CJProcess extends Process {
                 }
             }
         }*/
+    }
+
+    /**
+     * Returns the CJDom Jars string.
+     */
+    private static String getCJDomJarsString()
+    {
+        String jarPathPrefix = "/app" + Location.get().pathname();
+        List<String> cjdomJarNames = List.of("CJDom-2025.04.jar", "SnapCJ-2025.04.jar");
+        List<String> cjdomJarPaths = ListUtils.map(cjdomJarNames, jarName -> jarPathPrefix + jarName);
+        return ListUtils.joinStrings(cjdomJarPaths, ":");
     }
 
     /**
