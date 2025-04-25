@@ -216,7 +216,7 @@ public class CJScreen {
     /**
      * Called when a window is ordered onscreen.
      */
-    public void addWindow(WindowView aWin)
+    public void addWindowToScreen(WindowView aWin)
     {
         // If first window, see if 'snap_loader' needs to be removed
         if (_windows.isEmpty())
@@ -225,20 +225,33 @@ public class CJScreen {
         // Add to list
         _windows.add(aWin);
 
+        // Set Window showing
+        ViewUtils.setShowing(aWin, true);
+
         // Make window main window
-        _win = _mousePressWin = aWin;
+        if (aWin.isFocusable()) {
+            _win = _mousePressWin = aWin;
+            _windows.forEach(win -> ViewUtils.setFocused(win, false));
+            ViewUtils.setFocused(aWin, true);
+        }
     }
 
     /**
      * Called when a window is hidden.
      */
-    public void removeWindow(WindowView aWin)
+    public void removeWindowFromScreen(WindowView aWin)
     {
+        // Set Window not showing or focused
+        ViewUtils.setShowing(aWin, false);
+        ViewUtils.setFocused(aWin, false);
+
         // Remove window from list
         _windows.remove(aWin);
 
         // Make next window in list main window
-        _win = ListUtils.getLast(_windows);
+        _win = ListUtils.findLastMatch(_windows, win -> win.isFocusable());
+        if (_win != null)
+            ViewUtils.setFocused(_win, true);
     }
 
     /**
@@ -471,8 +484,9 @@ public class CJScreen {
      */
     protected void handleDocumentGainedFocus(Event anEvent)
     {
-        for (WindowView win : _windows)
-            ViewUtils.setFocused(win, true);
+        WindowView lastFocusableWin = ListUtils.findLastMatch(_windows, win -> win.isFocusable());
+        if (lastFocusableWin != null)
+            ViewUtils.setFocused(lastFocusableWin, true);
     }
 
     /**

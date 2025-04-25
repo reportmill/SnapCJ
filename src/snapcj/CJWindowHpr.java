@@ -3,7 +3,7 @@ import snap.geom.Rect;
 import snap.view.*;
 
 /**
- * A WindowHpr to map WindowView to TVWindow.
+ * A WindowHpr to map WindowView to CJWindow.
  */
 public class CJWindowHpr extends WindowView.WindowHpr {
 
@@ -14,16 +14,15 @@ public class CJWindowHpr extends WindowView.WindowHpr {
     protected CJWindow  _winNtv;
 
     /**
-     * Creates the native.
+     * Returns the window.
      */
-    public WindowView getWindow()
-    {
-        return _win;
-    }
+    @Override
+    public WindowView getWindow()  { return _win; }
 
     /**
-     * Override to set snap Window in TVWindow.
+     * Sets the window and creates native.
      */
+    @Override
     public void setWindow(WindowView aWin)
     {
         _win = aWin;

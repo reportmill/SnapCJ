@@ -57,11 +57,8 @@ public class CJWindow {
         if (_win.getType() != WindowView.TYPE_PLAIN)
             WindowBar.attachWindowBar(_rootView);
 
-        // Set window and start listening to bounds, Maximized and ActiveCursor changes
-        _win.addPropChangeListener(pc -> snapWindowMaximizedChanged(), WindowView.Maximized_Prop);
-        _win.addPropChangeListener(pce -> snapWindowBoundsChanged(pce), View.X_Prop, View.Y_Prop,
-                View.Width_Prop, View.Height_Prop);
-        _win.addPropChangeListener(pc -> snapWindowActiveCursorChanged(), WindowView.ActiveCursor_Prop);
+        // Start listening to snap window prop changes
+        _win.addPropChangeListener(this::handleSnapWindowPropChange);
 
         // Create/configure WindowDiv, the HTMLElement to hold window and canvas
         HTMLDocument doc = HTMLDocument.getDocument();
@@ -77,8 +74,8 @@ public class CJWindow {
         _canvas.getStyle().setProperty("box-sizing", "border-box");
 
         // Add RootView listener to propagate size changes to canvas
-        _rootView.addPropChangeListener(pc -> rootViewSizeChange(), View.Width_Prop, View.Height_Prop);
-        rootViewSizeChange();
+        _rootView.addPropChangeListener(pc -> handleRootViewSizeChange(), View.Width_Prop, View.Height_Prop);
+        handleRootViewSizeChange();
 
         // Have to do this so TouchEvent.preventDefault doesn't complain and iOS doesn't scroll doc
         _canvas.getStyle().setProperty("touch-action", "none");
@@ -100,8 +97,8 @@ public class CJWindow {
         _canvas.addEventListener("drop", dragLsnr);
 
         // Register for drag start event
-        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent)e));
-        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent)e));
+        _canvas.addEventListener("dragstart", e -> handleDragGesture((DragEvent) e));
+        _canvas.addEventListener("dragend", e -> handleDragEnd((DragEvent) e));
 
         // Add canvas to WindowDiv
         _windowDiv.appendChild(_canvas);
@@ -214,11 +211,11 @@ public class CJWindow {
         if (parent == CJScreen.getScreenDiv()) {
             if (_win.isMaximized())
                 _win.setBounds(CJ.getViewportBounds());
-            snapWindowBoundsChanged(null);
+            handleSnapWindowBoundsChange(null);
         }
 
         // If window in DOM container element
-        else browserWindowSizeChanged();
+        else handleBrowserWindowSizeChange();
     }
 
     /**
@@ -241,15 +238,11 @@ public class CJWindow {
 
         // Add to Screen.Windows
         CJScreen screen = CJScreen.getScreen();
-        screen.addWindow(_win);
-
-        // Set Window showing
-        ViewUtils.setShowing(_win, true);
-        ViewUtils.setFocused(_win, true);
+        screen.addWindowToScreen(_win);
 
         // Start listening to browser window resizes
         if (_resizeLsnr == null)
-            _resizeLsnr = e -> browserWindowSizeChanged();
+            _resizeLsnr = e -> handleBrowserWindowSizeChange();
         Window.current().addEventListener("resize", _resizeLsnr);
     }
 
@@ -290,11 +283,7 @@ public class CJWindow {
 
         // Remove Window from screen
         CJScreen screen = CJScreen.getScreen();
-        screen.removeWindow(_win);
-
-        // Set Window not showing
-        ViewUtils.setShowing(_win, false);
-        ViewUtils.setFocused(_win, false);
+        screen.removeWindowFromScreen(_win);
 
         // Stop listening to browser window resizes
         Window.current().removeEventListener("resize", _resizeLsnr);
@@ -326,7 +315,7 @@ public class CJWindow {
     /**
      * Called when browser window resizes.
      */
-    private void browserWindowSizeChanged()
+    private void handleBrowserWindowSizeChange()
     {
         // If Window is child of body, just return
         if (isChildOfBody()) {
@@ -348,35 +337,9 @@ public class CJWindow {
     }
 
     /**
-     * Called when WindowView has bounds change to sync to WindowDiv.
-     */
-    private void snapWindowBoundsChanged(PropChange aPC)
-    {
-        // If Window not child of body, just return (parent node changes go to win, not win to parent)
-        if (!isChildOfBody()) return;
-
-        // Get bounds x, y, width, height and PropChange name
-        int x = (int) Math.round(_win.getX());
-        int y = (int) Math.round(_win.getY());
-        int w = (int) Math.round(_win.getWidth());
-        int h = (int) Math.round(_win.getHeight());
-        String propName = aPC != null ? aPC.getPropName() : null;
-
-        // Handle changes
-        if (propName == null || propName == View.X_Prop)
-            _windowDiv.getStyle().setProperty("left", x + "px");
-        if (propName == null || propName == View.Y_Prop)
-            _windowDiv.getStyle().setProperty("top", y + "px");
-        if (propName == null || propName == View.Width_Prop)
-            _windowDiv.getStyle().setProperty("width", w + "px");
-        if (propName == null || propName == View.Height_Prop)
-            _windowDiv.getStyle().setProperty("height", h + "px");
-    }
-
-    /**
      * Called when root view size changes.
      */
-    private void rootViewSizeChange()
+    private void handleRootViewSizeChange()
     {
         int rootW = (int) Math.ceil(_rootView.getWidth());
         int rootH = (int) Math.ceil(_rootView.getHeight());
@@ -411,9 +374,56 @@ public class CJWindow {
     }
 
     /**
+     * Called when Snap WindowView has prop change.
+     */
+    private void handleSnapWindowPropChange(PropChange aPC)
+    {
+        switch (aPC.getPropName()) {
+
+            // Handle bounds change
+            case View.X_Prop: case View.Y_Prop:
+            case View.Width_Prop: case View.Height_Prop:
+                handleSnapWindowBoundsChange(aPC);
+                break;
+
+            // Handle WindowView.Maximized_Prop
+            case WindowView.Maximized_Prop: handleSnapWindowMaximizedChange(); break;
+
+            // Handle WindowView.ActiveCursor_Prop
+            case WindowView.ActiveCursor_Prop: handleSnapWindowActiveCursorChange(); break;
+        }
+    }
+
+    /**
+     * Called when WindowView has bounds change to sync to WindowDiv.
+     */
+    private void handleSnapWindowBoundsChange(PropChange aPC)
+    {
+        // If Window not child of body, just return (parent node changes go to win, not win to parent)
+        if (!isChildOfBody()) return;
+
+        // Get bounds x, y, width, height and PropChange name
+        int x = (int) Math.round(_win.getX());
+        int y = (int) Math.round(_win.getY());
+        int w = (int) Math.round(_win.getWidth());
+        int h = (int) Math.round(_win.getHeight());
+        String propName = aPC != null ? aPC.getPropName() : null;
+
+        // Handle changes
+        if (propName == null || propName == View.X_Prop)
+            _windowDiv.getStyle().setProperty("left", x + "px");
+        if (propName == null || propName == View.Y_Prop)
+            _windowDiv.getStyle().setProperty("top", y + "px");
+        if (propName == null || propName == View.Width_Prop)
+            _windowDiv.getStyle().setProperty("width", w + "px");
+        if (propName == null || propName == View.Height_Prop)
+            _windowDiv.getStyle().setProperty("height", h + "px");
+    }
+
+    /**
      * Called when WindowView.Maximized is changed.
      */
-    private void snapWindowMaximizedChanged()
+    private void handleSnapWindowMaximizedChange()
     {
         // Get body and canvas
         HTMLBodyElement body = HTMLBodyElement.getBody();
@@ -455,7 +465,7 @@ public class CJWindow {
     /**
      * Sets the cursor.
      */
-    private void snapWindowActiveCursorChanged()
+    private void handleSnapWindowActiveCursorChange()
     {
         Cursor aCursor = _win.getActiveCursor();
         String cstr = "default";
