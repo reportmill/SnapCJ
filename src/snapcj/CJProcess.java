@@ -288,9 +288,17 @@ public class CJProcess extends Process {
      */
     private static String getCJDomJarsString()
     {
-        String jarPathPrefix = "/app" + Location.get().pathname();
+        // Get jar root
+        String pathname = Location.get().pathname();
+        if (!pathname.startsWith("/")) pathname = "/" + pathname;
+        if (!pathname.endsWith("/")) pathname += "/";
+        String jarPathPrefix = "/app" + pathname;
+
+        // Get jar paths
         List<String> cjdomJarNames = List.of("CJDom-2025.05.jar", "SnapCJ-2025.05.jar");
         List<String> cjdomJarPaths = ListUtils.map(cjdomJarNames, jarName -> jarPathPrefix + jarName);
+
+        // Return as class path string
         return ListUtils.joinStrings(cjdomJarPaths, ":");
     }
 
