@@ -65,7 +65,7 @@ public class CJWindow {
         _windowDiv = doc.createElement("div");
         _windowDiv.setId("WindowDiv");
         _windowDiv.getStyle().setProperty("box-sizing", "border-box");
-        _windowDiv.getStyle().setProperty("background", "#F4F4F4CC");
+        //_windowDiv.getStyle().setProperty("background", "#F4F4F4CC");
 
         // Create canvas and configure to totally fill window element (minus padding insets)
         _canvas = (HTMLCanvasElement) HTMLDocument.getDocument().createElement("canvas");
@@ -111,7 +111,7 @@ public class CJWindow {
     {
         if (_rootView.getFill() == null)
             _rootView.setFill(ViewUtils.getBackFill());
-        if (_rootView.getBorder() == null)
+        if (_rootView.getBorder() == null && _win.getType() != WindowView.TYPE_PLAIN)
             _rootView.setBorder(Color.GRAY, 1);
     }
 
