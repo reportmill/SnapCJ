@@ -2,6 +2,7 @@ package snapcj;
 import cjdom.*;
 import snap.util.ArrayUtils;
 import snap.util.ListUtils;
+import snap.util.SnapUtils;
 import snap.view.ViewUtils;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -162,15 +163,17 @@ public class CJProcess extends Process {
      */
     private String getMainScriptText()
     {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("  async function myInit() {\n");
+        // Get args for cheerpjInit()
+        String initArgs = "version:" + SnapUtils.getJavaVersionInt();
         if (_useCJDom)
-            sb.append("    await cheerpjInit({ version:11, natives: cjdomNativeMethods });\n");
-        else {
-            sb.append("    await cheerpjInit({ version:11 });\n");
+            initArgs += ", natives: cjdomNativeMethods";
+
+        // Create script string
+        StringBuilder sb = new StringBuilder();
+        sb.append("  async function myInit() {\n");
+        sb.append("    await cheerpjInit({ ").append(initArgs).append(" });\n");
+        if (!_useCJDom)
             sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
-        }
         sb.append("    await cheerpjRunMain('").append(_mainClassName).append("', '").append(_classPath).append("');\n");
         sb.append("    document.getElementById('console').appendChild(new Text('Process exited'));\n");
         sb.append("  }\n");
