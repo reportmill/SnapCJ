@@ -10,7 +10,7 @@ import snap.util.MathUtils;
 import java.util.Arrays;
 
 /**
- * A FontFile subclass for TeaVM.
+ * A FontFile subclass for CheerpJ.
  */
 public class CJFontFile extends FontFile {
 

@@ -4,7 +4,7 @@ import snap.geom.Point;
 import snap.view.*;
 
 /**
- * A ViewEvent implementation for TeaVM.
+ * A ViewEvent implementation for CheerpJ.
  */
 public class CJEvent extends ViewEvent {
 

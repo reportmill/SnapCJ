@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * A ViewEnv implementation for TeaVM.
+ * A ViewEnv implementation for CheerpJ.
  */
 public class CJViewEnv extends ViewEnv {
 
