@@ -26,4 +26,5 @@ dependencies {
 
     // CJDom project
     implementation project(':CJDom')
+    compileOnly files("../CJDom/lib/cheerpj-awt.jar")
 }
