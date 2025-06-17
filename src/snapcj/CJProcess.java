@@ -65,6 +65,10 @@ public class CJProcess extends Process {
         System.out.println("MainClass: " + _mainClassName);
         System.out.println("ClassPath: " + _classPath);
 
+        // If CJDom was added explicitly to dependencies (but not SnapKit), set UseCJDom here
+        if (!_useCJDom && _classPath.contains("cjdom"))
+            _useCJDom = true;
+
         execProcess(args);
     }
 
@@ -188,6 +192,9 @@ public class CJProcess extends Process {
      */
     private void addLoaderScript()
     {
+        if (!_classPath.contains("SnapKit"))
+            return;
+
         // Create script to run main for new class and class path
         HTMLScriptElement loaderScript = (HTMLScriptElement) _iframeDoc.createElement("script");
         String scriptText = getLoaderScriptText();
