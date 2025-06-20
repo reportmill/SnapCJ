@@ -202,7 +202,7 @@ public class CJEnv extends GFXEnv {
         if (urlAddress != null)
             urlAddress = urlAddress.replace("!", "");
         System.out.println("Open URL: " + urlAddress);
-        Window.current().open(urlAddress, "_blank", "menubar=no");
+        Window.current().open(urlAddress, "_blank"); //, "menubar=no");
     }
 
     /**
