@@ -175,6 +175,7 @@ public class CJImage extends Image {
     /**
      * Returns an RGB integer for given x, y.
      */
+    @Override
     public int getRGB(int aX, int aY)
     {
         // If HTMLImageElement, convert to canvas
@@ -186,6 +187,31 @@ public class CJImage extends Image {
         Uint8ClampedArray data = idata.getData();
         int d1 = data.get(0), d2 = data.get(1), d3 = data.get(2), d4 = data.get(3);
         return d4 << 24 | d1 << 16 | d2 << 8 | d3;
+    }
+
+    /**
+     * Sets an RGB integer for given x, y.
+     */
+    @Override
+    public void setRGB(int aX, int aY, int rgb)
+    {
+        // If HTMLImageElement, convert to canvas
+        if (_img != null) convertToCanvas();
+
+        // Get color as short array
+        short[] colorBytes = new short[4 * _dpiScale * _dpiScale];
+        colorBytes[0] = (short) (rgb >> 16 & 0xFF);
+        colorBytes[1] = (short) (rgb >> 8 & 0xFF);
+        colorBytes[2] = (short) (rgb & 0xFF);
+        colorBytes[3] = (short) (rgb >> 24 & 0xFF);
+        for (int i = 1, iMax = _dpiScale * _dpiScale; i < iMax; i++)
+            System.arraycopy(colorBytes, 0, colorBytes, i * 4, 4);
+
+        // Get ImageData for
+        Uint8ClampedArray colorBytesJS = new Uint8ClampedArray(colorBytes);
+        ImageData imageData = new ImageData(colorBytesJS, _dpiScale, _dpiScale);
+        CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) _canvas.getContext("2d");
+        renderContext2D.putImageData(imageData, aX * _dpiScale, aY * _dpiScale, 0, 0, _dpiScale, _dpiScale);
     }
 
     /**
