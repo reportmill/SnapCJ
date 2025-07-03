@@ -6,6 +6,7 @@ import cjdom.*;
 import snap.gfx.*;
 import snap.util.FileUtils;
 import snap.util.Prefs;
+import snap.util.SnapEnv;
 import snap.web.*;
 
 /**
@@ -31,6 +32,11 @@ public class CJEnv extends GFXEnv {
         if (_env == null) {
             _env = _shared = this;
         }
+
+        // Set browser platform
+        if (Navigator.isWindows()) SnapEnv.isWebVM_Windows = true;
+        else if (Navigator.isMac()) SnapEnv.isWebVM_Mac = true;
+        else if (Navigator.isIOS()) SnapEnv.isWebVM_iOS = true;
     }
 
     /**
