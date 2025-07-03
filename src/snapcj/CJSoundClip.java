@@ -42,7 +42,7 @@ public class CJSoundClip extends SoundClip {
         }
 
         // Get URL
-        WebURL url = WebURL.getURL(aSource);
+        WebURL url = WebURL.getUrl(aSource);
         if (url == null)
             return null;
 

@@ -157,7 +157,7 @@ public class CJEnv extends GFXEnv {
         if (aSource instanceof WebFile)
             aSource = ((WebFile) aSource).getJavaFile();
         if (aSource instanceof WebURL)
-            aSource = ((WebURL) aSource).getJavaURL();
+            aSource = ((WebURL) aSource).getJavaUrl();
         java.io.File file = FileUtils.getFile(aSource);
 
         // Get file name, type, bytes
@@ -203,7 +203,7 @@ public class CJEnv extends GFXEnv {
      */
     public void openURL(Object aSource)
     {
-        WebURL url = WebURL.getURL(aSource);
+        WebURL url = WebURL.getUrl(aSource);
         String urlAddress = url != null ? url.getString() : null;
         if (urlAddress != null)
             urlAddress = urlAddress.replace("!", "");
