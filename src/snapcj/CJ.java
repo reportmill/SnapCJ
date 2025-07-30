@@ -54,7 +54,7 @@ public class CJ {
 
         // If HiDPI, reduce because CanvasPattern seems to render at pixel sizes
         if (image.getWidth() != image.getPixWidth())
-            image = image.cloneForSizeAndDpiScale(image.getPixWidth() / 4, image.getPixHeight() / 4, 1);
+            image = image.copyForSizeAndDpiScale(image.getPixWidth() / 4, image.getPixHeight() / 4, 1);
 
         // Get CanvasPattern and set
         CanvasImageSource imageSource = (CanvasImageSource) image.getNative();
