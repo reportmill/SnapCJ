@@ -293,6 +293,15 @@ public class CJScreen {
         event.setClickCount(_clicks);
         mouseDownWin.dispatchEventToWindow(event);
 
+        // If any draggable views under mouse press, preemptively dispatch drag gesture event to configure things in CJDom.js
+        preemptiveDispatchDragGestureForMouseEvent(anEvent, mouseDownWin);
+    }
+
+    /**
+     * Checks for any views under mouse press that handle DragGesture and sends event so they can configure things in CJDom.js.
+     */
+    private void preemptiveDispatchDragGestureForMouseEvent(MouseEvent mouseDownEvent, WindowView mouseDownWin)
+    {
         // If MouseDownWin changed, just return. Modal window started new event loop - maybe should eat next drag/up events.
         // There really should be more code to prevent mouse loop straddling event queues
         if (mouseDownWin != _mouseDownWin)
@@ -305,7 +314,7 @@ public class CJScreen {
         // If MousePressView wants DragGesture, go ahead and send event (start drag will just set cjdom._dragGestureDataTransfer)
         for (View mousePressV = mousePressView; mousePressV != null; mousePressV = mousePressV.getParent()) {
             if (mousePressV.getEventAdapter().isEnabled(ViewEvent.Type.DragGesture)) {
-                ViewEvent dragGestureEvent = createEvent(mouseDownWin, anEvent, ViewEvent.Type.DragGesture, null);
+                ViewEvent dragGestureEvent = createEvent(mouseDownWin, mouseDownEvent, ViewEvent.Type.DragGesture, null);
                 mouseDownWin.dispatchEventToWindow(dragGestureEvent);
                 break;
             }
@@ -405,8 +414,8 @@ public class CJScreen {
 
         // Get MouseDownWin for event
         _mouseDownWin = getWindow(anEvent);
-        if (_mouseDownWin == null) return;
-        anEvent.preventDefault();
+        if (_mouseDownWin == null)
+            return;
 
         // Create and dispatch MousePress event
         ViewEvent event = createEvent(_mouseDownWin, anEvent, View.MousePress, null);
@@ -419,11 +428,10 @@ public class CJScreen {
      */
     public void touchMove(TouchEvent anEvent)
     {
+        if (_mouseDownWin == null) return;
+
         // Don't think this can happen
         if (anEvent.getTouch() == null) return;
-
-        if (_mouseDownWin == null) return;
-        anEvent.preventDefault();
 
         // Create and dispatch MouseDrag event
         ViewEvent event = createEvent(_mouseDownWin, anEvent, View.MouseDrag, null);
@@ -436,11 +444,10 @@ public class CJScreen {
      */
     public void touchEnd(TouchEvent anEvent)
     {
+        if (_mouseDownWin == null) return;
+
         // Don't think this can happen
         if (anEvent.getTouch() == null) return;
-
-        if (_mouseDownWin == null) return;
-        anEvent.preventDefault();
 
         WindowView mouseDownWin = _mouseDownWin;
         _mouseDownWin = null;
