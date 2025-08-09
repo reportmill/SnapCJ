@@ -86,7 +86,7 @@ public class CJProcess extends Process {
         _iframe = (HTMLIFrameElement) doc.createElement("iframe");
         _iframe.setSrc("launcher.html");
         String style = "background-color: white; border: none; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px;";
-        String position = "margin: 0; padding: 0; position: absolute; right: 36px; top: 20%; width: 50%; height: 75%;";
+        String position = "margin: 0; padding: 0; position: absolute; right: 33px; bottom: 33px; width: 50%; height: 75%;";
         _iframe.getStyle().setCssText(style + position);
 
         // Add to doc body
