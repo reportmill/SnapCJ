@@ -29,7 +29,7 @@ public class CJEvent extends ViewEvent {
 
         // Handle unknown event type (Currently called by ViewEvent.copyForView())
         //System.out.println("CJEvent.getPointImpl: Unsupported event type: " + event.getType());
-        return new Point();
+        return Point.ZERO;
     }
 
     /**
