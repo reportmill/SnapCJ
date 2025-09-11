@@ -52,6 +52,7 @@ public class CJWindow {
         // Set Window and RootView
         _win = snapWindow;
         _rootView = _win.getRootView();
+        ViewUtils.setNative(_win, this);
 
         // If Window.Type not PLAIN, attach WindowBar
         if (_win.getType() != WindowView.TYPE_PLAIN)

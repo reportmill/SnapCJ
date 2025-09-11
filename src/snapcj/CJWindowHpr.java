@@ -30,11 +30,6 @@ public class CJWindowHpr extends WindowView.WindowHpr {
     }
 
     /**
-     * Returns the native.
-     */
-    public CJWindow getNative()  { return _winNtv; }
-
-    /**
      * Window method: initializes native window.
      */
     public void initWindow()
