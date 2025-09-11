@@ -7,65 +7,45 @@ import snap.view.*;
  */
 public class CJWindowHpr extends WindowView.WindowHpr {
 
-    // The snap Window
-    protected WindowView  _win;
-
     // The snap CJWindow
     protected CJWindow  _winNtv;
 
     /**
-     * Returns the window.
+     * Constructor.
      */
-    @Override
-    public WindowView getWindow()  { return _win; }
-
-    /**
-     * Sets the window and creates native.
-     */
-    @Override
-    public void setWindow(WindowView aWin)
+    public CJWindowHpr()
     {
-        _win = aWin;
-        _winNtv = new CJWindow(aWin);
+        super();
     }
 
     /**
-     * Window method: initializes native window.
+     * Initializes helper for given window.
      */
-    public void initWindow()
-    {
-        _winNtv.initWindow();
-    }
+    @Override
+    public void initForWindow(WindowView aWin)  { _winNtv = new CJWindow(aWin); }
+
+    /**
+     * Initializes native window.
+     */
+    public void initializeNativeWindow()  { _winNtv.initWindow(); }
 
     /**
      * Window/Popup method: Shows the window.
      */
-    public void show()
-    {
-        _winNtv.show();
-    }
+    public void show()  { _winNtv.show(); }
 
     /**
      * Window/Popup method: Hides the window.
      */
-    public void hide()
-    {
-        _winNtv.hide();
-    }
+    public void hide()  { _winNtv.hide(); }
 
     /**
      * Window/Popup method: Order window to front.
      */
-    public void toFront()
-    {
-        _winNtv.toFront();
-    }
+    public void toFront()  { _winNtv.toFront(); }
 
     /**
      * Registers a view for repaint.
      */
-    public void requestPaint(Rect aRect)
-    {
-        _winNtv.paintViews(aRect);
-    }
+    public void requestPaint(Rect aRect)  { _winNtv.paintViews(aRect); }
 }
