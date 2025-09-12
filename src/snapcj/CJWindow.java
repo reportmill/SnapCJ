@@ -54,10 +54,6 @@ public class CJWindow {
         _rootView = _win.getRootView();
         ViewUtils.setNative(_win, this);
 
-        // If Window.Type not PLAIN, attach WindowBar
-        if (_win.getType() != WindowView.TYPE_PLAIN)
-            WindowBar.attachWindowBar(_rootView);
-
         // Start listening to snap window prop changes
         _win.addPropChangeListener(this::handleSnapWindowPropChange);
 
@@ -112,7 +108,7 @@ public class CJWindow {
     {
         if (_rootView.getFill() == null)
             _rootView.setFill(ViewUtils.getBackFill());
-        if (_rootView.getBorder() == null && _win.getType() != WindowView.TYPE_PLAIN)
+        if (_rootView.getBorder() == null && _win.getType() != WindowView.Type.PLAIN)
             _rootView.setBorder(Color.GRAY, 1);
     }
 
