@@ -97,11 +97,10 @@ public class CJ {
      */
     public static Rect getViewportBounds()
     {
-        double x = 0; // double x = getViewportX();
-        double y = 0; // double y = getViewportY();
-        double w = CJDom.getViewportWidth();
-        double h = CJDom.getViewportHeight();
-        return new Rect(x, y, w, h);
+        HTMLHtmlElement htmlElement = HTMLDocument.getDocument().getDocumentElement();
+        double docW = htmlElement.getClientWidth();
+        double docH = htmlElement.getClientHeight();
+        return new Rect(0, 0, docW, docH);
     }
 
     /**

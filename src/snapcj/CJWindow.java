@@ -42,7 +42,7 @@ public class CJWindow {
     protected static int _topWin;
 
     // The paint scale
-    public static int PIXEL_SCALE = CJDom.getDevicePixelRatio() == 2 ? 2 : 1;
+    public static int PIXEL_SCALE = Window.getDevicePixelRatio() == 2 ? 2 : 1;
 
     /**
      * Constructor.
