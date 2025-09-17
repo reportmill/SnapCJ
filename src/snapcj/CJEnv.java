@@ -170,7 +170,7 @@ public class CJEnv extends GFXEnv {
         String fileUrlAddress = fileJS.createURL();
 
         // Open file url address
-        Window.current().open(fileUrlAddress, "_blank");
+        Window.get().open(fileUrlAddress, "_blank");
     }
 
     /**
@@ -208,7 +208,7 @@ public class CJEnv extends GFXEnv {
         if (urlAddress != null)
             urlAddress = urlAddress.replace("!", "");
         System.out.println("Open URL: " + urlAddress);
-        Window.current().open(urlAddress, "_blank"); //, "menubar=no");
+        Window.get().open(urlAddress, "_blank"); //, "menubar=no");
     }
 
     /**
@@ -228,16 +228,6 @@ public class CJEnv extends GFXEnv {
      * This is really just here to help with TeaVM.
      */
     public void exit(int aValue)  { }
-
-    /**
-     * Sets the Browser window.location.hash.
-     */
-    @Override
-    public void setBrowserWindowLocationHash(String aString)
-    {
-        Window window = Window.current();
-        window.setWindowLocationHash(aString);
-    }
 
     /**
      * Executes a process.

@@ -240,7 +240,7 @@ public class CJWindow {
         // Start listening to browser window resizes
         if (_resizeLsnr == null)
             _resizeLsnr = e -> handleBrowserWindowSizeChange();
-        Window.current().addEventListener("resize", _resizeLsnr);
+        Window.get().addEventListener("resize", _resizeLsnr);
     }
 
     /**
@@ -283,7 +283,7 @@ public class CJWindow {
         screen.removeWindowFromScreen(_win);
 
         // Stop listening to browser window resizes
-        Window.current().removeEventListener("resize", _resizeLsnr);
+        Window.get().removeEventListener("resize", _resizeLsnr);
         _resizeLsnr = null;
 
         // Send WinClose event
