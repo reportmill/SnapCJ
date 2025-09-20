@@ -208,8 +208,7 @@ public class CJImage extends Image {
             System.arraycopy(colorBytes, 0, colorBytes, i * 4, 4);
 
         // Get ImageData for
-        Uint8ClampedArray colorBytesJS = new Uint8ClampedArray(colorBytes);
-        ImageData imageData = new ImageData(colorBytesJS, _dpiScale, _dpiScale);
+        ImageData imageData = new ImageData(colorBytes, _dpiScale, _dpiScale);
         CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) _canvas.getContext("2d");
         renderContext2D.putImageData(imageData, aX * _dpiScale, aY * _dpiScale, 0, 0, _dpiScale, _dpiScale);
     }

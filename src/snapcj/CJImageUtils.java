@@ -33,11 +33,8 @@ public class CJImageUtils {
         // If HTMLImageElement, convert to canvas
         if (anImg._img != null) anImg.convertToCanvas();
 
-        // Create array for image values
-        Uint8ClampedArray imageBytesArray = new Uint8ClampedArray(rgba);
-
         // Get ImageData for
-        ImageData imageData = new ImageData(imageBytesArray, anImg.getPixWidth(), anImg.getPixHeight());
+        ImageData imageData = new ImageData(rgba, anImg.getPixWidth(), anImg.getPixHeight());
         CanvasRenderingContext2D renderContext2D = (CanvasRenderingContext2D) anImg._canvas.getContext("2d");
         renderContext2D.putImageData(imageData, 0, 0, 0, 0, anImg.getPixWidth(), anImg.getPixHeight());
     }
