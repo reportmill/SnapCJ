@@ -62,7 +62,7 @@ public class CJDragboard extends CJClipboard {
 
         // If DragGesture, create new DataTrans for client to configure
         if (anEvent.isDragGesture())
-            _dataTrans = new DataTransfer();
+            _dataTrans = WebEnv.get().newDataTransfer();
 
         // If DragDrop etc., get DataTransfer from drag event
         else {

@@ -5,7 +5,6 @@ import snap.util.ListUtils;
 import snap.view.Clipboard;
 import snap.view.ClipboardData;
 import snap.view.ViewUtils;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -68,16 +67,12 @@ public class CJClipboard extends Clipboard {
         if (aMimeType == FILE_LIST) {
 
             // Get files
-            File[] jsfiles = _dataTrans.getFiles();
+            List<File> jsfiles = _dataTrans.getFiles();
             if (jsfiles == null)
                 return null;
 
             // Iterate over jsFiles and create clipbard data
-            List<ClipboardData> cfiles = new ArrayList<>(jsfiles.length);
-            for (File jsfile : jsfiles) {
-                ClipboardData cbfile = new CJClipboardData(jsfile);
-                cfiles.add(cbfile);
-            }
+            List<ClipboardData> cfiles = ListUtils.map(jsfiles, jsfile -> new CJClipboardData(jsfile));
 
             // Return ClipboardData for files array
             return new ClipboardData(aMimeType, cfiles);
@@ -131,12 +126,8 @@ public class CJClipboard extends Clipboard {
         ClipboardItem[] clipboardItems = ListUtils.mapNonNullToArray(clipboardDatas, cdata -> getClipboardItemForData(cdata), ClipboardItem.class);
 
         // Try to write items to clipboard
-        try {
-            cjdom.Clipboard.writeClipboardItems(clipboardItems);
-        }
-        catch (Exception e) {
-            System.err.println("CJClipboard.addAllDataToClipboard failed: " + e);
-        }
+        try { cjdom.Clipboard.writeClipboardItems(clipboardItems); }
+        catch (Exception e) { System.err.println("CJClipboard.addAllDataToClipboard failed: " + e); }
 
         // Clear datas
         clearData();
@@ -226,7 +217,7 @@ public class CJClipboard extends Clipboard {
         _loadListener = aRun;
 
         // Create new data transfer
-        DataTransfer dataTransfer = new DataTransfer();
+        DataTransfer dataTransfer = WebEnv.get().newDataTransfer();
 
         // Read clipboard items
         ClipboardItem[] clipboardItems = cjdom.Clipboard.readClipboardItems();
