@@ -1,10 +1,8 @@
 package snapcj;
-import cjdom.EventQueue;
-import cjdom.FilePicker;
-import cjdom.HTMLDocument;
-import cjdom.Window;
+import cjdom.*;
 import snap.geom.Rect;
 import snap.view.*;
+import snap.view.Clipboard;
 import snap.web.WebFile;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +44,7 @@ public class CJViewEnv extends ViewEnv {
     /**
      * Returns whether current thread is event thread.
      */
-    public boolean isEventThread()  { return EventQueue.isEventThread(); }
+    public boolean isEventThread()  { return WebEnv.get().isEventThread(); }
 
     /**
      * Run later.

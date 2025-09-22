@@ -256,7 +256,7 @@ public class CJWindow {
         _win.addPropChangeListener(hideLsnr, View.Showing_Prop);
 
         // Start new app thread, since this thread is now tied up until window closes
-        EventQueue.getShared().startNewEventThreadAndWait();
+        WebEnv.get().startNewEventThreadAndWait();
 
         // Remove listener
         _win.removePropChangeListener(hideLsnr);
@@ -267,7 +267,7 @@ public class CJWindow {
      */
     private void modalWindowShowingChanged()
     {
-        EventQueue.getShared().stopEventThreadAndNotify();
+        WebEnv.get().stopEventThreadAndNotify();
     }
 
     /**
