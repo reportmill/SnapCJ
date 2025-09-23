@@ -1,9 +1,9 @@
 package snapcj;
-import cjdom.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.*;
 import snap.util.SnapEnv;
+import webapi.*;
 
 /**
  * Utility methods for SnapKit + CheerpJ.

@@ -1,9 +1,10 @@
 package snapcj;
-import cjdom.*;
 import snap.util.ArrayUtils;
 import snap.util.ListUtils;
 import snap.util.SnapUtils;
 import snap.view.ViewUtils;
+import webapi.*;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;

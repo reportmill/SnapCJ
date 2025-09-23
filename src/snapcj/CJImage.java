@@ -1,11 +1,12 @@
 package snapcj;
-import cjdom.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.ImageUtils;
 import snap.gfx.Painter;
 import snap.util.ASCIICodec;
 import snap.web.WebURL;
+import webapi.*;
+
 import java.io.InputStream;
 
 /**

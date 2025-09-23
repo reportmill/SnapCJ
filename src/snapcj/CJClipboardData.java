@@ -1,6 +1,6 @@
 package snapcj;
-import cjdom.File;
-import cjdom.FileReader;
+import webapi.File;
+import webapi.FileReader;
 import snap.view.ClipboardData;
 
 /**

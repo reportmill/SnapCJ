@@ -1,5 +1,5 @@
 package snapcj;
-import cjdom.Storage;
+import webapi.Storage;
 import snap.util.Convert;
 import snap.util.Prefs;
 import java.util.ArrayList;

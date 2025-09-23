@@ -2,12 +2,13 @@
  * Copyright (c) 2010, ReportMill Software. All rights reserved.
  */
 package snapcj;
-import cjdom.*;
 import snap.gfx.Color;
 import snap.gfx.Image;
 import snap.gfx.Painter;
 import snap.gfx3d.*;
 import snap.util.SnapUtils;
+import webapi.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +27,13 @@ public class CJRenderer extends Renderer {
     private Map<String,WebGLProgram>  _programs = new HashMap<>();
 
     // A map of vertex shaders
-    private Map<String,WebGLShader>  _vertShaders = new HashMap<>();
+    private Map<String, WebGLShader>  _vertShaders = new HashMap<>();
 
     // A map of fragment shaders
     private Map<String,WebGLShader>  _fragShaders = new HashMap<>();
 
     // A map of textures
-    private Map<Texture,WebGLTexture>  _textures = new HashMap<>();
+    private Map<Texture, WebGLTexture>  _textures = new HashMap<>();
 
     // Canvas size in points
     private int  _canvasW, _canvasH;

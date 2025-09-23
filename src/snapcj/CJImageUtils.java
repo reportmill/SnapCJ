@@ -1,7 +1,7 @@
 package snapcj;
-import cjdom.CanvasRenderingContext2D;
-import cjdom.ImageData;
-import cjdom.Uint8ClampedArray;
+import webapi.CanvasRenderingContext2D;
+import webapi.ImageData;
+import webapi.Uint8ClampedArray;
 
 /**
  * Image utils for TVImage.

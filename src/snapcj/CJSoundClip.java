@@ -1,7 +1,7 @@
 package snapcj;
-import cjdom.Blob;
-import cjdom.HTMLAudioElement;
-import cjdom.HTMLDocument;
+import webapi.Blob;
+import webapi.HTMLAudioElement;
+import webapi.HTMLDocument;
 import snap.gfx.SoundClip;
 import snap.web.WebURL;
 

@@ -1,6 +1,9 @@
 package snapcj;
-import cjdom.*;
 import snap.gfx.*;
+import webapi.CanvasImageSource;
+import webapi.CanvasRenderingContext2D;
+import webapi.HTMLCanvasElement;
+import webapi.HTMLElement;
 
 /**
  * A snap Painter for rendering to a CheerpJ HTMLCanvasElement.

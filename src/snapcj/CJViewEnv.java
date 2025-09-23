@@ -1,9 +1,12 @@
 package snapcj;
-import cjdom.*;
 import snap.geom.Rect;
 import snap.view.*;
 import snap.view.Clipboard;
 import snap.web.WebFile;
+import webapi.FilePicker;
+import webapi.HTMLDocument;
+import webapi.WebEnv;
+import webapi.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,10 +1,10 @@
 package snapcj;
-import cjdom.*;
 import snap.geom.PathIter;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.geom.Transform;
 import snap.gfx.*;
+import webapi.*;
 
 /**
  * A snap Painter for rendering to a CheerpJ HTMLCanvasElement.

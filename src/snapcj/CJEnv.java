@@ -2,12 +2,13 @@ package snapcj;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
-import cjdom.*;
+
 import snap.gfx.*;
 import snap.util.FileUtils;
 import snap.util.Prefs;
 import snap.util.SnapEnv;
 import snap.web.*;
+import webapi.*;
 
 /**
  * A GFXEnv implementation for CheerpJ.

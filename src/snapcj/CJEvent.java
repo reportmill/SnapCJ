@@ -1,7 +1,7 @@
 package snapcj;
-import cjdom.*;
 import snap.geom.Point;
 import snap.view.*;
+import webapi.*;
 
 /**
  * A ViewEvent implementation for CheerpJ.

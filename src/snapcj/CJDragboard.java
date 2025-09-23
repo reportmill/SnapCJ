@@ -1,7 +1,9 @@
 package snapcj;
-import cjdom.*;
 import snap.gfx.Image;
 import snap.view.ViewEvent;
+import webapi.DragEvent;
+import webapi.HTMLElement;
+import webapi.WebEnv;
 
 /**
  * A CJClipboard subclass to support drag and drop.

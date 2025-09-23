@@ -1,10 +1,10 @@
 package snapcj;
-import cjdom.*;
 import snap.gfx.Image;
 import snap.util.ListUtils;
 import snap.view.Clipboard;
 import snap.view.ClipboardData;
 import snap.view.ViewUtils;
+import webapi.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public class CJClipboard extends Clipboard {
         ClipboardItem[] clipboardItems = ListUtils.mapNonNullToArray(clipboardDatas, cdata -> getClipboardItemForData(cdata), ClipboardItem.class);
 
         // Try to write items to clipboard
-        try { cjdom.Clipboard.writeClipboardItems(clipboardItems); }
+        try { webapi.Clipboard.writeClipboardItems(clipboardItems); }
         catch (Exception e) { System.err.println("CJClipboard.addAllDataToClipboard failed: " + e); }
 
         // Clear datas
@@ -220,7 +220,7 @@ public class CJClipboard extends Clipboard {
         DataTransfer dataTransfer = WebEnv.get().newDataTransfer();
 
         // Read clipboard items
-        ClipboardItem[] clipboardItems = cjdom.Clipboard.readClipboardItems();
+        ClipboardItem[] clipboardItems = webapi.Clipboard.readClipboardItems();
 
         // Iterate over clipboard items and add to data transfer
         for (ClipboardItem clipboardItem : clipboardItems) {

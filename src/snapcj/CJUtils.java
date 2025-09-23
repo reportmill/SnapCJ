@@ -1,6 +1,6 @@
 package snapcj;
-import cjdom.HTMLElement;
-import cjdom.Node;
+import webapi.HTMLElement;
+import webapi.Node;
 import snap.util.Convert;
 import snap.util.FormatUtils;
 import snap.view.ViewUtils;

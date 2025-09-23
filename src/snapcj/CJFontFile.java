@@ -1,8 +1,8 @@
 package snapcj;
-import cjdom.CanvasRenderingContext2D;
-import cjdom.HTMLCanvasElement;
-import cjdom.HTMLDocument;
-import cjdom.TextMetrics;
+import webapi.CanvasRenderingContext2D;
+import webapi.HTMLCanvasElement;
+import webapi.HTMLDocument;
+import webapi.TextMetrics;
 import snap.geom.Rect;
 import snap.geom.Shape;
 import snap.gfx.FontFile;

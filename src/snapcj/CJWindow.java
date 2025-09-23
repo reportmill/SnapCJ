@@ -1,6 +1,5 @@
 package snapcj;
-import cjdom.*;
-import cjdom.EventListener;
+import webapi.*;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.Color;
@@ -8,6 +7,7 @@ import snap.gfx.Painter;
 import snap.props.PropChange;
 import snap.props.PropChangeListener;
 import snap.view.*;
+import webapi.EventListener;
 
 /**
  * A class to represent the WindowView in the browser page.
