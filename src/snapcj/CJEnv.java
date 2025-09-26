@@ -1,8 +1,6 @@
 package snapcj;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
-
 import snap.gfx.*;
 import snap.util.FileUtils;
 import snap.util.Prefs;
@@ -38,14 +36,6 @@ public class CJEnv extends GFXEnv {
         if (Navigator.isWindows()) SnapEnv.isWebVM_Windows = true;
         else if (Navigator.isMac()) SnapEnv.isWebVM_Mac = true;
         else if (Navigator.isIOS()) SnapEnv.isWebVM_iOS = true;
-    }
-
-    /**
-     * Returns resource for class and path.
-     */
-    public URL getResource(Class<?> aClass, String aPath)
-    {
-        return aClass.getResource(aPath);
     }
 
     /**
@@ -136,6 +126,8 @@ public class CJEnv extends GFXEnv {
     @Override
     public Prefs getPrefs(String aName)
     {
+        if (SnapEnv.isJxBrowser)
+            return super.getPrefs(aName);
         return new CJPrefs(aName);
     }
 
