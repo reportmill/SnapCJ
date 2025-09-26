@@ -1,9 +1,11 @@
 package snapcj;
 import snap.gfx.*;
+import snap.util.SnapEnv;
 import webapi.CanvasImageSource;
 import webapi.CanvasRenderingContext2D;
 import webapi.HTMLCanvasElement;
 import webapi.HTMLElement;
+import java.util.Arrays;
 
 /**
  * A snap Painter for rendering to a CheerpJ HTMLCanvasElement.
@@ -39,8 +41,20 @@ public class CJPainter2 extends PainterDVR2 {
         for (int i = 0; i < _nativeStackSize; i++)
             _nativeStack[i] = toNative(_nativeStack[i]);
 
-        // Paint stacks
-        painter.paintStacks(_instructionStack, _instructionStackSize, _intStack, _doubleStack, _stringStack, _nativeStack);
+        // If JXBrowser, make arrays exactly the right size
+        if (SnapEnv.isJxBrowser) {
+            int[] instructionStack = Arrays.copyOf(_instructionStack, _instructionStackSize);
+            int[] intStack = Arrays.copyOf(_intStack, _intStackSize);
+            double[] doubleStack = Arrays.copyOf(_doubleStack, _doubleStackSize);
+            String[] stringStack = Arrays.copyOf(_stringStack, _stringStackSize);
+            Object[] nativeStack = Arrays.copyOf(_nativeStack, _nativeStackSize);
+            painter.paintStacks(instructionStack, _instructionStackSize, intStack, doubleStack, stringStack, nativeStack);
+        }
+
+        // Otherwise just send through Paint stacks
+        else painter.paintStacks(_instructionStack, _instructionStackSize, _intStack, _doubleStack, _stringStack, _nativeStack);
+
+        // Clear painter
         clear(); _cntx = null;
     }
 
