@@ -2,7 +2,6 @@ package snapcj;
 import snap.geom.Point;
 import snap.geom.Rect;
 import snap.gfx.*;
-import snap.util.SnapEnv;
 import webapi.*;
 
 /**
@@ -101,13 +100,5 @@ public class CJ {
         double docW = htmlElement.getClientWidth();
         double docH = htmlElement.getClientHeight();
         return new Rect(0, 0, docW, docH);
-    }
-
-    /**
-     * Sets the CheerpJ environment.
-     */
-    public static void set()
-    {
-        if (SnapEnv.isWebVM) CJViewEnv.set();
     }
 }

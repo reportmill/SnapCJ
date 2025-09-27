@@ -39,14 +39,6 @@ public class CJEnv extends GFXEnv {
     }
 
     /**
-     * Returns the root URL classes in Snap Jar as string.
-     */
-    public String getClassRoot()
-    {
-        return CJViewEnv.getScriptRoot();
-    }
-
-    /**
      * Returns a list of all system fontnames (excludes any that don't start with capital A-Z).
      */
     public String[] getFontNames()  { return _fontNames; }
@@ -226,10 +218,13 @@ public class CJEnv extends GFXEnv {
      * Executes a process.
      */
     @Override
-    public Process execProcess(String[] args)
-    {
-        return new CJProcess(args);
-    }
+    public Process execProcess(String[] args)  { return new CJProcess(args); }
+
+    /**
+     * Returns new CJViewEnv.
+     */
+    @Override
+    protected snap.view.ViewEnv createViewEnv()  { return new CJViewEnv(); }
 
     /**
      * Returns a shared instance.
