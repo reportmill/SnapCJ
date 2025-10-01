@@ -1,9 +1,9 @@
 package snapcj;
+import snap.util.SnapEnv;
 import webapi.*;
 import snap.util.ListUtils;
 import snap.view.*;
 import webapi.EventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -295,7 +295,8 @@ public class CJScreen {
         mouseDownWin.dispatchEventToWindow(event);
 
         // If any draggable views under mouse press, preemptively dispatch drag gesture event to configure things in CJDom.js
-        preemptiveDispatchDragGestureForMouseEvent(anEvent, mouseDownWin);
+        if (!SnapEnv.isJxBrowser)
+            preemptiveDispatchDragGestureForMouseEvent(anEvent, mouseDownWin);
     }
 
     /**
@@ -502,6 +503,9 @@ public class CJScreen {
      */
     protected void handleDocumentLostFocus(Event anEvent)
     {
+        // This bogus - but needed for now
+        if (SnapEnv.isJxBrowser) return;
+
         for (WindowView win : _windows)
             ViewUtils.setFocused(win, false);
     }
