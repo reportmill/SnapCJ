@@ -67,7 +67,7 @@ public class CJProcess extends Process {
         System.out.println("ClassPath: " + _classPath);
 
         // If CJDom was added explicitly to dependencies (but not SnapKit), set UseCJDom here
-        if (!_useCJDom && _classPath.contains("cjdom"))
+        if (!_useCJDom && (_classPath.contains("cjdom") || _classPath.contains("webapi")))
             _useCJDom = true;
 
         execProcess(args);
