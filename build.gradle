@@ -25,6 +25,6 @@ dependencies {
     implementation project(':SnapKit')
 
     // CJDom project
-    implementation project(':CJDom')
-    compileOnly files("../CJDom/lib/cheerpj-awt.jar")
+    implementation project(':WebAPI')
+    //compileOnly files("../CJDom/lib/cheerpj-awt.jar")
 }
