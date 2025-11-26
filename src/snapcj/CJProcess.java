@@ -4,11 +4,11 @@ import snap.util.ListUtils;
 import snap.util.SnapUtils;
 import snap.view.ViewUtils;
 import webapi.*;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This Process subclass tries to implement Process for CheerpJ.
@@ -35,6 +35,9 @@ public class CJProcess extends Process {
 
     // The div element that holds the console
     private HTMLDivElement _consoleDiv;
+
+    // A listener to make iframe/screen visible when window shown
+    private MutationObserver _iframeChildListChangeLsnr;
 
     // The input stream
     private ReadWriteInputStream _inputStream;
@@ -86,30 +89,31 @@ public class CJProcess extends Process {
         HTMLDocument doc = HTMLDocument.getDocument();
         _iframe = (HTMLIFrameElement) doc.createElement("iframe");
         _iframe.setSrc("launcher.html");
-        String style = "background-color: white; border: none; box-sizing: border-box; z-index: 0; box-shadow: grey 1px 1px 8px;";
+        String style = "background-color: white; border: none; box-sizing: border-box; box-shadow: grey 1px 1px 8px;";
         String position = "margin: 0; padding: 0; position: absolute; right: 33px; bottom: 3px; width: 50%; height: 75%;";
         _iframe.getStyle().setCssText(style + position);
+        _iframe.getStyle().setProperty("z-index", "-9");
 
         // Add to doc body
         HTMLBodyElement body = doc.getBody();
         body.appendChild(_iframe);
 
         // Listen for iframe src load
-        _iframe.addEventListener("load", e -> didFinishIFrameLoad());
+        _iframe.addEventListener("load", e -> handleIframeFinishedLoad());
     }
 
     /**
      * Called after iframe src is loaded.
      */
-    private void didFinishIFrameLoad()
+    private void handleIframeFinishedLoad()
     {
         // Get/set iframeDoc
         _iframeDoc = _iframe.getContentDocument();
 
         // If CJDom, add loader script, otherwise add SwingParent div
-        if (_useCJDom)
-            addLoaderScript();
-        else addSwingParentDiv();
+        //if (_useCJDom) addLoaderScript(); else
+        if (!_useCJDom)
+            addSwingParentDiv();
 
         addConsoleDiv();
 
@@ -118,6 +122,10 @@ public class CJProcess extends Process {
 
         // Otherwise just add script
         addMainScript();
+
+        // Listen for iframe child list changes
+        _iframeChildListChangeLsnr = new MutationObserver(this::handleIframeChildListChange);
+        _iframeChildListChangeLsnr.observe(_iframe.getContentDocument().getBody(), MutationObserver.Option.childList, MutationObserver.Option.subtree);
     }
 
     /**
@@ -174,18 +182,21 @@ public class CJProcess extends Process {
             initArgs += ", natives: cjdomNativeMethods";
 
         // Create script string
-        StringBuilder sb = new StringBuilder();
-        sb.append("  async function myInit() {\n");
-        sb.append("    await cheerpjInit({ ").append(initArgs).append(" });\n");
-        if (!_useCJDom)
-            sb.append("    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));\n");
-        sb.append("    await cheerpjRunMain('").append(_mainClassName).append("', '").append(_classPath).append("');\n");
-        sb.append("    document.getElementById('console').appendChild(new Text('Process exited'));\n");
-        sb.append("  }\n");
-        sb.append("  myInit();\n");
+        String script = """
+              async function myInit() {
+                await cheerpjInit({ {INIT_ARGS} });{CREATE_DISPLAY}
+                await cheerpjRunMain('{MAIN_CLASS}', '{CLASS_PATH}');
+                document.getElementById('console').appendChild(new Text('Process exited'));
+              }
+              myInit();
+            """;
 
-        // Return
-        return sb.toString();
+        // Insert initialization args, CheerpJ display, main class and class path
+        script = script.replace("{INIT_ARGS}", initArgs);
+        script = script.replace("{CREATE_DISPLAY}", !_useCJDom ? "\n    cheerpjCreateDisplay(-1, -1, document.getElementById('SwingParent'));" : "");
+        script = script.replace("{MAIN_CLASS}", _mainClassName);
+        script = script.replace("{CLASS_PATH}", _classPath);
+        return script;
     }
 
     /**
@@ -211,14 +222,16 @@ public class CJProcess extends Process {
      */
     private String getLoaderScriptText()
     {
-        String sb = "    var iframe = document.createElement('iframe');\n" +
-                    "    iframe.id = 'snap_loader'; iframe.width = '100%'; iframe.height = '100%';\n" +
-                    "    iframe.style = 'margin: 0; padding: 0; border: none;';\n" +
-                    "    iframe.src = 'https://reportmill.com/SnapCode/loader/#" + _appName + "';\n" +
-                    "    document.body.appendChild(iframe);\n";
+        String script = """
+            var iframe = document.createElement('iframe');
+            iframe.id = 'snap_loader'; iframe.width = '100%'; iframe.height = '100%';
+            iframe.style = 'margin: 0; padding: 0; border: none;';
+            iframe.src = 'https://reportmill.com/SnapCode/loader/#{APP_NAME}';
+            document.body.appendChild(iframe);
+        """;
 
-        // Return
-        return sb;
+        // Insert app name and return
+        return script.replace("{APP_NAME}", _appName);
     }
 
     /**
@@ -282,16 +295,28 @@ public class CJProcess extends Process {
             if (newText.contains("exited"))
                 ViewUtils.runLater(() -> destroy());
         }
+    }
 
+    /**
+     * Called to handle child list changes to main iframe and make iframe order front if swing/snapkit window created.
+     */
+    private void handleIframeChildListChange(MutationRecord[] mutationRecords)
+    {
         // Iterate over mutation records
-        /*for (MutationRecord mutationRecord : mutationRecords) {
+        for (MutationRecord mutationRecord : mutationRecords) {
             Node[] addedNodes = mutationRecord.getAddedNodes();
             for (Node addedNode : addedNodes) {
-                if (addedNode instanceof Text) { Text text = (Text) addedNode;
-                    _inputStream.addString(text.getData());
+                if (addedNode instanceof HTMLDivElement div) {
+
+                    // If Swing/Snapkit window, make iframe visible and disconnect observer
+                    if (Objects.equals(div.getId(), "WindowDiv") || div.getClassName().startsWith("cjTitleBar")) {
+                        _iframe.getStyle().setProperty("z-index", "1");
+                        _iframeChildListChangeLsnr.disconnect();
+                        return;
+                    }
                 }
             }
-        }*/
+        }
     }
 
     /**
